@@ -24,7 +24,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 abstract class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresenter<T> {
 
+    companion object {
+        val TASK_ADDED = 0
+        val TASK_FINISHED = 1
+    }
+
     protected var executor: ExecutorService? = null
+
+    private var taskStatusListener: IAsyncPresenter.ITaskListener? = null
 
     private val runningTasks: MutableList<Int> = Collections.synchronizedList(LinkedList())
 
@@ -43,6 +50,11 @@ abstract class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPres
 
     override fun onAttachView(view: T) {
         super.onAttachView(view)
+
+        if (view is IAsyncPresenter.ITaskListener) {
+            taskStatusListener = view
+        }
+
         if (executor == null) {
             executor = createExecutor()
         }
@@ -59,6 +71,7 @@ abstract class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPres
 
     override fun onDetachView() {
         super.onDetachView()
+        taskStatusListener = null
         waitForView.set(true)
     }
 
@@ -99,14 +112,20 @@ abstract class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPres
 
     fun notifyTaskAdded(task: Int) {
         runningTasks.add(task)
+        taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
     }
 
     fun notifyTaskFinished(task: Int) {
         runningTasks.remove(task)
+        taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
     }
 
     fun isTaskRunning(task: Int): Boolean {
         return runningTasks.contains(task)
+    }
+
+    fun isAnyOfTasksRunning(vararg tasks: Int): Boolean {
+        return tasks.any { isTaskRunning(it) }
     }
 
     fun hasRunningTasks(): Boolean {

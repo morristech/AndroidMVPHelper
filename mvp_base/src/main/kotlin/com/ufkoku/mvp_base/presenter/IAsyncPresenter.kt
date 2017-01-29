@@ -22,4 +22,10 @@ interface IAsyncPresenter<T : IMvpView> : IPresenter<T> {
 
     fun cancel()
 
+    interface ITaskListener {
+
+        fun onTaskStatusChanged(taskId: Int, status: Int)
+
+    }
+
 }
