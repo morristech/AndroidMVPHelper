@@ -17,112 +17,40 @@
 package com.ufkoku.mvp.retainable
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import com.ufkoku.mvp_base.presenter.IAsyncPresenter
+import com.ufkoku.mvp.retainable.delegate.ActivityDelegate
 import com.ufkoku.mvp_base.presenter.IPresenter
+import com.ufkoku.mvp_base.view.IMvpActivity
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-abstract class BaseRetainableActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : AppCompatActivity() {
+abstract class BaseRetainableActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
 
-    companion object {
-        val STATE_FRAGMENT_TAG = "com.ufkoku.uicontrol.BaseActivity.StateFragment"
-    }
+    private val delegate: ActivityDelegate<BaseRetainableActivity<V, P, VS>, V, P, VS> = ActivityDelegate(this)
 
-    private var stateFragment: StateFragment<V, P, VS>? = null
-
-    var presenter: P?
+    protected val presenter: P?
         get() {
-            return stateFragment?.presenter
-        }
-        private set(value) {
-            stateFragment?.presenter = value
+            return delegate.presenter
         }
 
-    var viewState: VS?
+    protected val viewState: VS?
         get() {
-            return stateFragment?.viewState
+            return delegate.viewState
         }
-        private set(value) {
-            stateFragment?.viewState = value
-        }
-
-    //-----------------------------------------------------------------------------------------//
-
-    /**
-     * Call setContentView hear and init all UI variables
-     * */
-    abstract fun createView()
-
-    abstract fun getMvpView(): V
-
-    /**
-     * Creating viewState
-     * */
-    abstract fun createNewViewState(): VS
-
-    /**
-     * Creating presenter
-     * */
-    abstract fun createPresenter(): P
-
-    /**
-     * This is methods is called when ui, view state and presenter are initialized, and viewState.apply() method called
-     * */
-    abstract fun onInitialized(presenter: P, viewState: VS)
 
     //-----------------------------------------------------------------------------------------//
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        stateFragment = supportFragmentManager.findFragmentByTag(STATE_FRAGMENT_TAG) as StateFragment<V, P, VS>?
-        if (stateFragment == null) {
-            stateFragment = StateFragment()
-            supportFragmentManager.beginTransaction()
-                    .add(stateFragment, STATE_FRAGMENT_TAG)
-                    .commit()
-        }
-
-        if (viewState == null) {
-            viewState = createNewViewState()
-        }
-
-        if (presenter == null) {
-            presenter = createPresenter()
-        }
-
-        createView()
-
-        viewState!!.apply(getMvpView())
-        presenter!!.onAttachView(getMvpView())
-
-        onInitialized(presenter!!, viewState!!)
+        delegate.onCreate(savedInstanceState)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        presenter!!.onDetachView()
-        if (isFinishing && presenter is IAsyncPresenter<*>) {
-            (presenter!! as IAsyncPresenter<*>).cancel()
-        }
+        delegate.onDestroy()
     }
 
     //-----------------------------------------------------------------------------------------//
 
-    open class StateFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : Fragment() {
-
-        var presenter: P? = null
-
-        var viewState: VS? = null
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            retainInstance = true
-        }
-
-    }
 
 }

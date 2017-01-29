@@ -19,71 +19,46 @@ package com.ufkoku.mvp.retainable
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.View
-import com.ufkoku.mvp_base.presenter.IAsyncPresenter
+import com.ufkoku.mvp.retainable.delegate.FragmentDelegate
 import com.ufkoku.mvp_base.presenter.IPresenter
+import com.ufkoku.mvp_base.view.IMvpFragment
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-abstract class BaseRetainableDialogFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : DialogFragment() {
+abstract class BaseRetainableDialogFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : DialogFragment(), IMvpFragment<V, P, VS> {
 
-    protected var presenter: P? = null
+    private val delegate: FragmentDelegate<BaseRetainableDialogFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)
 
-    protected var viewState: VS? = null
+    protected val presenter: P?
+        get() {
+            return delegate.presenter
+        }
 
-    //-----------------------------------------------------------------------------------------//
-
-    abstract fun getMvpView(): V
-
-    /**
-     * Creating viewState
-     * */
-    abstract fun createNewViewState(): VS
-
-    /**
-     * Creating presenter
-     * */
-    abstract fun createPresenter(): P
-
-    /**
-     * This is methods is called when ui, view state and presenter are initialized, and viewState.apply() method called
-     * */
-    abstract fun onInitialized(presenter: P, viewState: VS)
+    protected val viewState: VS?
+        get() {
+            return delegate.viewState
+        }
 
     //---------------------------------------------------------------------------------------//
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        retainInstance = true
-
-        viewState = createNewViewState()
-
-        presenter = createPresenter()
+        delegate.onCreate(savedInstanceState)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewState!!.apply(getMvpView())
-        presenter!!.onAttachView(getMvpView())
-
-        onInitialized(presenter!!, viewState!!)
+        delegate.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {
-        presenter?.onDetachView()
-
         super.onDestroyView()
+        delegate.onDestroyView()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        if (presenter is IAsyncPresenter<*>) {
-            (presenter as IAsyncPresenter<*>).cancel()
-        }
-
-        presenter = null
-        viewState = null
+        delegate.onDestroy()
     }
 
 }

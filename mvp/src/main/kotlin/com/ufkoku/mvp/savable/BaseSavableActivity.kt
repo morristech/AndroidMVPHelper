@@ -18,74 +18,42 @@ package com.ufkoku.mvp.savable
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.ufkoku.mvp.savable.delegate.ActivityDelegate
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
+import com.ufkoku.mvp_base.view.IMvpActivity
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.ISavableViewState
 
-abstract class BaseSavableActivity<V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>> : AppCompatActivity() {
+abstract class BaseSavableActivity<V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
 
-    var presenter: P? = null
+    private val delegate: ActivityDelegate<BaseSavableActivity<V, P, VS>, V, P, VS> = ActivityDelegate(this)
 
-    var viewState: VS? = null
+    protected val presenter: P?
+        get() {
+            return delegate.presenter
+        }
 
-    //-----------------------------------------------------------------------------------------//
-
-    /**
-     * Call setContentView hear and init all UI variables
-     * */
-    abstract fun createView()
-
-    abstract fun getMvpView(): V
-
-    /**
-     * Creating viewState
-     * */
-    abstract fun createNewViewState(): VS
-
-    /**
-     * Creating presenter
-     * */
-    abstract fun createPresenter(): P
-
-    /**
-     * This is methods is called when ui, view state and presenter are initialized, and viewState.apply() method called
-     * */
-    abstract fun onInitialized(presenter: P, viewState: VS)
+    protected val viewState: VS?
+        get() {
+            return delegate.viewState
+        }
 
     //-----------------------------------------------------------------------------------------//
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        viewState = createNewViewState()
-        if (savedInstanceState != null) {
-            viewState!!.restore(savedInstanceState)
-        }
-
-        presenter = createPresenter()
-
-        createView()
-
-        viewState!!.apply(getMvpView())
-        presenter!!.onAttachView(getMvpView())
-
-        onInitialized(presenter!!, viewState!!)
+        delegate.onCreate(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
-        if (outState != null) {
-            viewState!!.save(outState)
-        }
+        delegate.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
-        presenter!!.onDetachView()
-        if (presenter is IAsyncPresenter<*>) {
-            (presenter!! as IAsyncPresenter<*>).cancel()
-        }
+        delegate.onDestroy()
     }
+
 }
