@@ -48,7 +48,7 @@ android {
 }
 
 buildscript {
-    ext.kotlin_version = '1.0.4'
+    ext.kotlin_version = kotlin_version
     repositories {
         mavenCentral()
     }
@@ -62,7 +62,7 @@ dependencies {
 
     compile project(':mvp_base')
 
-    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:appcompat-v7:' + supportVersion
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
