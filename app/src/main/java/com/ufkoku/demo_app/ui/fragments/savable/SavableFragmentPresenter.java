@@ -18,7 +18,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
-
 public class SavableFragmentPresenter extends BaseAsyncRxPresenter<ISavableFragment> {
 
     public static Integer TASK_FETCH_DATA = 1;

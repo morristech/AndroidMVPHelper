@@ -20,10 +20,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
-/**
- * Created by Zwei on 10.11.2016.
- */
-
 public class RetainableFragmentPresenter extends BaseAsyncRxPresenter<IRetainableFragment> {
 
     public static Integer TASK_FETCH_DATA = 1;

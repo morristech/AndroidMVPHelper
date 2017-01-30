@@ -3,10 +3,6 @@ package com.ufkoku.demo_app.ui.activity.retainable;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.mvp_base.viewstate.IViewState;
 
-/**
- * Created by Zwei on 09.11.2016.
- */
-
 public class RetainableViewState implements IViewState<IRetainableActivity> {
 
     private transient boolean applied = false;

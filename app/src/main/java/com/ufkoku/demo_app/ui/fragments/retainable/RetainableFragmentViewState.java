@@ -8,10 +8,6 @@ import com.ufkoku.mvp_base.viewstate.IViewState;
 
 import java.util.ArrayList;
 
-/**
- * Created by Zwei on 10.11.2016.
- */
-
 public class RetainableFragmentViewState implements IViewState<IRetainableFragment> {
 
     private transient boolean applied = false;

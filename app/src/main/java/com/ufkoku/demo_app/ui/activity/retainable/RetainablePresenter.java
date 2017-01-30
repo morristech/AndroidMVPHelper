@@ -16,10 +16,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
-/**
- * Created by Zwei on 09.11.2016.
- */
-
 public class RetainablePresenter extends BaseAsyncRxPresenter<IRetainableActivity> {
 
     public static Integer TASK_FETCH_DATA = 1;

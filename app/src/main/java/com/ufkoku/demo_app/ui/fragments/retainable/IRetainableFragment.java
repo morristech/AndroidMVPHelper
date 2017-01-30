@@ -6,7 +6,6 @@ import com.ufkoku.mvp_base.view.IMvpView;
 
 import java.util.ArrayList;
 
-
 public interface IRetainableFragment extends IMvpView, IFragmentsDataView {
 
     void onDataLoaded(ArrayList<AwesomeEntity> entities);

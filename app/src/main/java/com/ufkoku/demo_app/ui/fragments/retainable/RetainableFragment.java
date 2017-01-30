@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class RetainableFragment extends BaseRetainableFragment<IRetainableFragment, RetainableFragmentPresenter, RetainableFragmentViewState> implements IRetainableFragment {
 
     private FragmentsDataView view;

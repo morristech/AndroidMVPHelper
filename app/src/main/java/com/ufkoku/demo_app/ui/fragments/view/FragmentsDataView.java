@@ -13,7 +13,6 @@ import com.ufkoku.demo_app.ui.fragments.view.adapter.DataAdapter;
 
 import java.util.List;
 
-
 public class FragmentsDataView extends FrameLayout implements IFragmentsDataView {
 
     private ViewListener listener;

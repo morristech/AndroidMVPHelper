@@ -7,10 +7,6 @@ import com.ufkoku.mvp.retainable.BaseRetainableActivity;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Created by Zwei on 09.11.2016.
- */
-
 public class RetainableActivity extends BaseRetainableActivity<IRetainableActivity, RetainablePresenter, RetainableViewState> implements IRetainableActivity {
 
     private DataView view;
