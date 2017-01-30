@@ -16,6 +16,8 @@
 
 package com.ufkoku.mvp.presenter
 
+import android.os.Handler
+import android.os.Looper
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.view.IMvpView
 import java.util.*
@@ -32,6 +34,7 @@ abstract class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPres
     protected var executor: ExecutorService? = null
 
     private var taskStatusListener: IAsyncPresenter.ITaskListener? = null
+    private var mainThreadHandler: Handler? = null
 
     private val runningTasks: MutableList<Int> = Collections.synchronizedList(LinkedList())
 
@@ -53,6 +56,7 @@ abstract class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPres
 
         if (view is IAsyncPresenter.ITaskListener) {
             taskStatusListener = view
+            mainThreadHandler = Handler(Looper.getMainLooper())
         }
 
         if (executor == null) {
@@ -72,6 +76,7 @@ abstract class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPres
     override fun onDetachView() {
         super.onDetachView()
         taskStatusListener = null
+        mainThreadHandler = null
         waitForView.set(true)
     }
 
@@ -112,12 +117,20 @@ abstract class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPres
 
     fun notifyTaskAdded(task: Int) {
         runningTasks.add(task)
-        taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
+        if (Looper.getMainLooper() == Looper.myLooper()) {
+            taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
+        } else {
+            mainThreadHandler?.post { taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED) }
+        }
     }
 
     fun notifyTaskFinished(task: Int) {
         runningTasks.remove(task)
-        taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
+        if (Looper.getMainLooper() == Looper.myLooper()) {
+            taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
+        } else {
+            mainThreadHandler?.post { taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED) }
+        }
     }
 
     fun isTaskRunning(task: Int): Boolean {
