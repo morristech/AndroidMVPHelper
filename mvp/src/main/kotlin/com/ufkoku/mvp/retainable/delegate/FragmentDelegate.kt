@@ -48,7 +48,6 @@ class FragmentDelegate<out F, V : IMvpView, P : IPresenter<V>, VS : IViewState<V
 
     fun onDestroyView() {
         presenter?.onDetachView()
-        fragment.onDestroyView()
     }
 
     fun onDestroy() {
