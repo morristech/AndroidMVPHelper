@@ -96,7 +96,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     protected var vError: View? = null
     protected var tvErrorMessage: TextView? = null
 
-    private var vEmpty: View? = null
+    protected var vEmpty: View? = null
     protected var tvEmptyMessage: TextView? = null
 
     protected abstract fun loadNextPage()
@@ -202,9 +202,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * Set items to RecyclerView and initiates it with adapter.
      * */
     override fun setItems(items: MutableList<I>, canLoadMore: Boolean, isSearch: Boolean) {
-        if (vError != null) {
-            vError!!.visibility = View.GONE
-        }
+        showErrorView(false)
 
         if (recyclerView != null) {
             var adapter: BasePagingAdapter<I, *>? = recyclerView!!.adapter as BasePagingAdapter<I, *>?
@@ -223,17 +221,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             scrollUpdater!!.loading = false
         }
 
-        if (vEmpty != null) {
-            if (items.isEmpty()) {
-                if (viewState != null) {
-                    val id = getEmptyMessage(isSearch)
-                    tvEmptyMessage!!.text = id
-                    vEmpty!!.visibility = View.VISIBLE
-                }
-            } else {
-                vEmpty!!.visibility = View.GONE
-            }
-        }
+        showEmptyView(items.size > 0, isSearch)
     }
 
     /**
@@ -271,10 +259,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             if (viewState!!.items == null) {
                 viewState!!.errorCode = code
                 viewState!!.isNextPageFailed = false
-                if (vError != null && tvErrorMessage != null) {
-                    tvErrorMessage!!.text = message
-                    vError!!.visibility = View.VISIBLE
-                }
+                showErrorView(true, StringUtils.isNotNullOrEmpty(viewState!!.query), code)
             } else {
                 Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
             }
@@ -389,6 +374,35 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     open fun onErrorRetryButtonClicked() {
         waitView?.visibility = View.VISIBLE
         loadFirstPage()
+    }
+
+    /**
+     * Called to show or hide empty stub view, if there is no items
+     */
+    open fun showEmptyView(visible: Boolean, isSearch: Boolean = false) {
+        if (vEmpty != null) {
+            if (visible) {
+                val id = getEmptyMessage(isSearch)
+                tvEmptyMessage!!.text = id
+                vEmpty!!.visibility = View.VISIBLE
+            } else {
+                vEmpty!!.visibility = View.GONE
+            }
+        }
+    }
+
+    /**
+     * Called to show error view, if there is no items at all
+     */
+    open fun showErrorView(visible: Boolean, isSearch: Boolean = false, code: Int = 0) {
+        if (vError != null) {
+            if (visible) {
+                tvErrorMessage!!.text = getErrorMessage(isSearch, code)
+                vError!!.visibility = View.VISIBLE
+            } else {
+                vError!!.visibility = View.GONE
+            }
+        }
     }
 
 }
