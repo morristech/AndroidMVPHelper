@@ -137,6 +137,20 @@ dependencies {
 }
 ```
 
+### [mvp_list](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_list)
+
+Contains classes for fast implementing of infinite scrolling RecyclerView lists, with optional items such as progress bars, empty and error stub views, swipe to refresh, search.
+
+```gradle
+repositories {
+    maven { url 'https://dl.bintray.com/ufkoku/maven/' }
+}
+
+dependencies{
+  compile "com.ufkoku.mvp:mvp_list:$mvp_ver"
+}
+```
+
 ```license
 Copyright 2016 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
 
