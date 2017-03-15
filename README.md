@@ -9,12 +9,6 @@ Look at [Wiki](https://github.com/Ufkoku/AndroidMVPHelper/wiki) for more details
 For library usage add:
 
 ```gradle
-android {  
-  defaultConfig{
-    enforceUniquePackageName = false
-  }
-}
-
 repositories {
     maven { url 'https://dl.bintray.com/ufkoku/maven/' }
 }
