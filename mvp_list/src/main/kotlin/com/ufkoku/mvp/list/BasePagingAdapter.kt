@@ -19,6 +19,7 @@ package com.ufkoku.mvp.list
 import android.support.annotation.IntDef
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import java.util.*
 
 import kotlin.annotation.Retention
 import kotlin.annotation.AnnotationRetention
@@ -41,17 +42,16 @@ abstract class BasePagingAdapter<I, L : BasePagingAdapter.AdapterListener> : Rec
 
     protected val inflater: LayoutInflater
 
-    var items: List<I>
+    var items: MutableList<I>
         set(value) {
-            field = value
+            field = copyInputList(value)
             notifyDataSetChanged()
         }
 
     var listener: L? = null
 
-    @AdditionalItemType
     var additionalItem = ADDITIONAL_ITEM_NONE
-        set(newAdditionalItem) {
+        set(@AdditionalItemType newAdditionalItem) {
             if (newAdditionalItem != additionalItem) {
                 val oldAdditionalItem = additionalItem
                 field = newAdditionalItem
@@ -65,9 +65,24 @@ abstract class BasePagingAdapter<I, L : BasePagingAdapter.AdapterListener> : Rec
             }
         }
 
-    constructor(inflater: LayoutInflater, items: List<I>) {
+    constructor(inflater: LayoutInflater, items: MutableList<I>) {
         this.inflater = inflater
         this.items = items
+    }
+
+    /**
+     * If you want to copy input list, for example, as LinkedList you can override this method
+     * Note you must not do "return input", delegate will duplicate items
+     * */
+    protected open fun copyInputList(input: MutableList<I>): MutableList<I> = ArrayList(input)
+
+    /**
+     * Adds items to end
+     * */
+    open fun addItems(newItems: List<I>) {
+        var prevSize = items.size
+        this.items.addAll(newItems)
+        notifyItemRangeInserted(prevSize, newItems.size)
     }
 
     override fun getItemCount(): Int {

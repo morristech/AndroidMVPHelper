@@ -99,17 +99,38 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     protected var vEmpty: View? = null
     protected var tvEmptyMessage: TextView? = null
 
-    protected abstract fun loadNextPage()
+    /****************************************************************************/
 
+    /**
+     * Call your presenter to first next page in this method
+     * */
     protected abstract fun loadFirstPage()
 
-    protected abstract fun createPagingAdapter(inflater: LayoutInflater, items: List<I>): BasePagingAdapter<I, *>
+    /**
+     * Call your presenter to load next page in this method
+     * */
+    protected abstract fun loadNextPage()
 
-    abstract fun getEmptyMessage(isSearch: Boolean): String
+    /**
+     * @param items list that passed from presenter
+     * @return adapter that will be set to RecyclerView
+     * */
+    protected abstract fun createPagingAdapter(inflater: LayoutInflater, items: MutableList<I>): BasePagingAdapter<I, *>
 
-    abstract fun getErrorMessage(isSearch: Boolean, code: Int): String
+    /**
+     * @param isSearch use it, if you want to display different message for empty content
+     * @return string that will be displayed at empty stub view
+     * */
+    protected abstract fun getEmptyMessage(isSearch: Boolean): String
 
-    /************************Call these methods from userclass********************/
+    /**
+     * @param isSearch use it, if you want to display different message for empty content;
+     * @param code code of error to get message for;
+     * @return String that will be displayed at error stub or search view
+     * */
+    protected abstract fun getErrorMessage(isSearch: Boolean, code: Int): String
+
+    /*****Call these methods from class, that delegate is attached to************/
 
     open fun onAttach(activity: Activity) {
         this.activity = activity
@@ -238,8 +259,8 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
         if (recyclerView != null) {
             recyclerView!!.post {
                 if (recyclerView != null && recyclerView!!.adapter != null) {
-                    val adapter = recyclerView!!.adapter
-                    adapter.notifyItemRangeInserted(adapter.itemCount - response.data.size - 1, response.data.size)
+                    val adapter = recyclerView!!.adapter as BasePagingAdapter<I, *>
+                    adapter.addItems(response.data)
                 }
             }
         }
@@ -292,7 +313,10 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * SwipeToRefreshLayout callback
      * */
     override fun onRefresh() {
-        loadFirstPage()
+        if (presenter != null) {
+            presenter!!.cancelAllPageRequests()
+            loadFirstPage()
+        }
     }
 
     /**
@@ -320,6 +344,8 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
                 viewState!!.items = null
                 viewState!!.query = query
                 presenter!!.cancelAllPageRequests()
+
+                recyclerView?.post { recyclerView?.adapter = null }
 
                 loadFirstPage()
             }
@@ -371,7 +397,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     /**
      * Called when Error view retry button clicked
      * */
-    open fun onErrorRetryButtonClicked() {
+    protected open fun onErrorRetryButtonClicked() {
         waitView?.visibility = View.VISIBLE
         loadFirstPage()
     }
@@ -379,7 +405,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     /**
      * Called to show or hide empty stub view, if there is no items
      */
-    open fun showEmptyView(visible: Boolean, isSearch: Boolean = false) {
+    protected open fun showEmptyView(visible: Boolean, isSearch: Boolean = false) {
         if (vEmpty != null) {
             if (visible) {
                 val id = getEmptyMessage(isSearch)
@@ -394,7 +420,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     /**
      * Called to show error view, if there is no items at all
      */
-    open fun showErrorView(visible: Boolean, isSearch: Boolean = false, code: Int = 0) {
+    protected open fun showErrorView(visible: Boolean, isSearch: Boolean = false, code: Int = 0) {
         if (vError != null) {
             if (visible) {
                 tvErrorMessage!!.text = getErrorMessage(isSearch, code)

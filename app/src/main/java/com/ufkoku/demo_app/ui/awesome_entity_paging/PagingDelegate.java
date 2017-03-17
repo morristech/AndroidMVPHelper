@@ -59,7 +59,7 @@ public class PagingDelegate extends BasePagingSearchableDelegate<AwesomeEntity, 
 
     @NotNull
     @Override
-    public PagingAdapter createPagingAdapter(@NotNull LayoutInflater inflater, @NotNull List<? extends AwesomeEntity> items) {
+    public PagingAdapter createPagingAdapter(@NotNull LayoutInflater inflater, @NotNull List<AwesomeEntity> items) {
         if (getRecyclerView() != null){
             getRecyclerView().setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         }

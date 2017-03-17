@@ -16,7 +16,7 @@ import java.util.List;
 
 public class PagingAdapter extends BasePagingAdapter<AwesomeEntity, PagingAdapter.PagingAdapterListener> {
 
-    public PagingAdapter(@NotNull LayoutInflater inflater, @NotNull List<? extends AwesomeEntity> items) {
+    public PagingAdapter(@NotNull LayoutInflater inflater, @NotNull List<AwesomeEntity> items) {
         super(inflater, items);
     }
 

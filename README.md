@@ -9,6 +9,12 @@ Look at [Wiki](https://github.com/Ufkoku/AndroidMVPHelper/wiki) for more details
 For library usage add:
 
 ```gradle
+android {  
+  defaultConfig{
+    enforceUniquePackageName = false
+  }
+}
+
 repositories {
     maven { url 'https://dl.bintray.com/ufkoku/maven/' }
 }
@@ -33,9 +39,9 @@ Retainable elements store their ViewStates and Presenters on screen rotation (Fr
 Savable elements use onSaveInstance(), and recreating ViewState and Presenter on screen rotation.
 
 Examples of usage:
-* [BaseRetainableActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/activity/retainable)
+* [BaseRetainableActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/retainable)
 * [BaseRetainableFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/fragments/retainable)
-* [BaseSavableActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/activity/savable)
+* [BaseSavableActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/savable)
 * [BaseSavableFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/fragments/savable)
 
 //Note: mvp contains module mvp_base
