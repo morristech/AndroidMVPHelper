@@ -9,12 +9,6 @@ Look at [Wiki](https://github.com/Ufkoku/AndroidMVPHelper/wiki) for more details
 For library usage add:
 
 ```gradle
-android {  
-  defaultConfig{
-    enforceUniquePackageName = false
-  }
-}
-
 repositories {
     maven { url 'https://dl.bintray.com/ufkoku/maven/' }
 }
@@ -140,6 +134,8 @@ dependencies {
 ### [mvp_list](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_list)
 
 Contains classes for fast implementing of infinite scrolling RecyclerView lists, with optional items such as progress bars, empty and error stub views, swipe to refresh, search.
+
+NOTE: Use search only with retainable fragments/activities!
 
 ```gradle
 repositories {
