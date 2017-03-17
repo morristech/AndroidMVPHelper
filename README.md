@@ -135,7 +135,7 @@ dependencies {
 
 Contains classes for fast implementing of infinite scrolling RecyclerView lists, with optional items such as progress bars, empty and error stub views, swipe to refresh, search.
 
-NOTE: Use search only with retainable fragments/activities!
+NOTE: Use only with retainable fragments/activities!
 
 ```gradle
 repositories {
