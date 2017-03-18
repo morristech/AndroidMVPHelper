@@ -1,6 +1,6 @@
 # AndroidMVPHelper
 
-![alt tag](https://img.shields.io/badge/version-0.4.8--beta-brightgreen.svg)
+![alt tag](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)
 
 Library manages lifecycle of Activities and Fragments, their Presenters and ViewStates.
 
@@ -9,12 +9,6 @@ Look at [Wiki](https://github.com/Ufkoku/AndroidMVPHelper/wiki) for more details
 For library usage add:
 
 ```gradle
-android {  
-  defaultConfig{
-    enforceUniquePackageName = false
-  }
-}
-
 repositories {
     maven { url 'https://dl.bintray.com/ufkoku/maven/' }
 }
@@ -140,6 +134,8 @@ dependencies {
 ### [mvp_list](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_list)
 
 Contains classes for fast implementing of infinite scrolling RecyclerView lists, with optional items such as progress bars, empty and error stub views, swipe to refresh, search.
+
+NOTE: Use only with retainable fragments/activities!
 
 ```gradle
 repositories {
