@@ -148,6 +148,8 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             }
         }
 
+        scrollUpdater?.loading = presenter.isNextPageLoading()
+
         updateProgressVisibility()
     }
 
@@ -216,6 +218,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             viewState!!.canLoadMore = response.canLoadMore
             presenter!!.cancelNextPages() //preventing finishing of next page requests
             setItems(response.data, response.canLoadMore, StringUtils.isNotNullOrEmpty(viewState!!.query))
+            scrollUpdater?.loading = false
         }
     }
 
@@ -237,10 +240,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             }
         }
 
-        if (scrollUpdater != null) {
-            scrollUpdater!!.enabled = canLoadMore
-            scrollUpdater!!.loading = false
-        }
+        scrollUpdater?.enabled = canLoadMore
 
         showEmptyView(items.size > 0, isSearch)
     }
