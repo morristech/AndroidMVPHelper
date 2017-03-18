@@ -66,7 +66,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             field = value
         }
 
-    private var scrollUpdater: RecyclerViewOnScrollUpdater? = null
+    protected var scrollUpdater: RecyclerViewOnScrollUpdater? = null
         set(value) {
             if (scrollUpdater != null) {
                 scrollUpdater!!.listener = null
