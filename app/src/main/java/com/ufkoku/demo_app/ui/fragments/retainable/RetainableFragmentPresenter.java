@@ -3,15 +3,13 @@ package com.ufkoku.demo_app.ui.fragments.retainable;
 import android.support.annotation.NonNull;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.demo_app.ui.fragments.savable.ISavableFragment;
-import com.ufkoku.mvp.presenter.BaseAsyncPresenter;
-import com.ufkoku.mvp.presenter.rx.BaseAsyncRxPresenter;
+import com.ufkoku.mvp.presenter.rx.BaseAsyncRxSchedulerPresenter;
+import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscribe;
+import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscriber;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -20,7 +18,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class RetainableFragmentPresenter extends BaseAsyncRxPresenter<IRetainableFragment> {
+public class RetainableFragmentPresenter extends BaseAsyncRxSchedulerPresenter<IRetainableFragment> {
 
     public static Integer TASK_FETCH_DATA = 1;
 
@@ -32,9 +30,9 @@ public class RetainableFragmentPresenter extends BaseAsyncRxPresenter<IRetainabl
 
     public void fetchData() {
         notifyTaskAdded(TASK_FETCH_DATA);
-        Observable.create(new BaseAsyncRxPresenter.UiWaitingOnSubscribe<ArrayList<AwesomeEntity>>(this) {
+        Observable.create(new UiWaitingOnSubscribe<ArrayList<AwesomeEntity>>(this) {
             @Override
-            public void call(@NonNull BaseAsyncRxPresenter.UiWaitingOnSubscriber<ArrayList<AwesomeEntity>> uiWaitingOnSubscriber) {
+            public void call(@NonNull UiWaitingOnSubscriber<ArrayList<AwesomeEntity>> uiWaitingOnSubscriber) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {

@@ -1,7 +1,9 @@
 package com.ufkoku.demo_app.ui.activity.savable;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.mvp.presenter.rx.BaseAsyncRxPresenter;
+import com.ufkoku.mvp.presenter.rx.BaseAsyncRxSchedulerPresenter;
+import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscribe;
+import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscriber;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +15,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class SavableActivityPresenter extends BaseAsyncRxPresenter<ISavableActivity> {
+public class SavableActivityPresenter extends BaseAsyncRxSchedulerPresenter<ISavableActivity> {
 
     @NotNull
     @Override
@@ -22,7 +24,7 @@ public class SavableActivityPresenter extends BaseAsyncRxPresenter<ISavableActiv
     }
 
     public void fetchData() {
-        Observable.create(new BaseAsyncRxPresenter.UiWaitingOnSubscribe<AwesomeEntity>(this) {
+        Observable.create(new UiWaitingOnSubscribe<AwesomeEntity>(this) {
             @Override
             public void call(UiWaitingOnSubscriber<AwesomeEntity> uiWaitingOnSubscriber) {
                 try {

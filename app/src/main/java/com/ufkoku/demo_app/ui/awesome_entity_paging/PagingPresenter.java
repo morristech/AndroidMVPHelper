@@ -5,7 +5,9 @@ import android.support.annotation.NonNull;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.demo_app.entity.PagingResponse;
 import com.ufkoku.mvp.list.interfaces.IPagingSearchablePresenter;
-import com.ufkoku.mvp.presenter.rx.BaseAsyncRxPresenter;
+import com.ufkoku.mvp.presenter.rx.BaseAsyncRxSchedulerPresenter;
+import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscribe;
+import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscriber;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +21,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class PagingPresenter extends BaseAsyncRxPresenter<IPagingView> implements IPagingSearchablePresenter {
+public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> implements IPagingSearchablePresenter {
 
     public static final int TASK_LOAD_INIT_DATA = 0;
     public static final int TASK_LOAD_FIRST_PAGE = 1;

@@ -1,13 +1,12 @@
 package com.ufkoku.demo_app.ui.activity.retainable;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.mvp.presenter.rx.BaseAsyncRxPresenter;
+import com.ufkoku.mvp.presenter.rx.BaseAsyncRxSchedulerPresenter;
+import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscribe;
+import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscriber;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -16,7 +15,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
-public class RetainablePresenter extends BaseAsyncRxPresenter<IRetainableActivity> {
+public class RetainablePresenter extends BaseAsyncRxSchedulerPresenter<IRetainableActivity> {
 
     public static Integer TASK_FETCH_DATA = 1;
 
@@ -28,7 +27,7 @@ public class RetainablePresenter extends BaseAsyncRxPresenter<IRetainableActivit
 
     public void fetchData() {
         notifyTaskAdded(TASK_FETCH_DATA);
-        Observable.create(new BaseAsyncRxPresenter.UiWaitingOnSubscribe<AwesomeEntity>(this) {
+        Observable.create(new UiWaitingOnSubscribe<AwesomeEntity>(this) {
             @Override
             public void call(UiWaitingOnSubscriber<AwesomeEntity> uiWaitingOnSubscriber) {
                 try {
