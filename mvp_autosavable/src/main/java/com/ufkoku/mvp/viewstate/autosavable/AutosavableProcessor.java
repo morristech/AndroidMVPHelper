@@ -41,7 +41,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SupportedAnnotationTypes({"*"})
+@SupportedAnnotationTypes({"com.ufkoku.mvp.viewstate.autosavable.AutoSavable"})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class AutosavableProcessor extends AbstractProcessor {
 
