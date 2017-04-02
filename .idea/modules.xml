@@ -11,6 +11,8 @@
       <module fileurl="file://$PROJECT_DIR$/mvp_list/mvp_list.iml" filepath="$PROJECT_DIR$/mvp_list/mvp_list.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvp_presenter/mvp_presenter.iml" filepath="$PROJECT_DIR$/mvp_presenter/mvp_presenter.iml" />
       <module fileurl="file://$PROJECT_DIR$/mvp_rx_presenter/mvp_rx_presenter.iml" filepath="$PROJECT_DIR$/mvp_rx_presenter/mvp_rx_presenter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvp_view_wrap/mvp_view_wrap.iml" filepath="$PROJECT_DIR$/mvp_view_wrap/mvp_view_wrap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mvp_view_wrap_annotation/mvp_view_wrap_annotation.iml" filepath="$PROJECT_DIR$/mvp_view_wrap_annotation/mvp_view_wrap_annotation.iml" />
     </modules>
   </component>
 </project>

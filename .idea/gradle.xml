@@ -16,6 +16,8 @@
             <option value="$PROJECT_DIR$/mvp_list" />
             <option value="$PROJECT_DIR$/mvp_presenter" />
             <option value="$PROJECT_DIR$/mvp_rx_presenter" />
+            <option value="$PROJECT_DIR$/mvp_view_wrap" />
+            <option value="$PROJECT_DIR$/mvp_view_wrap_annotation" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
