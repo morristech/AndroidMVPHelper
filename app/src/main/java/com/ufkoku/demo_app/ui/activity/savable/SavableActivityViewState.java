@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.mvp.viewstate.autosavable.AutoSavable;
-import com.ufkoku.mvp.viewstate.autosavable.SavableActivityViewStateSaver;
 import com.ufkoku.mvp_base.viewstate.ISavableViewState;
 
 @AutoSavable

@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.mvp.viewstate.autosavable.AutoSavable;
-import com.ufkoku.mvp.viewstate.autosavable.SavableFragmentViewStateSaver;
 import com.ufkoku.mvp_base.viewstate.ISavableViewState;
 
 import java.util.ArrayList;
