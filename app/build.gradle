@@ -31,7 +31,6 @@ dependencies {
     compile "com.android.support:appcompat-v7:" + supportVersion
     compile "com.android.support:recyclerview-v7:" + supportVersion
 
-
     compile project(":mvp")
     compile project(":mvp_rx_presenter")
     compile project(":mvp_list")
@@ -43,11 +42,15 @@ dependencies {
     annotationProcessor project(":mvp_view_wrap")
 
 //    def mvp_ver = version_name
+//
 //    compile "com.ufkoku.mvp:mvp:$mvp_ver"
 //    compile "com.ufkoku.mvp:mvp_rx_presenter:$mvp_ver"
 //    compile "com.ufkoku.mvp:mvp_list:$mvp_ver"
+//
 //    compile("com.ufkoku.mvp:mvp_autosavable_annotation:$mvp_ver")
-//    apt("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")
-//    androidTestApt("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")
+//    annotationProcessor("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")
+//
+//    compile("com.ufkoku.mvp:mvp_view_wrap_annotation:$mvp_ver")
+//    annotationProcessor("com.ufkoku.mvp:mvp_view_wrap:$mvp_ver")
 
 }
