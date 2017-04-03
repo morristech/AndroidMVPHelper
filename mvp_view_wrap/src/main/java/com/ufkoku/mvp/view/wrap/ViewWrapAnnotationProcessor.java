@@ -120,6 +120,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
         List<TypeVariableName> typeVariableNames = convertTypeParametersToTypeVariableNames(wrappedElement.getTypeParameters());
 
         TypeSpec typeSpec = TypeSpec.classBuilder(wrappedElement.getSimpleName() + WRAP_SUFFIX)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addTypeVariables(typeVariableNames)
                 .addSuperinterface(TypeName.get(wrappedElement.asType()))
                 .addField(wrappedFieldSpec)
@@ -144,11 +145,14 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
             }
         }
 
-        for (TypeMirror mirror : typeElement.getInterfaces()) {
-            methodSpecs.addAll(createMethodWrapsForDeclaredType(
-                    (TypeElement) processingEnv.getTypeUtils().asElement(mirror),
-                    (DeclaredType) mirror
-            ));
+        for (TypeMirror mirror : processingEnv.getTypeUtils().directSupertypes(declaredType)) {
+            TypeElement element = (TypeElement) processingEnv.getTypeUtils().asElement(mirror);
+            if (element.getKind() == ElementKind.INTERFACE) {
+                methodSpecs.addAll(createMethodWrapsForDeclaredType(
+                        (TypeElement) processingEnv.getTypeUtils().asElement(mirror),
+                        (DeclaredType) mirror
+                ));
+            }
         }
 
         return methodSpecs;
@@ -211,7 +215,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
                 codeBuilder.add("@$T\n", Override.class);
                 codeBuilder.add("public void run() {\n").indent();
                 {
-                    if (returnTypeIsVoid){
+                    if (returnTypeIsVoid) {
                         codeBuilder.addStatement(callString);
                     } else {
                         codeBuilder.addStatement("returnValueArray[0] = $L", callString);
@@ -238,7 +242,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
                 codeBuilder.unindent().add("}");
             }
             codeBuilder.unindent().add("}\n");
-            if (!returnTypeIsVoid){
+            if (!returnTypeIsVoid) {
                 codeBuilder.addStatement("return ($T) returnValueArray[0]", executableType.getReturnType());
             }
             codeBuilder.endControlFlow();

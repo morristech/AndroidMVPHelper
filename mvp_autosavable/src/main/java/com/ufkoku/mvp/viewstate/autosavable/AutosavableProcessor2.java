@@ -263,7 +263,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         MethodSpec restoreSpec = restoreSpecBuilder.build();
 
         TypeSpec typeSpec = TypeSpec.classBuilder(name)
-                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addMethod(saveSpec)
                 .addMethod(restoreSpec)
                 .build();
