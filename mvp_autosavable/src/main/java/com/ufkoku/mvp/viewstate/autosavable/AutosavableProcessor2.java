@@ -194,7 +194,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                         addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putDoubleArray", "getDoubleArray", "set", "get", false);
                     } else if (typeUtils.isAssignable(elementUtils.getTypeElement(CharSequence.class.getCanonicalName()).asType(), fieldData.typeMirror)) {
                         addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putCharSequence", "getCharSequence", "set", "get", false);
-                    } else if (typeUtils.isAssignable(parcelableTypeElement.asType(), fieldData.typeMirror)) {
+                    } else if (typeUtils.isAssignable(fieldData.typeMirror, parcelableTypeElement.asType())) {
                         addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putParcelable", "getParcelable", "set", "get", false);
                     } else {
                         boolean saved = false;
