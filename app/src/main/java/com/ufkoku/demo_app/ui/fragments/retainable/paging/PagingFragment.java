@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.ui.awesome_entity_paging.IPagingView;
+import com.ufkoku.demo_app.ui.awesome_entity_paging.IPagingViewWrap;
 import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingDelegate;
 import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingPresenter;
 import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingViewState;
@@ -27,6 +28,8 @@ public class PagingFragment
 
     private PagingDelegate delegate = createDelegate();
 
+    private IPagingViewWrap delegateWrap = new IPagingViewWrap(delegate);
+
     protected PagingDelegate createDelegate() {
         return new PagingDelegate();
     }
@@ -34,7 +37,7 @@ public class PagingFragment
     @NotNull
     @Override
     public IPagingView getMvpView() {
-        return delegate;
+        return delegateWrap;
     }
 
     @NotNull

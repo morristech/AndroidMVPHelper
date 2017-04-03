@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.ui.awesome_entity_paging.IPagingView;
+import com.ufkoku.demo_app.ui.awesome_entity_paging.IPagingViewWrap;
 import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingDelegate;
 import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingPresenter;
 import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingViewState;
@@ -18,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 public class PagingActivity extends BaseRetainableActivity<IPagingView, PagingPresenter, PagingViewState> {
 
     private PagingDelegate delegate = new PagingDelegate();
+
+    private IPagingViewWrap delegateWrap = new IPagingViewWrap(delegate);
 
     @Override
     public void createView() {
@@ -32,7 +35,7 @@ public class PagingActivity extends BaseRetainableActivity<IPagingView, PagingPr
     @NotNull
     @Override
     public IPagingView getMvpView() {
-        return delegate;
+        return delegateWrap;
     }
 
     @NotNull
