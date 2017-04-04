@@ -27,15 +27,11 @@ abstract class BaseAsyncExecutorPresenter<T : IMvpView> : BaseAsyncPresenter<T>(
     protected abstract fun createExecutor(): ExecutorService
 
     override fun onAttachView(view: T) {
-        super.onAttachView(view)
-
         if (executor == null) {
             executor = createExecutor()
         }
-    }
 
-    override fun onDetachView() {
-        super.onDetachView()
+        super.onAttachView(view)
     }
 
     override fun cancel() {
@@ -43,6 +39,8 @@ abstract class BaseAsyncExecutorPresenter<T : IMvpView> : BaseAsyncPresenter<T>(
             executor!!.shutdownNow()
             executor = null
         }
+
+        super.cancel()
     }
 
 }
