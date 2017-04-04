@@ -1,3 +1,7 @@
+### 1.2.3
+#### Bug fixes
+* Fixed calling of super method in BaseAsyncExecutorPresenter.
+
 ### 1.2.2
 #### Bug fixes
 * Fixed issue for AutosavableProcessor with Parcelable handling;
