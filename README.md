@@ -1,6 +1,6 @@
 # AndroidMVPHelper
 
-![alt tag](https://img.shields.io/badge/version-1.0.2-brightgreen.svg)
+![alt tag](https://img.shields.io/badge/version-1.2.3-brightgreen.svg)
 
 Library manages lifecycle of Activities and Fragments, their Presenters and ViewStates.
 
@@ -15,9 +15,23 @@ repositories {
 ```
 
 ### [mvp_base](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_base)
+
+```gradle
+dependencies{
+  compile "com.ufkoku.mvp:mvp_base:$mvp_ver"
+}
+```
+
 Contains basic interfaces without any implementation.
 
 ### [mvp](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_base)
+
+```gradle
+dependencies{
+  compile "com.ufkoku.mvp:mvp:$mvp_ver"
+}
+```
+
 Contains implementations of:
 * [Retainable elements](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp/src/main/kotlin/com/ufkoku/mvp/retainable):
   * [BaseRetainableActivity](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/retainable/BaseRetainableActivity.kt);
@@ -28,10 +42,6 @@ Contains implementations of:
   * [BaseSavableFragment](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/savable/BaseSavableFragment.kt);
   * [BaseSavableDialogFragment](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/savable/BaseSavableDialogFragment.kt).
 
-Retainable elements store their ViewStates and Presenters on screen rotation (Fragments use [setRetainInstance(boolean)](https://developer.android.com/reference/android/support/v4/app/Fragment.html#setRetainInstance(boolean)) and Activities store them in retainable fragment)
-
-Savable elements use onSaveInstance(), and recreating ViewState and Presenter on screen rotation.
-
 Examples of usage:
 * [BaseRetainableActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/retainable)
 * [BaseRetainableFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/fragments/retainable)
@@ -39,66 +49,35 @@ Examples of usage:
 * [BaseSavableFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/fragments/savable)
 
 //Note: mvp contains module mvp_base
-```gradle
-dependencies{
-  compile "com.ufkoku.mvp:mvp:$mvp_ver"
-}
-```
 
 ### [mvp_presenter](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_presenter)
-Contains implementation of:
-* [IPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_base/src/main/kotlin/com/ufkoku/mvp_base/presenter/IPresenter.kt) - [BasePresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BasePresenter.kt)
-* [IAsyncPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_base/src/main/kotlin/com/ufkoku/mvp_base/presenter/IAsyncPresenter.kt) - [BaseAsyncPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BaseAsyncPresenter.kt)
 
-BasePresenter implements methods onAttachView() and onDetachView().
-
-BaseAsyncPresenter additionaly implements managing of background executor. Method waitForViewIfNeeded() allows you to pause worker thread, prior to attaching view to presenter.
-
-//Note: mvp contains module mvp_base
 ```gradle
 dependencies{
   compile "com.ufkoku.mvp:mvp_presenter:$mvp_ver"
 }
 ```
 
+Contains implementations of:
+* [IPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_base/src/main/kotlin/com/ufkoku/mvp_base/presenter/IPresenter.kt) - [BasePresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BasePresenter.kt)
+* [IAsyncPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_base/src/main/kotlin/com/ufkoku/mvp_base/presenter/IAsyncPresenter.kt) -  [BaseAsyncPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BaseAsyncPresenter.kt) and [BaseAsyncExecutorPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BaseAsyncExecutorPresenter.kt)
+
+//Note: mvp contains module mvp_base
+
 ### [mvp_rx_presenter](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_rx_presenter)
-Containts [BaseAsyncRxPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_rx_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/rx/BaseAsyncRxPresenter.kt) that extends [BaseAsyncPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BaseAsyncPresenter.kt)
 
-It creates Scheduler based on BaseAsyncPresenter.executor.
-
-Also it contains classes UiWaitingOnSubscribe and UiWaitingOnSubscriber that implements calling of BaseAsyncPresenter.waitForViewIfNeeded() before populating result.
-
-//Note: mvp_rx_presenter contains module mvp_presenter
 ```gradle
 dependencies{
   compile "com.ufkoku.mvp:mvp_rx_presenter:$mvp_ver"
 }
 ```
 
+Containts [BaseAsyncRxSchedulerPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_rx_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/rx/BaseAsyncRxSchedulerPresenter.kt) that extends [BaseAsyncExecutorPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BaseAsyncExecutorPresenter.kt)
+
+//Note: mvp_rx_presenter contains module mvp_presenter
+
+
 ### [mvp_autosavable](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_autosavable) and [mvp_autosavable_annotation](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_autosavable)
-
-This modules provides autosaving to Bundle and restoring state back.
-
-This two modules performing generate com.ufkoku.mvp.viewstate.autosavable.{class_name}Saver classes.
-
-When annotation processor generates com.ufkoku.mvp.viewstate.autosavable.{class_name}Saver it looks for:
-* Public access to field;
-* Getters and Setters (get/set){FieldName};
-* Using reflection to access fields.
-
-Annotation processor ignores:
-* transient fields;
-* static fields;
-* final fields.
-
-To use it you should:
-* Annotate your class with @AutoSavable
-* Build project
-* Implement save() and restore() methods from [ISavableViewState](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_base/src/main/kotlin/com/ufkoku/mvp_base/viewstate/ISavableViewState.kt) via calling:
-  * com.ufkoku.mvp.viewstate.autosavable.{class_name}Saver.save(this, bundle)
-  * com.ufkoku.mvp.viewstate.autosavable.{class_name}Saver.restore(this, bundle)
-
-Example of usage [SavableActivityViewState](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/app/src/main/java/com/ufkoku/demo_app/ui/activity/savable/SavableActivityViewState.java)
 
 * If you are using kotlin:
 ```gradle
@@ -126,16 +105,13 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {    
     compile("com.ufkoku.mvp:mvp_autosavable_annotation:$mvp_ver")
-    apt("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")
-    androidTestApt("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")
+    apt("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")    
 }
 ```
 
+This modules creates classes for marked ViewStates for saving and restoring from Bunble.
+
 ### [mvp_list](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_list)
-
-Contains classes for fast implementing of infinite scrolling RecyclerView lists, with optional items such as progress bars, empty and error stub views, swipe to refresh, search.
-
-NOTE: Use only with retainable fragments/activities!
 
 ```gradle
 repositories {
@@ -146,6 +122,44 @@ dependencies{
   compile "com.ufkoku.mvp:mvp_list:$mvp_ver"
 }
 ```
+
+Contains classes for fast implementing of infinite scrolling RecyclerView lists, with optional items such as progress bars, empty and error stub views, swipe to refresh, search.
+
+NOTE: Use only with retainable fragments/activities!
+
+### [mvp_view_wrap](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_view_wrap) and [mvp_view_wrap_annotation](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_view_wrap_annotation)
+
+* If you are using kotlin:
+```gradle
+dependencies{  
+  compile("com.ufkoku.mvp:mvp_view_wrap_annotation:$mvp_ver")
+  kapt("com.ufkoku.mvp:mvp_view_wrap:$mvp_ver")
+}
+
+kapt {
+  generateStubs = true
+}
+```
+* else you should use [APT](https://bitbucket.org/hvisser/android-apt)
+```gradle
+buildscript {
+    repositories {
+      mavenCentral()
+    }
+    dependencies {
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+    }
+}
+
+apply plugin: 'com.neenbedankt.android-apt'
+
+dependencies {    
+    compile("com.ufkoku.mvp:mvp_view_wrap_annotation:$mvp_ver")
+    apt("com.ufkoku.mvp:mvp_view_wrap:$mvp_ver")    
+}
+```
+
+This modules creates wrap classes for marked interfaces.
 
 ```license
 Copyright 2016 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
