@@ -8,7 +8,7 @@ android {
         applicationId "com.ufkoku.demo_app"
         minSdkVersion Integer.parseInt(minApiVersion)
         targetSdkVersion Integer.parseInt(targetApiVersion)
-        versionCode = version_code
+        versionCode = Integer.parseInt(version_code)
         versionName = version_name
     }
 
