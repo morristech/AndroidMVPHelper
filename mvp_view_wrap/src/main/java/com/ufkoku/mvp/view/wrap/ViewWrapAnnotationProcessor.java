@@ -44,6 +44,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.tools.Diagnostic;
@@ -178,7 +179,8 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
     }
 
     private CodeBlock createMainThreadMethodBody(ExecutableElement executableElement, ExecutableType executableType) {
-        String returnTypeString = executableType.getReturnType().toString();
+        TypeMirror returnType = executableType.getReturnType();
+        String returnTypeString = returnType.toString();
         boolean returnTypeIsVoid = returnTypeString.equals("void") || returnTypeString.equals(Void.class.getName());
 
         String callString;
@@ -208,7 +210,11 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
         {
             codeBuilder.addStatement("final $T lockObject = new $T()", Object.class, Object.class);
             if (!returnTypeIsVoid) {
-                codeBuilder.addStatement("final $T[] returnValueArray = new $T[1]", Object.class, Object.class);
+                if (returnType instanceof PrimitiveType) {
+                    codeBuilder.addStatement("final $T[] returnValueArray = new $T[1]", returnType, returnType);
+                } else {
+                    codeBuilder.addStatement("final $T[] returnValueArray = new $T[1]", Object.class, Object.class);
+                }
             }
             codeBuilder.add("$L.post(new $T() {\n", FIELD_NAME_MAIN_HANDLER, Runnable.class).indent();
             {
@@ -238,12 +244,13 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
                 codeBuilder.unindent().add("} catch ($T ex) {\n", InterruptedException.class).indent();
                 {
                     codeBuilder.addStatement("ex.printStackTrace()");
+                    codeBuilder.addStatement("throw new $T(ex)", RuntimeException.class);
                 }
                 codeBuilder.unindent().add("}");
             }
             codeBuilder.unindent().add("}\n");
             if (!returnTypeIsVoid) {
-                codeBuilder.addStatement("return ($T) returnValueArray[0]", executableType.getReturnType());
+                codeBuilder.addStatement("return ($T) returnValueArray[0]", returnType);
             }
             codeBuilder.endControlFlow();
         }
