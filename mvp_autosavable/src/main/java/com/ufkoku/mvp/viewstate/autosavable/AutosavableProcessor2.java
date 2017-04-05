@@ -405,7 +405,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         ExecutableType setterType = null;
 
         for (Element methodElement : typeElement.getEnclosedElements()) {
-            if (methodElement.getKind() == ElementKind.METHOD) {
+            if (methodElement.getKind() == ElementKind.METHOD && methodElement.getModifiers().contains(Modifier.PUBLIC)) {
 
                 ExecutableElement executableElement = (ExecutableElement) methodElement;
                 final String methodName = executableElement.getSimpleName().toString();
