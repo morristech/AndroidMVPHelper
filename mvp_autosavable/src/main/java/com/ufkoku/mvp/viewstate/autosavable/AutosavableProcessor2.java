@@ -431,12 +431,12 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                                 }
                             }
                         }
-                    }
-                }
 
-                //cancel loop if
-                if (getterElement != null && setterElement != null) {
-                    break;
+                        //cancel loop if
+                        if (getterElement != null && setterElement != null) {
+                            break;
+                        }
+                    }
                 }
             }
         }
