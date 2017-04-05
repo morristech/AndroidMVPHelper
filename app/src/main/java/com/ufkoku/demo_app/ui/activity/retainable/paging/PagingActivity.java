@@ -1,7 +1,6 @@
 package com.ufkoku.demo_app.ui.activity.retainable.paging;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;

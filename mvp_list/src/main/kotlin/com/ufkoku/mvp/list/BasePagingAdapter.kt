@@ -21,9 +21,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import java.util.*
 
-import kotlin.annotation.Retention
-import kotlin.annotation.AnnotationRetention
-
 abstract class BasePagingAdapter<I, L : BasePagingAdapter.AdapterListener> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     companion object {

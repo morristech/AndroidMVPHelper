@@ -24,10 +24,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import com.ufkoku.mvp.list.interfaces.IPagingResponse
 import com.ufkoku.mvp.list.interfaces.IPagingSearchablePresenter
 import com.ufkoku.mvp.list.interfaces.IPagingSearchableView
-import com.ufkoku.mvp.list.interfaces.IPagingResponse
-
 import com.ufkoku.mvp.list.util.RecyclerViewOnScrollUpdater
 import com.ufkoku.mvp.list.util.StringUtils
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter

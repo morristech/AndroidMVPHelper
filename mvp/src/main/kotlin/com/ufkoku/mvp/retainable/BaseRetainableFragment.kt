@@ -20,7 +20,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
 import com.ufkoku.mvp.retainable.delegate.FragmentDelegate
-import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpFragment
 import com.ufkoku.mvp_base.view.IMvpView

@@ -18,7 +18,7 @@ package com.ufkoku.mvp.presenter.rx
 
 import com.ufkoku.mvp.presenter.BaseAsyncExecutorPresenter
 import com.ufkoku.mvp_base.view.IMvpView
-import rx.*
+import rx.Scheduler
 import rx.schedulers.Schedulers
 
 abstract class BaseAsyncRxSchedulerPresenter<T : IMvpView> : BaseAsyncExecutorPresenter<T>() {

@@ -1,6 +1,5 @@
 package com.ufkoku.demo_app.ui.awesome_entity_paging;
 
-import android.animation.PropertyValuesHolder;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;

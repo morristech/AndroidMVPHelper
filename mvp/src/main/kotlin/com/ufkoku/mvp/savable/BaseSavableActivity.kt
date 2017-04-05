@@ -19,7 +19,6 @@ package com.ufkoku.mvp.savable
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.ufkoku.mvp.savable.delegate.ActivityDelegate
-import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpActivity
 import com.ufkoku.mvp_base.view.IMvpView

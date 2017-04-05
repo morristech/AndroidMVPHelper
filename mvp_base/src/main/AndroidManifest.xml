@@ -1,4 +1,3 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ufkoku.mvp_base">
+<manifest package="com.ufkoku.mvp_base">
 
 </manifest>

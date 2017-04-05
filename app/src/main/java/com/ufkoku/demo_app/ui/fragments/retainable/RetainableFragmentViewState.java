@@ -3,7 +3,6 @@ package com.ufkoku.demo_app.ui.fragments.retainable;
 import android.support.annotation.NonNull;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.demo_app.ui.fragments.savable.ISavableFragment;
 import com.ufkoku.mvp_base.viewstate.IViewState;
 
 import java.util.ArrayList;
