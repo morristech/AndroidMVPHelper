@@ -1,6 +1,6 @@
 # AndroidMVPHelper
 
-![alt tag](https://img.shields.io/badge/version-1.2.3-brightgreen.svg)
+![alt tag](https://img.shields.io/badge/version-1.2.6-brightgreen.svg)
 
 Library manages lifecycle of Activities and Fragments, their Presenters and ViewStates.
 
@@ -48,8 +48,6 @@ Examples of usage:
 * [BaseSavableActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/savable)
 * [BaseSavableFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/fragments/savable)
 
-//Note: mvp contains module mvp_base
-
 ### [mvp_presenter](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_presenter)
 
 ```gradle
@@ -62,8 +60,6 @@ Contains implementations of:
 * [IPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_base/src/main/kotlin/com/ufkoku/mvp_base/presenter/IPresenter.kt) - [BasePresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BasePresenter.kt)
 * [IAsyncPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_base/src/main/kotlin/com/ufkoku/mvp_base/presenter/IAsyncPresenter.kt) -  [BaseAsyncPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BaseAsyncPresenter.kt) and [BaseAsyncExecutorPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BaseAsyncExecutorPresenter.kt)
 
-//Note: mvp contains module mvp_base
-
 ### [mvp_rx_presenter](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_rx_presenter)
 
 ```gradle
@@ -73,9 +69,6 @@ dependencies{
 ```
 
 Containts [BaseAsyncRxSchedulerPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_rx_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/rx/BaseAsyncRxSchedulerPresenter.kt) that extends [BaseAsyncExecutorPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/BaseAsyncExecutorPresenter.kt)
-
-//Note: mvp_rx_presenter contains module mvp_presenter
-
 
 ### [mvp_autosavable](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_autosavable) and [mvp_autosavable_annotation](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_autosavable)
 
@@ -109,7 +102,7 @@ dependencies {
 }
 ```
 
-This modules creates classes for marked ViewStates for saving and restoring from Bunble.
+This modules generates classes for marked ViewStates for saving and restoring from Bunble.
 
 ### [mvp_list](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_list)
 
@@ -159,7 +152,7 @@ dependencies {
 }
 ```
 
-This modules creates wrap classes for marked interfaces.
+This modules generates wrap-classes for marked interfaces.
 
 ```license
 Copyright 2016 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
