@@ -38,7 +38,7 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
 
     /**
      * This variable is true if view detached, but screen is continuing it work,
-     * for example recreation of view on screen rotation
+     * for example recreation of view on screen rotation, if retainable fragment is used.
      * */
     protected val waitForView = AtomicBoolean(false)
 
@@ -105,19 +105,23 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
 
     protected fun notifyTaskAdded(task: Int) {
         runningTasks.add(task)
-        if (Looper.getMainLooper() == Looper.myLooper()) {
-            taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
-        } else {
-            mainThreadHandler?.post { taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED) }
+        if (taskStatusListener != null) {
+            if (Looper.getMainLooper() == Looper.myLooper()) {
+                taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
+            } else {
+                mainThreadHandler?.post { taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED) }
+            }
         }
     }
 
     protected fun notifyTaskFinished(task: Int) {
         runningTasks.remove(task)
-        if (Looper.getMainLooper() == Looper.myLooper()) {
-            taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
-        } else {
-            mainThreadHandler?.post { taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED) }
+        if (taskStatusListener != null) {
+            if (Looper.getMainLooper() == Looper.myLooper()) {
+                taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
+            } else {
+                mainThreadHandler?.post { taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED) }
+            }
         }
     }
 
