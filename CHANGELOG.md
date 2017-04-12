@@ -1,3 +1,11 @@
+### 1.2.7
+#### Removals
+* Removed utils package from rx package;
+* Fixed java-doc comment at BaseAsyncPresenter;
+
+#### DemoApp changes
+* Refactored.
+
 ### 1.2.6
 #### Changes
 * Added handling of primitive types as return types without boxing/unboxing in mvp_view_wrap;
