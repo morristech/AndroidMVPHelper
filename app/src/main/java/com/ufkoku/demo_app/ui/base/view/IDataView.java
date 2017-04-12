@@ -1,10 +1,10 @@
-package com.ufkoku.demo_app.ui.fragments.view;
+package com.ufkoku.demo_app.ui.base.view;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 
 import java.util.List;
 
-public interface IFragmentsDataView {
+public interface IDataView {
 
     void populateData(List<AwesomeEntity> entities);
 

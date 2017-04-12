@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.ui.fragments.base.IFragmentManager;
-import com.ufkoku.demo_app.ui.fragments.retainable.RetainableFragment;
+import com.ufkoku.demo_app.ui.fragments.retainable.static_list.RetainableFragment;
 import com.ufkoku.demo_app.ui.fragments.savable.SavableFragment;
 
 

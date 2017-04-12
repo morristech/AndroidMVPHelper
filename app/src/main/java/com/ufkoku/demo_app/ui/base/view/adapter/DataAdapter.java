@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.fragments.view.adapter;
+package com.ufkoku.demo_app.ui.base.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

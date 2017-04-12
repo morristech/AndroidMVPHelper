@@ -1,4 +1,10 @@
+repositories {
+    maven { url 'https://dl.bintray.com/ufkoku/maven/' }
+    mavenCentral()
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion = Integer.parseInt(compileApiVersion)
@@ -23,10 +29,11 @@ android {
         }
     }
 
-}
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
-repositories {
-    maven { url 'https://dl.bintray.com/ufkoku/maven/' }
 }
 
 dependencies {

@@ -7,20 +7,20 @@ import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.mvp.viewstate.autosavable.AutoSavable;
 import com.ufkoku.mvp_base.viewstate.ISavableViewState;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @AutoSavable
 public class SavableFragmentViewState implements ISavableViewState<ISavableFragment> {
 
     private transient boolean applied = false;
 
-    private ArrayList<AwesomeEntity> entities;
+    private List<AwesomeEntity> entities;
 
-    public ArrayList<AwesomeEntity> getEntities() {
+    public List<AwesomeEntity> getEntities() {
         return entities;
     }
 
-    public void setEntities(ArrayList<AwesomeEntity> entity) {
+    public void setEntities(List<AwesomeEntity> entity) {
         this.entities = entity;
     }
 
@@ -43,7 +43,6 @@ public class SavableFragmentViewState implements ISavableViewState<ISavableFragm
         if (entities != null) {
             applied = true;
             iSavableFragment.populateData(entities);
-            iSavableFragment.setWaitViewVisible(false);
         }
     }
 

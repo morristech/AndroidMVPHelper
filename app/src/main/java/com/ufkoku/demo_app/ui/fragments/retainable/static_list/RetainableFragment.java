@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.fragments.retainable;
+package com.ufkoku.demo_app.ui.fragments.retainable.static_list;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,26 +9,28 @@ import android.view.ViewGroup;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
+import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
+import com.ufkoku.demo_app.ui.base.view.DataView;
 import com.ufkoku.demo_app.ui.fragments.base.IFragmentManager;
 import com.ufkoku.demo_app.ui.fragments.savable.SavableFragment;
-import com.ufkoku.demo_app.ui.fragments.view.FragmentsDataView;
 import com.ufkoku.mvp.retainable.BaseRetainableFragment;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class RetainableFragment extends BaseRetainableFragment<IRetainableFragment, RetainableFragmentPresenter, RetainableFragmentViewState> implements IRetainableFragment {
+public class RetainableFragment extends BaseRetainableFragment<IRetainableFragment, StaticListPresenter<IRetainableFragment>, RetainableFragmentViewState> implements IRetainableFragment {
 
-    private FragmentsDataView view;
+    private DataView view;
+
+    private IRetainableFragmentWrap wrap = new IRetainableFragmentWrap(this);
 
     //-----------------------------------------------------------------------------------//
 
     @NotNull
     @Override
     public IRetainableFragment getMvpView() {
-        return this;
+        return wrap;
     }
 
     @NotNull
@@ -39,26 +41,15 @@ public class RetainableFragment extends BaseRetainableFragment<IRetainableFragme
 
     @NotNull
     @Override
-    public RetainableFragmentPresenter createPresenter() {
-        return new RetainableFragmentPresenter();
+    public StaticListPresenter<IRetainableFragment> createPresenter() {
+        return new StaticListPresenter<>();
     }
-
-    @Override
-    public void onInitialized(RetainableFragmentPresenter retainableFragmentPresenter, RetainableFragmentViewState retainableFragmentViewState) {
-        if (!retainableFragmentViewState.isApplied()) {
-            if (!retainableFragmentPresenter.isTaskRunning(retainableFragmentPresenter.TASK_FETCH_DATA)) { //task maybe waiting for view, because onDestroy wasn't called
-                retainableFragmentPresenter.fetchData();
-            }
-        }
-    }
-
-    //-----------------------------------------------------------------------------------//
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = (FragmentsDataView) inflater.inflate(R.layout.fragment_data_view, container, false);
-        view.setListener(new FragmentsDataView.ViewListener() {
+        view = (DataView) inflater.inflate(R.layout.view_data, container, false);
+        view.setListener(new DataView.ViewListener() {
             @Override
             public void onRetainableClicked() {
                 Context context = getContext();
@@ -79,6 +70,17 @@ public class RetainableFragment extends BaseRetainableFragment<IRetainableFragme
     }
 
     @Override
+    public void onInitialized(StaticListPresenter<IRetainableFragment> presenter, RetainableFragmentViewState viewState) {
+        if (!viewState.isApplied()) {
+            if (!presenter.isTaskRunning(StaticListPresenter.TASK_FETCH_DATA)) {
+                presenter.fetchData();
+            }
+        }
+
+        updateProgressVisibility();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         view = null;
@@ -87,10 +89,10 @@ public class RetainableFragment extends BaseRetainableFragment<IRetainableFragme
     //-----------------------------------------------------------------------------------//
 
     @Override
-    public void onDataLoaded(ArrayList<AwesomeEntity> entity) {
+    public void onDataLoaded(List<AwesomeEntity> entity) {
         RetainableFragmentViewState state = getViewState();
         if (state != null){
-            state.setEntity(entity);
+            state.setData(entity);
         }
         populateData(entity);
     }
@@ -109,4 +111,19 @@ public class RetainableFragment extends BaseRetainableFragment<IRetainableFragme
             view.setWaitViewVisible(visible);
         }
     }
+
+    @Override
+    public void onTaskStatusChanged(int taskId, int status) {
+        updateProgressVisibility();
+    }
+
+    //---------------------------------------------------------------------------------//
+
+    public void updateProgressVisibility() {
+        StaticListPresenter<IRetainableFragment> presenter = getPresenter();
+        if (presenter != null) {
+            setWaitViewVisible(presenter.hasRunningTasks());
+        }
+    }
+
 }

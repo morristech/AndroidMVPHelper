@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.activity.retainable.paging;
+package com.ufkoku.demo_app.ui.activity.retainable.paging_list;
 
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -6,11 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
 import com.ufkoku.demo_app.R;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.IPagingView;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.IPagingViewWrap;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingDelegate;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingPresenter;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingViewState;
+import com.ufkoku.demo_app.ui.base.paging.IPagingView;
+import com.ufkoku.demo_app.ui.base.paging.IPagingViewWrap;
+import com.ufkoku.demo_app.ui.base.paging.PagingDelegate;
+import com.ufkoku.demo_app.ui.base.paging.PagingPresenter;
+import com.ufkoku.demo_app.ui.base.paging.PagingViewState;
 import com.ufkoku.mvp.retainable.BaseRetainableActivity;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public class PagingActivity extends BaseRetainableActivity<IPagingView, PagingPr
 
     @Override
     public void createView() {
-        setContentView(R.layout.paging);
+        setContentView(R.layout.view_paging_list);
 
         delegate.setTvInitData((TextView) findViewById(R.id.initData));
         delegate.setSwipeRefreshLayout((SwipeRefreshLayout) findViewById(R.id.swipeToRefresh));

@@ -16,11 +16,11 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.retainable.RetainableActivity" android:label="Retainable"/>
+        <activity android:name=".ui.activity.retainable.static_list.RetainableActivity" android:label="Retainable"/>
 
         <activity android:name=".ui.activity.savable.SavableActivity" android:label="Savable"/>
 
-        <activity android:name=".ui.activity.retainable.paging.PagingActivity"/>
+        <activity android:name=".ui.activity.retainable.paging_list.PagingActivity"/>
 
         <activity android:name=".ui.fragments.FragmentsActivity" android:label="Fragments"/>
 

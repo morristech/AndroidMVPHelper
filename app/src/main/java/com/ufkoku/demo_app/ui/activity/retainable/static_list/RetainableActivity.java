@@ -1,25 +1,25 @@
-package com.ufkoku.demo_app.ui.activity.savable;
+package com.ufkoku.demo_app.ui.activity.retainable.static_list;
 
 import android.content.Intent;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.demo_app.ui.activity.retainable.static_list.RetainableActivity;
+import com.ufkoku.demo_app.ui.activity.savable.SavableActivity;
 import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
 import com.ufkoku.demo_app.ui.base.view.DataView;
-import com.ufkoku.mvp.savable.BaseSavableActivity;
+import com.ufkoku.mvp.retainable.BaseRetainableActivity;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SavableActivity extends BaseSavableActivity<ISavableActivity, StaticListPresenter<ISavableActivity>, SavableActivityViewState> implements ISavableActivity {
+public class RetainableActivity extends BaseRetainableActivity<IRetainableActivity, StaticListPresenter<IRetainableActivity>, RetainableViewState> implements IRetainableActivity {
 
     private DataView view;
 
-    private ISavableActivityWrap wrap = new ISavableActivityWrap(this);
+    private IRetainableActivityWrap wrap = new IRetainableActivityWrap(this);
 
-    //------------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------//
 
     @Override
     public void createView() {
@@ -27,13 +27,13 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
         view.setListener(new DataView.ViewListener() {
             @Override
             public void onRetainableClicked() {
-                Intent intent = new Intent(SavableActivity.this, RetainableActivity.class);
+                Intent intent = new Intent(RetainableActivity.this, RetainableActivity.class);
                 startActivity(intent);
             }
 
             @Override
             public void onSavableClicked() {
-                Intent intent = new Intent(SavableActivity.this, SavableActivity.class);
+                Intent intent = new Intent(RetainableActivity.this, SavableActivity.class);
                 startActivity(intent);
             }
         });
@@ -42,30 +42,32 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
 
     @NotNull
     @Override
-    public ISavableActivity getMvpView() {
+    public IRetainableActivity getMvpView() {
         return wrap;
     }
 
     @NotNull
     @Override
-    public SavableActivityViewState createNewViewState() {
-        return new SavableActivityViewState();
+    public RetainableViewState createNewViewState() {
+        return new RetainableViewState();
     }
 
     @NotNull
     @Override
-    public StaticListPresenter<ISavableActivity> createPresenter() {
+    public StaticListPresenter<IRetainableActivity> createPresenter() {
         return new StaticListPresenter<>();
     }
 
     @Override
-    public void onInitialized(StaticListPresenter<ISavableActivity> presenter, SavableActivityViewState viewState) {
+    public void onInitialized(StaticListPresenter<IRetainableActivity> oresenter, RetainableViewState viewState) {
         if (!viewState.isApplied()) {
-            presenter.fetchData();
+            if (!oresenter.isTaskRunning(StaticListPresenter.TASK_FETCH_DATA)) {
+                oresenter.fetchData();
+            }
         }
-    }
 
-    //------------------------------------------------------------------------------------//
+        updateProgressVisibility();
+    }
 
     @Override
     protected void onDestroy() {
@@ -73,15 +75,14 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
         view = null;
     }
 
-    //------------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------//
 
     @Override
     public void onDataLoaded(List<AwesomeEntity> entity) {
-        SavableActivityViewState state = getViewState();
+        RetainableViewState state = getViewState();
         if (state != null) {
             state.setData(entity);
         }
-
         populateData(entity);
     }
 
@@ -107,7 +108,7 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
     //---------------------------------------------------------------------------------//
 
     public void updateProgressVisibility() {
-        StaticListPresenter<ISavableActivity> presenter = getPresenter();
+        StaticListPresenter<IRetainableActivity> presenter = getPresenter();
         if (presenter != null) {
             setWaitViewVisible(presenter.hasRunningTasks());
         }

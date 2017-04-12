@@ -1,25 +1,20 @@
-package com.ufkoku.demo_app.ui.awesome_entity_paging;
-
-import android.support.annotation.NonNull;
+package com.ufkoku.demo_app.ui.base.paging;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.demo_app.entity.PagingResponse;
+import com.ufkoku.demo_app.model.PageEntityModel;
+import com.ufkoku.demo_app.model.ProcessEntityModel;
+import com.ufkoku.demo_app.model.SingleEntityModel;
 import com.ufkoku.mvp.list.interfaces.IPagingSearchablePresenter;
 import com.ufkoku.mvp.presenter.rx.BaseAsyncRxSchedulerPresenter;
-import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscribe;
-import com.ufkoku.mvp.presenter.rx.utils.UiWaitingOnSubscriber;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 
 public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> implements IPagingSearchablePresenter {
 
@@ -27,8 +22,6 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
     public static final int TASK_LOAD_FIRST_PAGE = 1;
     public static final int TASK_LOAD_NEXT_PAGE = 2;
     public static final int TASK_PROCESS_PICKED_DATA = 3;
-
-    protected static final int LIMIT = 20;
 
     private Subscription firstPageSub = null;
     private Subscription nextPageSub = null;
@@ -48,32 +41,25 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
     public void getInitData() {
         notifyTaskAdded(TASK_LOAD_INIT_DATA);
 
-        Observable.create(new UiWaitingOnSubscribe<String>(this) {
-            @Override
-            public void call(UiWaitingOnSubscriber<String> subscriber) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    subscriber.onError(e);
-                }
-                subscriber.onNext("InitDataString");
-                subscriber.onCompleted();
-            }
-        })
-
+        SingleEntityModel.createEntityObservable()
+                .map(awesomeEntity -> awesomeEntity.getImportantDataField() + "")
                 .subscribeOn(getScheduler())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<String>() {
                     @Override
                     public void onCompleted() {
+                        waitForViewIfNeeded();
                         notifyTaskFinished(TASK_LOAD_INIT_DATA);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        notifyTaskFinished(TASK_LOAD_INIT_DATA);
-                        e.printStackTrace();
+                        waitForViewIfNeeded();
                         IPagingView fragment = getView();
+
+                        e.printStackTrace();
+
+                        notifyTaskFinished(TASK_LOAD_INIT_DATA);
+
                         if (fragment != null) {
                             fragment.onInitDataLoadFailed(0);
                         }
@@ -81,6 +67,7 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
                     @Override
                     public void onNext(String s) {
+                        waitForViewIfNeeded();
                         IPagingView fragment = getView();
                         if (fragment != null) {
                             fragment.onInitDataLoaded(s);
@@ -102,30 +89,14 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
         notifyTaskAdded(taskId);
 
-        Subscription subscription = Observable.create(new UiWaitingOnSubscribe<PagingResponse<AwesomeEntity>>(this) {
-            @Override
-            public void call(@NonNull UiWaitingOnSubscriber<PagingResponse<AwesomeEntity>> subscriber) {
-                List<AwesomeEntity> data = new ArrayList<>();
-                for (int i = offset; i < offset + LIMIT; i++) {
-                    data.add(new AwesomeEntity(i));
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    subscriber.onError(e);
-                }
-                subscriber.onNext(new PagingResponse<>(data, offset + LIMIT <= LIMIT * 2));
-                subscriber.onCompleted();
-            }
-        })
-
+        Subscription subscription = PageEntityModel.createPageObservable(offset)
                 .subscribeOn(getScheduler())
-                .observeOn(AndroidSchedulers.mainThread())
-
                 .subscribe(new Subscriber<PagingResponse<AwesomeEntity>>() {
                     @Override
                     public void onCompleted() {
-                        if (taskId == TASK_LOAD_FIRST_PAGE){
+                        waitForViewIfNeeded();
+
+                        if (taskId == TASK_LOAD_FIRST_PAGE) {
                             firstPageSub = null;
                         } else {
                             nextPageSub = null;
@@ -136,16 +107,18 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
                     @Override
                     public void onError(Throwable e) {
-                        if (taskId == TASK_LOAD_FIRST_PAGE){
+                        waitForViewIfNeeded();
+                        IPagingView fragment = getView();
+
+                        e.printStackTrace();
+
+                        if (taskId == TASK_LOAD_FIRST_PAGE) {
                             firstPageSub = null;
                         } else {
                             nextPageSub = null;
                         }
-
                         notifyTaskFinished(taskId);
 
-                        e.printStackTrace();
-                        IPagingView fragment = getView();
                         if (fragment != null) {
                             if (offset == 0) {
                                 fragment.onFirstPageLoadFailed(0);
@@ -157,6 +130,7 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
                     @Override
                     public void onNext(PagingResponse<AwesomeEntity> response) {
+                        waitForViewIfNeeded();
                         IPagingView fragment = getView();
                         if (fragment != null) {
                             if (offset == 0) {
@@ -177,24 +151,10 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
     public void processPickedItem(final AwesomeEntity entity) {
         notifyTaskAdded(TASK_PROCESS_PICKED_DATA);
-
-        Observable.create(new UiWaitingOnSubscribe<AwesomeEntity>(this) {
-            @Override
-            public void call(@NotNull UiWaitingOnSubscriber<AwesomeEntity> subscriber) {
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                subscriber.onNext(entity);
-                subscriber.onCompleted();
-            }
-        })
-
+        ProcessEntityModel.createObservable(entity)
                 .subscribeOn(getScheduler())
-                .observeOn(AndroidSchedulers.mainThread())
-
                 .subscribe(new Subscriber<AwesomeEntity>() {
+
                     @Override
                     public void onCompleted() {
                         notifyTaskFinished(TASK_PROCESS_PICKED_DATA);
@@ -202,18 +162,19 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
                     @Override
                     public void onError(Throwable e) {
-
+                        notifyTaskFinished(TASK_PROCESS_PICKED_DATA);
                     }
 
                     @Override
                     public void onNext(AwesomeEntity entity) {
+                        waitForViewIfNeeded();
                         IPagingView view = getView();
                         if (view != null) {
                             view.onPickedItemProcessed(entity);
                         }
                     }
-                });
 
+                });
     }
 
     @Override

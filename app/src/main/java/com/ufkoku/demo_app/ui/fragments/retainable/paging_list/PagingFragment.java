@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.fragments.retainable.paging;
+package com.ufkoku.demo_app.ui.fragments.retainable.paging_list;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,11 +13,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ufkoku.demo_app.R;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.IPagingView;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.IPagingViewWrap;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingDelegate;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingPresenter;
-import com.ufkoku.demo_app.ui.awesome_entity_paging.PagingViewState;
+import com.ufkoku.demo_app.ui.base.paging.IPagingView;
+import com.ufkoku.demo_app.ui.base.paging.IPagingViewWrap;
+import com.ufkoku.demo_app.ui.base.paging.PagingDelegate;
+import com.ufkoku.demo_app.ui.base.paging.PagingPresenter;
+import com.ufkoku.demo_app.ui.base.paging.PagingViewState;
 import com.ufkoku.mvp.retainable.BaseRetainableFragment;
 
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +61,7 @@ public class PagingFragment
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.paging, container, false);
+        View view = inflater.inflate(R.layout.view_paging_list, container, false);
 
         delegate.setTvInitData((TextView) view.findViewById(R.id.initData));
         delegate.setSwipeRefreshLayout((SwipeRefreshLayout) view.findViewById(R.id.swipeToRefresh));

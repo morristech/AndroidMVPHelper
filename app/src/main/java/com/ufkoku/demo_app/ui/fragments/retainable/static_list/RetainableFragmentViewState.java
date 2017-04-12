@@ -1,24 +1,24 @@
-package com.ufkoku.demo_app.ui.fragments.retainable;
+package com.ufkoku.demo_app.ui.fragments.retainable.static_list;
 
 import android.support.annotation.NonNull;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.mvp_base.viewstate.IViewState;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class RetainableFragmentViewState implements IViewState<IRetainableFragment> {
 
     private transient boolean applied = false;
 
-    private ArrayList<AwesomeEntity> entities;
+    private List<AwesomeEntity> data;
 
-    public ArrayList<AwesomeEntity> getEntity() {
-        return entities;
+    public List<AwesomeEntity> getData() {
+        return data;
     }
 
-    public void setEntity(ArrayList<AwesomeEntity> entity) {
-        this.entities = entity;
+    public void setData(List<AwesomeEntity> entity) {
+        this.data = entity;
     }
 
     public boolean isApplied() {
@@ -27,10 +27,9 @@ public class RetainableFragmentViewState implements IViewState<IRetainableFragme
 
     @Override
     public void apply(@NonNull IRetainableFragment iRetainableFragment) {
-        if (entities != null) {
+        if (data != null) {
             applied = true;
-            iRetainableFragment.populateData(entities);
-            iRetainableFragment.setWaitViewVisible(false);
+            iRetainableFragment.populateData(data);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.awesome_entity_paging;
+package com.ufkoku.demo_app.ui.base.paging;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

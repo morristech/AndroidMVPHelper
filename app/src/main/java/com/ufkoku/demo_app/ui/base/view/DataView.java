@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.fragments.view;
+package com.ufkoku.demo_app.ui.base.view;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,11 +9,11 @@ import android.widget.FrameLayout;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.demo_app.ui.fragments.view.adapter.DataAdapter;
+import com.ufkoku.demo_app.ui.base.view.adapter.DataAdapter;
 
 import java.util.List;
 
-public class FragmentsDataView extends FrameLayout implements IFragmentsDataView {
+public class DataView extends FrameLayout implements IDataView {
 
     private ViewListener listener;
 
@@ -21,15 +21,15 @@ public class FragmentsDataView extends FrameLayout implements IFragmentsDataView
 
     private View vWaitView;
 
-    public FragmentsDataView(Context context) {
+    public DataView(Context context) {
         super(context);
     }
 
-    public FragmentsDataView(Context context, AttributeSet attrs) {
+    public DataView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public FragmentsDataView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DataView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -42,20 +42,14 @@ public class FragmentsDataView extends FrameLayout implements IFragmentsDataView
 
         vWaitView = findViewById(R.id.waitView);
 
-        findViewById(R.id.retainable).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener != null) {
-                    listener.onRetainableClicked();
-                }
+        findViewById(R.id.retainable).setOnClickListener(view -> {
+            if (listener != null) {
+                listener.onRetainableClicked();
             }
         });
-        findViewById(R.id.savable).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener != null) {
-                    listener.onSavableClicked();
-                }
+        findViewById(R.id.savable).setOnClickListener(view -> {
+            if (listener != null) {
+                listener.onSavableClicked();
             }
         });
     }

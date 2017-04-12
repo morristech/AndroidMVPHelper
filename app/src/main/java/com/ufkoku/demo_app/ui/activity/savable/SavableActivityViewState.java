@@ -6,19 +6,21 @@ import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.mvp.viewstate.autosavable.AutoSavable;
 import com.ufkoku.mvp_base.viewstate.ISavableViewState;
 
+import java.util.List;
+
 @AutoSavable
 public class SavableActivityViewState implements ISavableViewState<ISavableActivity> {
 
     private transient boolean applied = false;
 
-    private AwesomeEntity entity;
+    private List<AwesomeEntity> data;
 
-    public AwesomeEntity getEntity() {
-        return entity;
+    public List<AwesomeEntity> getData() {
+        return data;
     }
 
-    public void setEntity(AwesomeEntity entity) {
-        this.entity = entity;
+    public void setData(List<AwesomeEntity> data) {
+        this.data = data;
     }
 
     public boolean isApplied() {
@@ -36,11 +38,11 @@ public class SavableActivityViewState implements ISavableViewState<ISavableActiv
     }
 
     @Override
-    public void apply(ISavableActivity iSavableActivity) {
-        if (entity != null) {
+    public void apply(ISavableActivity savableActivity) {
+        if (data != null) {
             applied = true;
-            iSavableActivity.populateAwesomeEntity(entity);
-            iSavableActivity.setWaitViewVisible(false);
+            savableActivity.populateData(data);
+            savableActivity.setWaitViewVisible(false);
         }
     }
 

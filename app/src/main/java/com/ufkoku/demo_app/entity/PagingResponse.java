@@ -6,10 +6,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-/**
- * Created by Zwei on 30.01.2017.
- */
-
 public class PagingResponse<I> implements IPagingResponse<I> {
 
     private final List<I> data;
