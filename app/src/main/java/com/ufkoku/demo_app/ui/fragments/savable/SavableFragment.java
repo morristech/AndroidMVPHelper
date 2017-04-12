@@ -23,12 +23,14 @@ public class SavableFragment extends BaseSavableFragment<ISavableFragment, Stati
 
     private DataView view;
 
+    private ISavableFragmentWrap wrap = new ISavableFragmentWrap(this);
+
     //----------------------------------------------------------------------------------------//
 
     @NotNull
     @Override
     public ISavableFragment getMvpView() {
-        return this;
+        return wrap;
     }
 
 
