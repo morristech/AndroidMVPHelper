@@ -63,7 +63,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
     private static final String SAVER_SUFFIX = "Saver";
 
     private static final String CLASS_NAME_BUNDLE = "android.os.Bundle";
-    private static final String CLASS_NAME_PARCELABEL = "android.os.Parcelable";
+    private static final String CLASS_NAME_PARCELABLE = "android.os.Parcelable";
 
     private TypeElement bundleTypeElement;
     private TypeElement parcelableTypeElement;
@@ -73,7 +73,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         super.init(processingEnvironment);
 
         bundleTypeElement = processingEnv.getElementUtils().getTypeElement(CLASS_NAME_BUNDLE);
-        parcelableTypeElement = processingEnvironment.getElementUtils().getTypeElement(CLASS_NAME_PARCELABEL);
+        parcelableTypeElement = processingEnvironment.getElementUtils().getTypeElement(CLASS_NAME_PARCELABLE);
     }
 
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -386,7 +386,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
             TypeMirror mirror = superTypes.get(i);
             Element element = processingEnv.getTypeUtils().asElement(mirror);
 
-            if (processingEnv.getTypeUtils().asElement(mirror).getKind() == ElementKind.CLASS) {
+            if (element.getKind() == ElementKind.CLASS) {
                 acceptableFields.putAll(getAllAcceptableFieldsData(
                         (TypeElement) element,
                         (DeclaredType) mirror
