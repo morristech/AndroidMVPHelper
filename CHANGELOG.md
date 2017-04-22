@@ -1,6 +1,20 @@
+### 1.3.11
+#### Removals
+* Removed getMethod from IPresenter
+
+#### Changes
+* Added optional possibility to retain presenters for savable fragments and activities, with saving ViewState to bundle; 
+* Property "view" in BasePresenter changed to protected;
+* Minor changes to autosavable processor.
+
+#### DemoApp changes
+* Added strict mode
+
 ### 1.2.7
 #### Removals
-* Removed utils package from rx package;
+* Removed utils package from rx package.
+
+#### Changes
 * Fixed java-doc comment at BaseAsyncPresenter;
 
 #### DemoApp changes

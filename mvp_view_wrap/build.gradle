@@ -24,13 +24,12 @@ ext {
     allLicenses = ["Apache-2.0"]
 }
 
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
-
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
 
 apply from: '../installv1.gradle'
 apply from: '../bintrayv1.gradle'
