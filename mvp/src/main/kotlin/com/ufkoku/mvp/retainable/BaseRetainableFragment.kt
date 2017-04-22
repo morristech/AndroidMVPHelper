@@ -52,13 +52,13 @@ abstract class BaseRetainableFragment<V : IMvpView, P : IPresenter<V>, VS : IVie
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         delegate.onDestroyView()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         delegate.onDestroy()
+        super.onDestroy()
     }
 
 }

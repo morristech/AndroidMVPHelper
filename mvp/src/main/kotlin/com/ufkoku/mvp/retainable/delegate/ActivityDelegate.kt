@@ -16,6 +16,7 @@
 
 package com.ufkoku.mvp.retainable.delegate
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
@@ -25,26 +26,23 @@ import com.ufkoku.mvp_base.view.IMvpActivity
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : IViewState<V>>(val activity: A) where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
+class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : IViewState<V>>(val activity: A)
+where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
 
     companion object {
-        private val STATE_FRAGMENT_TAG = "com.ufkoku.uicontrol.BaseActivity.StateFragment"
+        private val STATE_FRAGMENT_TAG = "com.ufkoku.mvp.retainable.delegate.StateFragment"
     }
 
-    private var stateFragment: StateFragment<V, P, VS>? = null
+    private var stateFragment: StateFragment<P, VS>? = null
 
     var presenter: P?
-        get() {
-            return stateFragment?.presenter
-        }
+        get() = stateFragment!!.presenter
         private set(value) {
             stateFragment!!.presenter = value
         }
 
     var viewState: VS?
-        get() {
-            return stateFragment?.viewState
-        }
+        get() = stateFragment!!.viewState
         private set(value) {
             stateFragment!!.viewState = value
         }
@@ -54,7 +52,7 @@ class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : IViewState<V
     fun onCreate(savedInstanceState: Bundle?) {
         val fragmentManager = activity.supportFragmentManager
 
-        stateFragment = fragmentManager.findFragmentByTag(STATE_FRAGMENT_TAG) as StateFragment<V, P, VS>?
+        stateFragment = fragmentManager.findFragmentByTag(STATE_FRAGMENT_TAG) as StateFragment<P, VS>?
         if (stateFragment == null) {
             stateFragment = StateFragment()
             fragmentManager.beginTransaction()
@@ -66,7 +64,7 @@ class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : IViewState<V
             viewState = activity.createNewViewState()
         }
 
-        if (stateFragment!!.presenter == null) {
+        if (presenter == null) {
             presenter = activity.createPresenter()
         }
 
@@ -87,15 +85,15 @@ class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : IViewState<V
 
     //-----------------------------------------------------------------------------------------//
 
-    class StateFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : Fragment() {
+    class StateFragment<P : IPresenter<*>, VS : IViewState<*>> : Fragment() {
 
         var presenter: P? = null
 
         var viewState: VS? = null
 
         override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
             retainInstance = true
+            super.onCreate(savedInstanceState)
         }
 
     }

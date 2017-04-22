@@ -46,11 +46,8 @@ abstract class BaseRetainableActivity<V : IMvpView, P : IPresenter<V>, VS : IVie
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         delegate.onDestroy()
+        super.onDestroy()
     }
-
-    //-----------------------------------------------------------------------------------------//
-
 
 }
