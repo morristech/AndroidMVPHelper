@@ -1,3 +1,12 @@
+### 1.3.12
+#### Changes
+* BaseAsyncPresent and BasePresenter refactored
+* BaseAsyncPresent.waitForViewIfNeeded() now returns view, and throws RuntimeException(InterruptedException)
+* notifyTask methods not check if the current thread is main.
+
+#### DemoApp changes
+* Fixes in demo app
+
 ### 1.3.11
 #### Removals
 * Removed getMethod from IPresenter
