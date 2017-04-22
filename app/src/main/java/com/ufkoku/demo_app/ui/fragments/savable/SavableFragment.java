@@ -27,6 +27,11 @@ public class SavableFragment extends BaseSavableFragment<ISavableFragment, Stati
 
     //----------------------------------------------------------------------------------------//
 
+    @Override
+    public boolean retainPresenter() {
+        return true;
+    }
+
     @NotNull
     @Override
     public ISavableFragment getMvpView() {

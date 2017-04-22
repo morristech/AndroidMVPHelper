@@ -21,6 +21,12 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
 
     //------------------------------------------------------------------------------------//
 
+
+    @Override
+    public boolean retainPresenter() {
+        return true;
+    }
+
     @Override
     public void createView() {
         view = (DataView) getLayoutInflater().inflate(R.layout.view_data, null);

@@ -16,16 +16,24 @@
 
 package com.ufkoku.mvp.savable
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.util.Log
 import android.view.View
 import com.ufkoku.mvp.savable.delegate.FragmentDelegate
+import com.ufkoku.mvp.savable.delegate.ISavableDelegateClient
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpFragment
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.ISavableViewState
 
-abstract class BaseSavableDialogFragment<V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>> : DialogFragment(), IMvpFragment<V, P, VS> {
+@SuppressLint("LongLogTag")
+abstract class BaseSavableDialogFragment<V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>> : DialogFragment(), IMvpFragment<V, P, VS>, ISavableDelegateClient {
+
+    companion object {
+        private val TAG = "BaseSavableDialogFragment"
+    }
 
     private val delegate: FragmentDelegate<BaseSavableDialogFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)
 
@@ -57,13 +65,18 @@ abstract class BaseSavableDialogFragment<V : IMvpView, P : IPresenter<V>, VS : I
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         delegate.onDestroyView()
+        super.onDestroyView()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         delegate.onDestroy()
+        super.onDestroy()
+    }
+
+    override fun setRetainInstance(retain: Boolean) {
+        super.setRetainInstance(retain)
+        Log.e(TAG, "Don't use setRetainInstance(boolean) with savable elements, use retainable for correct work.")
     }
 
 }

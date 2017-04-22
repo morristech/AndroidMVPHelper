@@ -19,12 +19,13 @@ package com.ufkoku.mvp.savable
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.ufkoku.mvp.savable.delegate.ActivityDelegate
+import com.ufkoku.mvp.savable.delegate.ISavableDelegateClient
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpActivity
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.ISavableViewState
 
-abstract class BaseSavableActivity<V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
+abstract class BaseSavableActivity<V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS>, ISavableDelegateClient {
 
     private val delegate: ActivityDelegate<BaseSavableActivity<V, P, VS>, V, P, VS> = ActivityDelegate(this)
 
@@ -51,8 +52,8 @@ abstract class BaseSavableActivity<V : IMvpView, P : IPresenter<V>, VS : ISavabl
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         delegate.onDestroy()
+        super.onDestroy()
     }
 
 }

@@ -17,6 +17,7 @@
 package com.ufkoku.mvp.savable.delegate
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
@@ -24,10 +25,28 @@ import com.ufkoku.mvp_base.view.IMvpActivity
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.ISavableViewState
 
-class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>>(val activity: A) where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
+class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>>(val activity: A)
+where A : AppCompatActivity, A : IMvpActivity<V, P, VS>, A : ISavableDelegateClient {
+
+    companion object {
+        private val STATE_FRAGMENT_TAG = "com.ufkoku.mvp.savable.delegate.ActivityDelegate.PresenterFragment"
+    }
+
+    /**
+     * Retainable fragment to store presenter, if ISavableDelegator.retainPresenter() returns true
+     * */
+    private var presenterFragment: PresenterFragment<P>? = null
 
     var presenter: P? = null
-        private set
+        get() = if (activity.retainPresenter()) presenterFragment!!.presenter else field
+        private set(value) {
+            if (activity.retainPresenter()) {
+                presenterFragment!!.presenter = value
+                field = null
+            } else {
+                field = value
+            }
+        }
 
     var viewState: VS? = null
         private set
@@ -40,7 +59,19 @@ class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : ISavableView
             viewState!!.restore(savedInstanceState)
         }
 
-        presenter = activity.createPresenter()
+        if (activity.retainPresenter()) {
+            presenterFragment = activity!!.supportFragmentManager.findFragmentByTag(STATE_FRAGMENT_TAG) as PresenterFragment<P>?
+            if (presenterFragment == null) {
+                presenterFragment = PresenterFragment()
+                activity.supportFragmentManager.beginTransaction()
+                        .add(presenterFragment, STATE_FRAGMENT_TAG)
+                        .commitNow()
+            }
+        }
+
+        if (presenter == null) {
+            presenter = activity.createPresenter()
+        }
 
         activity.createView()
 
@@ -58,9 +89,34 @@ class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : ISavableView
 
     fun onDestroy() {
         presenter!!.onDetachView()
-        if (presenter is IAsyncPresenter<*>) {
-            (presenter!! as IAsyncPresenter<*>).cancel()
+        if (!activity.retainPresenter()) {
+            if (presenter is IAsyncPresenter<*>) {
+                (presenter!! as IAsyncPresenter<*>).cancel()
+            }
+            presenter = null
         }
+    }
+
+    //-----------------------------------------------------------------------------------------//
+
+    class PresenterFragment<P : IPresenter<*>> : Fragment() {
+
+        var presenter: P? = null
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            retainInstance = true
+        }
+
+        override fun onDestroy() {
+            if (presenter is IAsyncPresenter<*>) {
+                (presenter as IAsyncPresenter<*>).cancel()
+            }
+            presenter = null
+
+            super.onDestroy()
+        }
+
     }
 
 }
