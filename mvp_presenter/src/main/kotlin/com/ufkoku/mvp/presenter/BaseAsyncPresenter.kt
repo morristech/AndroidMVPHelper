@@ -17,12 +17,9 @@
 
 package com.ufkoku.mvp.presenter
 
-import android.os.Handler
-import android.os.Looper
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.view.IMvpView
 import java.util.*
-import java.util.concurrent.atomic.AtomicBoolean
 
 open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresenter<T> {
 
@@ -31,98 +28,103 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
         val TASK_FINISHED = 1
     }
 
-    private var taskStatusListener: IAsyncPresenter.ITaskListener? = null
-    private var mainThreadHandler: Handler? = null
-
-    private val runningTasks: MutableList<Int> = Collections.synchronizedList(LinkedList())
-
-    /**
-     * This variable is true if view detached, but screen is continuing it work,
-     * for example recreation of view on screen rotation, if retainable fragment is used.
-     * */
-    protected val waitForView = AtomicBoolean(false)
-
     /**
      * Variable is used in method waitForViewIfNeeded().
      * */
     protected val lockObject = Object()
+
+    override var view: T?
+        get() {
+            synchronized(lockObject) {
+                return super.view
+            }
+        }
+        set(value) {
+            synchronized(lockObject) {
+                super.view = value
+            }
+        }
+
+    private var taskStatusListener: IAsyncPresenter.ITaskListener? = null
+        get() {
+            synchronized(lockObject) {
+                return field
+            }
+        }
+        set(value) {
+            synchronized(lockObject) {
+                field = value
+            }
+        }
+
+    private val runningTasks: MutableList<Int> = Collections.synchronizedList(LinkedList())
 
     override fun onAttachView(view: T) {
         super.onAttachView(view)
 
         if (view is IAsyncPresenter.ITaskListener) {
             taskStatusListener = view
-            mainThreadHandler = Handler(Looper.getMainLooper())
         }
 
-        synchronized(lockObject) {
-            waitForView.set(false)
-            try {
-                lockObject.notifyAll()
-            } catch (ignored: IllegalMonitorStateException) {
-
-            }
-        }
+        notifyLockObject()
     }
 
     override fun onDetachView() {
         super.onDetachView()
-
         taskStatusListener = null
-        mainThreadHandler = null
-        waitForView.set(true)
     }
 
     override fun cancel() {
+        runningTasks.clear()
+        notifyLockObject()
+    }
+
+    private fun notifyLockObject() {
         synchronized(lockObject) {
-            waitForView.set(false)
             try {
                 lockObject.notifyAll()
             } catch (ignored: IllegalMonitorStateException) {
 
             }
         }
-
-        runningTasks.clear()
     }
 
     /**
      * Call this method, before populating result (from worker thread).
-     * If waitForView is true, it will call wait() on lockObject.
+     * It will wait for view attach, via calling wait() on lockObject.
      * lockObject.notifyAll() will be called after onAttachView().
+     *
+     * @return view, attached to presenter
+     *
+     * @throws RuntimeException with cause InterruptedException, if thread was interrupted
      * */
-    fun waitForViewIfNeeded() {
+    fun waitForViewIfNeeded(): T {
         synchronized(lockObject) {
-            if (waitForView.get()) {
+            if (view == null) {
                 try {
                     lockObject.wait()
                 } catch (e: InterruptedException) {
-                    e.printStackTrace()
+                    throw RuntimeException(e)
                 }
             }
+            return view!!
         }
     }
 
+    /**
+     * Adds task id to list, notifies attached view if it is possible
+     * */
     protected fun notifyTaskAdded(task: Int) {
         runningTasks.add(task)
-        if (taskStatusListener != null) {
-            if (Looper.getMainLooper() == Looper.myLooper()) {
-                taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
-            } else {
-                mainThreadHandler?.post { taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED) }
-            }
-        }
+        taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
     }
 
+    /**
+     * Removes task id from list, notifies attached view if it is possible
+     * */
     protected fun notifyTaskFinished(task: Int) {
         runningTasks.remove(task)
-        if (taskStatusListener != null) {
-            if (Looper.getMainLooper() == Looper.myLooper()) {
-                taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
-            } else {
-                mainThreadHandler?.post { taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED) }
-            }
-        }
+        taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
     }
 
     fun isTaskRunning(task: Int): Boolean {

@@ -21,8 +21,7 @@ import com.ufkoku.mvp_base.view.IMvpView
 
 open class BasePresenter<T : IMvpView> : IPresenter<T> {
 
-    protected var view: T? = null
-        private set
+    protected open var view: T? = null
 
     override fun onAttachView(view: T) {
         this.view = view
