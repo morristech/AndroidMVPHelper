@@ -53,25 +53,19 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
                     @Override
                     public void onError(Throwable e) {
-                        waitForViewIfNeeded();
-                        IPagingView fragment = getView();
+                        IPagingView fragment = waitForViewIfNeeded();
 
                         e.printStackTrace();
 
                         notifyTaskFinished(TASK_LOAD_INIT_DATA);
 
-                        if (fragment != null) {
-                            fragment.onInitDataLoadFailed(0);
-                        }
+                        fragment.onInitDataLoadFailed(0);
                     }
 
                     @Override
                     public void onNext(String s) {
-                        waitForViewIfNeeded();
-                        IPagingView fragment = getView();
-                        if (fragment != null) {
-                            fragment.onInitDataLoaded(s);
-                        }
+                        IPagingView fragment = waitForViewIfNeeded();
+                        fragment.onInitDataLoaded(s);
                     }
                 });
     }
@@ -107,8 +101,7 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
                     @Override
                     public void onError(Throwable e) {
-                        waitForViewIfNeeded();
-                        IPagingView fragment = getView();
+                        IPagingView fragment = waitForViewIfNeeded();
 
                         e.printStackTrace();
 
@@ -119,19 +112,16 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
                         }
                         notifyTaskFinished(taskId);
 
-                        if (fragment != null) {
-                            if (offset == 0) {
-                                fragment.onFirstPageLoadFailed(0);
-                            } else {
-                                fragment.onNextPageLoadFailed(0);
-                            }
+                        if (offset == 0) {
+                            fragment.onFirstPageLoadFailed(0);
+                        } else {
+                            fragment.onNextPageLoadFailed(0);
                         }
                     }
 
                     @Override
                     public void onNext(PagingResponse<AwesomeEntity> response) {
-                        waitForViewIfNeeded();
-                        IPagingView fragment = getView();
+                        IPagingView fragment = waitForViewIfNeeded();
                         if (fragment != null) {
                             if (offset == 0) {
                                 fragment.onFirstPageLoaded(response);
@@ -167,11 +157,8 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
                     @Override
                     public void onNext(AwesomeEntity entity) {
-                        waitForViewIfNeeded();
-                        IPagingView view = getView();
-                        if (view != null) {
-                            view.onPickedItemProcessed(entity);
-                        }
+                        IPagingView view = waitForViewIfNeeded();
+                        view.onPickedItemProcessed(entity);
                     }
 
                 });

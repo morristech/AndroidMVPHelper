@@ -45,11 +45,8 @@ public class StaticListPresenter<V extends StaticListPresenter.PresenterListener
 
                     @Override
                     public void onNext(PagingResponse<AwesomeEntity> entity) {
-                        waitForViewIfNeeded();
-                        V activity = getView();
-                        if (activity != null) {
-                            activity.onDataLoaded(entity.getData());
-                        }
+                        V activity = waitForViewIfNeeded();
+                        activity.onDataLoaded(entity.getData());
                     }
                 });
     }

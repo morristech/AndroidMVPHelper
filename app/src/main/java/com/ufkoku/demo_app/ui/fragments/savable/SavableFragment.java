@@ -78,7 +78,9 @@ public class SavableFragment extends BaseSavableFragment<ISavableFragment, Stati
     @Override
     public void onInitialized(StaticListPresenter<ISavableFragment> presenter, SavableFragmentViewState viewState) {
         if (!viewState.isApplied()) {
-            presenter.fetchData();
+            if (!presenter.isTaskRunning(StaticListPresenter.TASK_FETCH_DATA)) {
+                presenter.fetchData();
+            }
         }
 
         updateProgressVisibility();

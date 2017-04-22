@@ -67,8 +67,12 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
     @Override
     public void onInitialized(StaticListPresenter<ISavableActivity> presenter, SavableActivityViewState viewState) {
         if (!viewState.isApplied()) {
-            presenter.fetchData();
+            if (!presenter.isTaskRunning(StaticListPresenter.TASK_FETCH_DATA)) {
+                presenter.fetchData();
+            }
         }
+
+        updateProgressVisibility();
     }
 
     //------------------------------------------------------------------------------------//
