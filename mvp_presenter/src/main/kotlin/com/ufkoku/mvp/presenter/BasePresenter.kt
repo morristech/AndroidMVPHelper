@@ -21,7 +21,8 @@ import com.ufkoku.mvp_base.view.IMvpView
 
 open class BasePresenter<T : IMvpView> : IPresenter<T> {
 
-    private var view: T? = null
+    protected var view: T? = null
+        private set
 
     override fun onAttachView(view: T) {
         this.view = view
@@ -29,10 +30,6 @@ open class BasePresenter<T : IMvpView> : IPresenter<T> {
 
     override fun onDetachView() {
         this.view = null
-    }
-
-    override fun getView(): T? {
-        return view
     }
 
 }

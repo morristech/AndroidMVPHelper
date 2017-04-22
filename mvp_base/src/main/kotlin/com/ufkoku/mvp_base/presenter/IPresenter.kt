@@ -18,12 +18,10 @@ package com.ufkoku.mvp_base.presenter
 
 import com.ufkoku.mvp_base.view.IMvpView
 
-interface IPresenter<T : IMvpView> {
+interface IPresenter<in T : IMvpView> {
 
     fun onAttachView(view: T)
 
     fun onDetachView()
-
-    fun getView(): T?
 
 }
