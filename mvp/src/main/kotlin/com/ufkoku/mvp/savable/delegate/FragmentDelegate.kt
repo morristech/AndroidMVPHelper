@@ -16,73 +16,59 @@
 
 package com.ufkoku.mvp.savable.delegate
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
+import com.ufkoku.mvp.utils.HolderFragment
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpFragment
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.ISavableViewState
 
-class FragmentDelegate<out F, V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>>(val fragment: F)
+open class FragmentDelegate<out F, V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>>(val fragment: F)
 where F : Fragment, F : IMvpFragment<V, P, VS>, F : ISavableDelegateClient {
 
     companion object {
-        private val STATE_FRAGMENT_TAG = "com.ufkoku.mvp.savable.delegate.FragmentDelegate.PresenterFragment"
         private val KEY_PRESENTER = "presenterFragmentKey"
     }
 
     /**
-     * Retainable fragment to store presenter, if ISavableDelegator.retainPresenter() returns true
+     * Used to get presenter from fragment holder
      * */
-    private var presenterFragment: PresenterFragment<P>? = null
-
-    /**
-     * Used to get presenter fragment from fragment manager
-     * */
-    private var presenterFragmentTag: String? = null
+    protected var presenterId: Int? = null
 
     var presenter: P? = null
-        get() = if (fragment.retainPresenter()) presenterFragment!!.presenter else field
-        private set(value) {
-            if (fragment.retainPresenter()) {
-                presenterFragment!!.presenter = value
-                field = null
-            } else {
-                field = value
-            }
-        }
+        protected set
 
     var viewState: VS? = null
-        private set
+        protected set
 
-    var instanceSaved = false
-        private set
-
+    protected var instanceSaved = false
 
     //-----------------------------------------------------------------------------------------//
 
+    @Suppress("UNCHECKED_CAST")
     fun onCreate(savedInstanceState: Bundle?) {
         viewState = fragment.createNewViewState()
         if (savedInstanceState != null) {
             viewState!!.restore(savedInstanceState)
         }
 
-        if (fragment.retainPresenter()) {
-            presenterFragmentTag = savedInstanceState?.getString(KEY_PRESENTER) ?: (STATE_FRAGMENT_TAG + hashCode())
-            presenterFragment = fragment.fragmentManager.findFragmentByTag(presenterFragmentTag) as PresenterFragment<P>?
-            if (presenterFragment == null) {
-                presenterFragment = PresenterFragment()
-                fragment.fragmentManager.beginTransaction()
-                        .add(presenterFragment, presenterFragmentTag)
-                        .commit()
-            }
+        val holder = HolderFragment.getInstance(fragment)
+        if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PRESENTER)) {
+            presenterId = savedInstanceState.getInt(KEY_PRESENTER)
+            presenter = holder.getPresenter(presenterId!!) as P?
         }
-
         if (presenter == null) {
             presenter = fragment.createPresenter()
+            if (fragment.retainPresenter()) {
+                if (presenterId == null) {
+                    presenterId = holder.addPresenter(presenter!!)
+                } else {
+                    holder.setPresenter(presenterId!!, presenter!!)
+                }
+            }
         }
     }
 
@@ -96,8 +82,8 @@ where F : Fragment, F : IMvpFragment<V, P, VS>, F : ISavableDelegateClient {
     fun onSaveInstanceState(outState: Bundle?) {
         if (outState != null) {
             viewState!!.save(outState)
-            if (presenterFragmentTag != null) {
-                outState.putString(KEY_PRESENTER, presenterFragmentTag)
+            if (presenterId != null) {
+                outState.putInt(KEY_PRESENTER, presenterId!!)
             }
             instanceSaved = true
         }
@@ -108,43 +94,18 @@ where F : Fragment, F : IMvpFragment<V, P, VS>, F : ISavableDelegateClient {
     }
 
     fun onDestroy() {
-        if (!instanceSaved && presenterFragment != null) {
-            fragment.fragmentManager.beginTransaction()
-                    .remove(presenterFragment)
-                    .commitAllowingStateLoss()
-            presenterFragment = null
+        if (!instanceSaved && fragment.retainPresenter()) {
+            HolderFragment.getInstance(fragment).removePresenter(presenterId!!)
         }
 
-        if (!fragment.retainPresenter()) {
+        if (!instanceSaved || !fragment.retainPresenter()) {
             if (presenter is IAsyncPresenter<*>) {
                 (presenter as IAsyncPresenter<*>).cancel()
             }
-            presenter = null
         }
 
+        presenter = null
         viewState = null
-    }
-
-    //-----------------------------------------------------------------------------------------//
-
-    class PresenterFragment<P : IPresenter<*>> : Fragment() {
-
-        var presenter: P? = null
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            retainInstance = true
-        }
-
-        override fun onDestroy() {
-            if (presenter is IAsyncPresenter<*>) {
-                (presenter as IAsyncPresenter<*>).cancel()
-            }
-            presenter = null
-
-            super.onDestroy()
-        }
-
     }
 
 }

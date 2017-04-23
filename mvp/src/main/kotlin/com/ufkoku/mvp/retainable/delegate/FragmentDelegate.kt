@@ -25,13 +25,13 @@ import com.ufkoku.mvp_base.view.IMvpFragment
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-class FragmentDelegate<out F, V : IMvpView, P : IPresenter<V>, VS : IViewState<V>>(val fragment: F) where F : Fragment, F : IMvpFragment<V, P, VS> {
+open class FragmentDelegate<out F, V : IMvpView, P : IPresenter<V>, VS : IViewState<V>>(val fragment: F) where F : Fragment, F : IMvpFragment<V, P, VS> {
 
     var presenter: P? = null
-        private set
+        protected set
 
     var viewState: VS? = null
-        private set
+        protected set
 
     fun onCreate(savedInstanceState: Bundle?) {
         fragment.retainInstance = true

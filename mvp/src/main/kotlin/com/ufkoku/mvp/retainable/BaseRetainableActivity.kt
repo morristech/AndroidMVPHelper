@@ -45,6 +45,11 @@ abstract class BaseRetainableActivity<V : IMvpView, P : IPresenter<V>, VS : IVie
         delegate.onCreate(savedInstanceState)
     }
 
+    override fun onSaveInstanceState(outState: Bundle?) {
+        delegate.onSaveInstanceState(outState)
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onDestroy() {
         delegate.onDestroy()
         super.onDestroy()
