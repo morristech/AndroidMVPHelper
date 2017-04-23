@@ -1,3 +1,7 @@
+### 1.3.13
+#### Changes
+* Optimizations for new functionality from 1.3.11 
+
 ### 1.3.12
 #### Changes
 * BaseAsyncPresent and BasePresenter refactored
