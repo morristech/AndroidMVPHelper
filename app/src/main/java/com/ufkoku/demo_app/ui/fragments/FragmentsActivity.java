@@ -17,18 +17,8 @@ public class FragmentsActivity extends AppCompatActivity implements IFragmentMan
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragments);
-        findViewById(R.id.savable).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setFragment(new SavableFragment());
-            }
-        });
-        findViewById(R.id.retainable).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setFragment(new RetainableFragment());
-            }
-        });
+        findViewById(R.id.savable).setOnClickListener(view -> setFragment(new SavableFragment()));
+        findViewById(R.id.retainable).setOnClickListener(view -> setFragment(new RetainableFragment()));
     }
 
     public void setFragment(Fragment fragment) {

@@ -21,7 +21,6 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
 
     //------------------------------------------------------------------------------------//
 
-
     @Override
     public boolean retainPresenter() {
         return true;
