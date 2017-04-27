@@ -30,25 +30,25 @@ public class StaticListPresenter<V extends StaticListPresenter.PresenterListener
 
                 .subscribeOn(getScheduler())
 
-                .subscribe(new EnhancedSubscriber<PagingResponse<AwesomeEntity>, V>(this) {
+                .subscribe(new EnhancedSubscriber<PagingResponse<AwesomeEntity>>(this) {
                     @Override
-                    public void onCompleted(@NotNull V view) {
+                    public void onCompletedImpl() {
                         notifyTaskFinished(TASK_FETCH_DATA);
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable e, @NotNull V view) {
+                    public void onErrorImpl(@NotNull Throwable e) {
                         notifyTaskFinished(TASK_FETCH_DATA);
                     }
 
                     @Override
-                    public void onInterruptedError(@NotNull Throwable e) {
+                    public void onInterruptedErrorImpl(@NotNull Throwable e) {
                         notifyTaskFinished(TASK_FETCH_DATA);
                     }
 
                     @Override
-                    public void onNext(PagingResponse<AwesomeEntity> entity, @NotNull V view) {
-                        view.onDataLoaded(entity.getData());
+                    public void onNextImpl(PagingResponse<AwesomeEntity> entity) {
+                        waitForViewIfNeeded().onDataLoaded(entity.getData());
                     }
                 });
     }

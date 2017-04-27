@@ -46,30 +46,30 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
         SingleEntityModel.createEntityObservable()
                 .map(awesomeEntity -> awesomeEntity.getImportantDataField() + "")
                 .subscribeOn(getScheduler())
-                .subscribe(new EnhancedSubscriber<String, IPagingView>(this) {
+                .subscribe(new EnhancedSubscriber<String>(this) {
 
                     @Override
-                    public void onCompleted(@NotNull IPagingView view) {
+                    public void onCompletedImpl() {
                         notifyTaskFinished(TASK_LOAD_INIT_DATA);
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable e, @NotNull IPagingView view) {
+                    public void onErrorImpl(@NotNull Throwable e) {
                         e.printStackTrace();
 
                         notifyTaskFinished(TASK_LOAD_INIT_DATA);
 
-                        view.onInitDataLoadFailed(0);
+                        waitForViewIfNeeded().onInitDataLoadFailed(0);
                     }
 
                     @Override
-                    public void onInterruptedError(@NotNull Throwable e) {
+                    public void onInterruptedErrorImpl(@NotNull Throwable e) {
                         notifyTaskFinished(TASK_LOAD_INIT_DATA);
                     }
 
                     @Override
-                    public void onNext(String value, @NotNull IPagingView view) {
-                        view.onInitDataLoaded(value);
+                    public void onNextImpl(String value) {
+                        waitForViewIfNeeded().onInitDataLoaded(value);
                     }
 
                 });
@@ -90,10 +90,10 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
         Subscription subscription = PageEntityModel.createPageObservable(offset)
                 .subscribeOn(getScheduler())
-                .subscribe(new EnhancedSubscriber<PagingResponse<AwesomeEntity>, IPagingView>(this) {
+                .subscribe(new EnhancedSubscriber<PagingResponse<AwesomeEntity>>(this) {
 
                     @Override
-                    public void onCompleted(@NotNull IPagingView view) {
+                    public void onCompletedImpl() {
                         if (taskId == TASK_LOAD_FIRST_PAGE) {
                             firstPageSub = null;
                         } else {
@@ -104,7 +104,7 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable e, @NotNull IPagingView view) {
+                    public void onErrorImpl(@NotNull Throwable e) {
                         e.printStackTrace();
 
                         notifyTaskFinished(taskId);
@@ -116,23 +116,23 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
                         }
 
                         if (offset == 0) {
-                            view.onFirstPageLoadFailed(0);
+                            waitForViewIfNeeded().onFirstPageLoadFailed(0);
                         } else {
-                            view.onNextPageLoadFailed(0);
+                            waitForViewIfNeeded().onNextPageLoadFailed(0);
                         }
                     }
 
                     @Override
-                    public void onInterruptedError(@NotNull Throwable e) {
+                    public void onInterruptedErrorImpl(@NotNull Throwable e) {
                         notifyTaskFinished(taskId);
                     }
 
                     @Override
-                    public void onNext(PagingResponse<AwesomeEntity> value, @NotNull IPagingView view) {
+                    public void onNextImpl(PagingResponse<AwesomeEntity> value) {
                         if (offset == 0) {
-                            view.onFirstPageLoaded(value);
+                            waitForViewIfNeeded().onFirstPageLoaded(value);
                         } else {
-                            view.onNextPageLoaded(value);
+                            waitForViewIfNeeded().onNextPageLoaded(value);
                         }
                     }
 
@@ -149,26 +149,26 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
         notifyTaskAdded(TASK_PROCESS_PICKED_DATA);
         ProcessEntityModel.createObservable(entity)
                 .subscribeOn(getScheduler())
-                .subscribe(new EnhancedSubscriber<AwesomeEntity, IPagingView>(this) {
+                .subscribe(new EnhancedSubscriber<AwesomeEntity>(this) {
 
                     @Override
-                    public void onCompleted(@NotNull IPagingView view) {
+                    public void onCompletedImpl() {
                         notifyTaskFinished(TASK_PROCESS_PICKED_DATA);
                     }
 
                     @Override
-                    public void onError(@NotNull Throwable e, @NotNull IPagingView view) {
+                    public void onErrorImpl(@NotNull Throwable e) {
                         notifyTaskFinished(TASK_PROCESS_PICKED_DATA);
                     }
 
                     @Override
-                    public void onInterruptedError(@NotNull Throwable e) {
+                    public void onInterruptedErrorImpl(@NotNull Throwable e) {
                         notifyTaskFinished(TASK_PROCESS_PICKED_DATA);
                     }
 
                     @Override
-                    public void onNext(AwesomeEntity value, @NotNull IPagingView view) {
-                        view.onPickedItemProcessed(value);
+                    public void onNextImpl(AwesomeEntity value) {
+                        waitForViewIfNeeded().onPickedItemProcessed(value);
                     }
 
                 });
