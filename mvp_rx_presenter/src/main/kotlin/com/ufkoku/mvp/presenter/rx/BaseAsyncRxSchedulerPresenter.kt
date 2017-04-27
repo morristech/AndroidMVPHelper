@@ -33,10 +33,10 @@ abstract class BaseAsyncRxSchedulerPresenter<T : IMvpView> : BaseAsyncExecutorPr
     }
 
     override fun cancel() {
-        super.cancel()
         if (scheduler != null) {
             scheduler = null
         }
+        super.cancel()
     }
 
 }

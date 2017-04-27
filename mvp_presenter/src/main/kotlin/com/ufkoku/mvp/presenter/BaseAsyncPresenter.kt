@@ -31,52 +31,36 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
     /**
      * Variable is used in method waitForViewIfNeeded().
      * */
-    protected val lockObject = Object()
-
-    override var view: T?
-        get() {
-            synchronized(lockObject) {
-                return super.view
-            }
-        }
-        set(value) {
-            synchronized(lockObject) {
-                super.view = value
-            }
-        }
+    val lockObject = Object()
 
     private var taskStatusListener: IAsyncPresenter.ITaskListener? = null
-        get() {
-            synchronized(lockObject) {
-                return field
-            }
-        }
-        set(value) {
-            synchronized(lockObject) {
-                field = value
-            }
-        }
 
     private val runningTasks: MutableList<Int> = Collections.synchronizedList(LinkedList())
 
     override fun onAttachView(view: T) {
-        super.onAttachView(view)
+        synchronized(lockObject) {
+            super.onAttachView(view)
 
-        if (view is IAsyncPresenter.ITaskListener) {
-            taskStatusListener = view
+            if (view is IAsyncPresenter.ITaskListener) {
+                taskStatusListener = view
+            }
+
+            notifyLockObject()
         }
-
-        notifyLockObject()
     }
 
     override fun onDetachView() {
-        super.onDetachView()
-        taskStatusListener = null
+        synchronized(lockObject) {
+            super.onDetachView()
+            taskStatusListener = null
+        }
     }
 
     override fun cancel() {
-        runningTasks.clear()
-        notifyLockObject()
+        synchronized(lockObject) {
+            runningTasks.clear()
+            notifyLockObject()
+        }
     }
 
     private fun notifyLockObject() {
@@ -90,7 +74,7 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
     }
 
     /**
-     * Call this method, before populating result (from worker thread).
+     * Use this method to get attached view for result populating (from worker thread).
      * It will wait for view attach, via calling wait() on lockObject.
      * lockObject.notifyAll() will be called after onAttachView().
      *
@@ -100,6 +84,9 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
      * */
     fun waitForViewIfNeeded(): T {
         synchronized(lockObject) {
+            if (Thread.interrupted()) {
+                throw RuntimeException(InterruptedException("Thread ${Thread.currentThread().name} is interrupted."))
+            }
             if (view == null) {
                 try {
                     lockObject.wait()
@@ -111,12 +98,26 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
         }
     }
 
+    fun checkIfInterruptedException(ex: Throwable?): Boolean {
+        var currentLevel = ex
+        while (currentLevel != null) {
+            if (currentLevel is InterruptedException) {
+                return true
+            } else {
+                currentLevel = currentLevel.cause
+            }
+        }
+        return false
+    }
+
     /**
      * Adds task id to list, notifies attached view if it is possible
      * */
     protected fun notifyTaskAdded(task: Int) {
         runningTasks.add(task)
-        taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
+        synchronized(lockObject) {
+            taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
+        }
     }
 
     /**
@@ -124,7 +125,9 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
      * */
     protected fun notifyTaskFinished(task: Int) {
         runningTasks.remove(task)
-        taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
+        synchronized(lockObject) {
+            taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
+        }
     }
 
     fun isTaskRunning(task: Int): Boolean {
