@@ -1,3 +1,10 @@
+### 1.4.15
+#### Changes
+* Fixed possible dead locks
+
+#### DemoApp changes
+* Demo app updated
+
 ### 1.4.14
 #### Changes
 * Optimizations for BaseAsyncPresenters;
