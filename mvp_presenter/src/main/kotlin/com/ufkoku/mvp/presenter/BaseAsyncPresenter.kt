@@ -57,10 +57,8 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
     }
 
     override fun cancel() {
-        synchronized(lockObject) {
-            runningTasks.clear()
-            notifyLockObject()
-        }
+        runningTasks.clear()
+        notifyLockObject()
     }
 
     private fun notifyLockObject() {
@@ -115,9 +113,11 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
      * */
     protected fun notifyTaskAdded(task: Int) {
         runningTasks.add(task)
+        var taskStatusListener: IAsyncPresenter.ITaskListener? = null
         synchronized(lockObject) {
-            taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
+            taskStatusListener = this.taskStatusListener
         }
+        taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
     }
 
     /**
@@ -125,9 +125,11 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
      * */
     protected fun notifyTaskFinished(task: Int) {
         runningTasks.remove(task)
+        var taskStatusListener: IAsyncPresenter.ITaskListener? = null
         synchronized(lockObject) {
-            taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
+            taskStatusListener = this.taskStatusListener
         }
+        taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
     }
 
     fun isTaskRunning(task: Int): Boolean {

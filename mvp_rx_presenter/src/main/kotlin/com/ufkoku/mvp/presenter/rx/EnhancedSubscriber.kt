@@ -1,7 +1,6 @@
 package com.ufkoku.mvp.presenter.rx
 
 import com.ufkoku.mvp.presenter.BaseAsyncPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import rx.Subscriber
 import rx.Subscription
 import java.lang.ref.WeakReference
@@ -10,7 +9,7 @@ import java.lang.ref.WeakReference
  * Use with ViewWraps only;
  * Don't use with subscribeOn(AndroidSchedulers.mainThread()) or observeOn(AndroidSchedulers.mainThread()), all calls from main thread must be excluded.
  * */
-abstract class EnhancedSubscriber<T, V : IMvpView>(val presenter: BaseAsyncPresenter<V>) : Subscriber<T>() {
+abstract class EnhancedSubscriber<T>(val presenter: BaseAsyncPresenter<*>) : Subscriber<T>() {
 
     protected var subscriberThread: WeakReference<Thread>? = null
 
@@ -41,45 +40,36 @@ abstract class EnhancedSubscriber<T, V : IMvpView>(val presenter: BaseAsyncPrese
     }
 
     final override fun onCompleted() {
-        synchronized(presenter.lockObject) {
-            setAndCheckThread()
-            val v = presenter.waitForViewIfNeeded()
-            onCompleted(v)
-        }
+        setAndCheckThread()
+        onCompletedImpl()
     }
 
     final override fun onError(e: Throwable) {
         if (!presenter.checkIfInterruptedException(e)) {
-            synchronized(presenter.lockObject) {
-                try {
-                    setAndCheckThread()
-                    val v = presenter.waitForViewIfNeeded()
-                    onError(e, v)
-                } catch (ex: RuntimeException) {
-                    if (presenter.checkIfInterruptedException(ex)) {
-                        onInterruptedError(e)
-                    }
+            try {
+                setAndCheckThread()
+                onErrorImpl(e)
+            } catch (ex: RuntimeException) {
+                if (presenter.checkIfInterruptedException(ex)) {
+                    onInterruptedErrorImpl(e)
                 }
             }
         } else {
-            onInterruptedError(e)
+            onInterruptedErrorImpl(e)
         }
     }
 
-    override fun onNext(t: T) {
-        synchronized(presenter.lockObject) {
-            setAndCheckThread()
-            val v = presenter.waitForViewIfNeeded()
-            onNext(t, v)
-        }
+    final override fun onNext(t: T) {
+        setAndCheckThread()
+        onNextImpl(t)
     }
 
-    abstract fun onCompleted(view: V)
+    abstract fun onCompletedImpl()
 
-    abstract fun onError(e: Throwable, view: V)
+    abstract fun onErrorImpl(e: Throwable)
 
-    abstract fun onInterruptedError(e: Throwable)
+    abstract fun onInterruptedErrorImpl(e: Throwable)
 
-    abstract fun onNext(value: T, view: V)
+    abstract fun onNextImpl(value: T)
 
 }
