@@ -4,6 +4,7 @@ import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.demo_app.entity.PagingResponse;
 import com.ufkoku.demo_app.model.PageEntityModel;
 import com.ufkoku.mvp.presenter.rx.BaseAsyncRxSchedulerPresenter;
+import com.ufkoku.mvp.presenter.rx.EnhancedSubscriber;
 import com.ufkoku.mvp_base.view.IMvpView;
 
 import org.jetbrains.annotations.NotNull;
@@ -11,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-
-import rx.Subscriber;
 
 public class StaticListPresenter<V extends StaticListPresenter.PresenterListener & IMvpView> extends BaseAsyncRxSchedulerPresenter<V> {
 
@@ -26,27 +25,30 @@ public class StaticListPresenter<V extends StaticListPresenter.PresenterListener
 
     public void fetchData() {
         notifyTaskAdded(TASK_FETCH_DATA);
+
         PageEntityModel.createPageObservable(0)
 
                 .subscribeOn(getScheduler())
 
-                .subscribe(new Subscriber<PagingResponse<AwesomeEntity>>() {
+                .subscribe(new EnhancedSubscriber<PagingResponse<AwesomeEntity>, V>(this) {
                     @Override
-                    public void onCompleted() {
-                        waitForViewIfNeeded();
+                    public void onCompleted(@NotNull V view) {
                         notifyTaskFinished(TASK_FETCH_DATA);
                     }
 
                     @Override
-                    public void onError(Throwable e) {
-                        waitForViewIfNeeded();
+                    public void onError(@NotNull Throwable e, @NotNull V view) {
                         notifyTaskFinished(TASK_FETCH_DATA);
                     }
 
                     @Override
-                    public void onNext(PagingResponse<AwesomeEntity> entity) {
-                        V activity = waitForViewIfNeeded();
-                        activity.onDataLoaded(entity.getData());
+                    public void onInterruptedError(@NotNull Throwable e) {
+                        notifyTaskFinished(TASK_FETCH_DATA);
+                    }
+
+                    @Override
+                    public void onNext(PagingResponse<AwesomeEntity> entity, @NotNull V view) {
+                        view.onDataLoaded(entity.getData());
                     }
                 });
     }
