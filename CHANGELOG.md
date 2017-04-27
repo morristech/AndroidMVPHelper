@@ -1,3 +1,11 @@
+### 1.4.14
+#### Changes
+* Optimizations for BaseAsyncPresenters;
+* Added new class to mvp_rx_presenter - EnhancedSubscriber
+
+#### DemoApp changes
+* Demo app updated
+
 ### 1.3.13
 #### Changes
 * Optimizations for new functionality from 1.3.11 
