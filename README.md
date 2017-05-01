@@ -83,22 +83,11 @@ kapt {
   generateStubs = true
 }
 ```
-* else you should use [APT](https://bitbucket.org/hvisser/android-apt)
+* else
 ```gradle
-buildscript {
-    repositories {
-      mavenCentral()
-    }
-    dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
-}
-
-apply plugin: 'com.neenbedankt.android-apt'
-
 dependencies {    
     compile("com.ufkoku.mvp:mvp_autosavable_annotation:$mvp_ver")
-    apt("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")    
+    annotationProcessor("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")    
 }
 ```
 
@@ -133,22 +122,11 @@ kapt {
   generateStubs = true
 }
 ```
-* else you should use [APT](https://bitbucket.org/hvisser/android-apt)
+* else
 ```gradle
-buildscript {
-    repositories {
-      mavenCentral()
-    }
-    dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
-}
-
-apply plugin: 'com.neenbedankt.android-apt'
-
 dependencies {    
     compile("com.ufkoku.mvp:mvp_view_wrap_annotation:$mvp_ver")
-    apt("com.ufkoku.mvp:mvp_view_wrap:$mvp_ver")    
+    annotationProcessor("com.ufkoku.mvp:mvp_view_wrap:$mvp_ver")    
 }
 ```
 
