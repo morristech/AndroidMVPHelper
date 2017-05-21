@@ -56,7 +56,7 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-@SupportedAnnotationTypes({"com.ufkoku.mvp.viewstate.autosavable.AutoSavable"})
+@SupportedAnnotationTypes({AutosavableProcessor2.CLASS_NAME_AUTOSAVABLE})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class AutosavableProcessor2 extends AbstractProcessor {
 
@@ -65,20 +65,34 @@ public class AutosavableProcessor2 extends AbstractProcessor {
     private static final String CLASS_NAME_BUNDLE = "android.os.Bundle";
     private static final String CLASS_NAME_PARCELABLE = "android.os.Parcelable";
 
+    static final String CLASS_NAME_AUTOSAVABLE = "com.ufkoku.mvp.viewstate.autosavable.AutoSavable";
+    private static final String CLASS_NAME_IGNORE = "com.ufkoku.mvp.viewstate.autosavable.Ignore";
+
     private TypeElement bundleTypeElement;
     private TypeElement parcelableTypeElement;
 
+    private Class<? extends Annotation> autoSavableClass;
+    private Class<? extends Annotation> ignoreSavableClass;
+
     @Override
+    @SuppressWarnings("unchecked")
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
 
         bundleTypeElement = processingEnv.getElementUtils().getTypeElement(CLASS_NAME_BUNDLE);
         parcelableTypeElement = processingEnvironment.getElementUtils().getTypeElement(CLASS_NAME_PARCELABLE);
+
+        try {
+            autoSavableClass = (Class<? extends Annotation>) Class.forName(CLASS_NAME_AUTOSAVABLE);
+            ignoreSavableClass = (Class<? extends Annotation>) Class.forName(CLASS_NAME_IGNORE);
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         try {
-            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith((Class<? extends Annotation>) Class.forName("com.ufkoku.mvp.viewstate.autosavable.AutoSavable"));
+            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(autoSavableClass);
             if (elements.size() > 0) {
                 for (Element element : elements) {
                     if (element.getKind() == ElementKind.CLASS) {
@@ -88,10 +102,9 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                 }
             }
             return true;
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
-        return false;
     }
 
     private void createSaverClass(TypeElement typeElement, DeclaredType declaredType) throws IOException {
@@ -369,7 +382,8 @@ public class AutosavableProcessor2 extends AbstractProcessor {
             if (element.getKind() == ElementKind.FIELD) {
                 if (!element.getModifiers().contains(Modifier.STATIC)
                         && !element.getModifiers().contains(Modifier.FINAL)
-                        && !element.getModifiers().contains(Modifier.TRANSIENT)) {
+                        && !element.getModifiers().contains(Modifier.TRANSIENT)
+                        && element.getAnnotation(ignoreSavableClass) == null) {
 
                     FieldData fieldData = new FieldData(
                             (VariableElement) element,
@@ -416,7 +430,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                     if (fieldName.equals(fieldData.variableElement.getSimpleName().toString())) {
                         ExecutableType executableType = (ExecutableType) processingEnv.getTypeUtils().asMemberOf(declaredType, executableElement);
 
-                        if (methodName.startsWith("get")) {
+                        if (methodName.startsWith("get") || methodName.startsWith("is")) {
                             if (getterElement == null) {
                                 if (executableType.getParameterTypes().size() == 0 && processingEnv.getTypeUtils().isAssignable(executableType.getReturnType(), fieldData.typeMirror)) {
                                     getterElement = executableElement;

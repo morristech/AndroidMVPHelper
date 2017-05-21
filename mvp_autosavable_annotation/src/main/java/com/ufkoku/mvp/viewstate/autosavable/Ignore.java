@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
+ * Copyright 2017 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 package com.ufkoku.mvp.viewstate.autosavable;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.SOURCE)
-public @interface AutoSavable {
-
+public @interface Ignore {
 }
