@@ -1,6 +1,6 @@
 # AndroidMVPHelper
 
-![alt tag](https://img.shields.io/badge/version-1.4.15-brightgreen.svg)
+![alt tag](https://img.shields.io/badge/version-2.0.0-brightgreen.svg)
 
 Library manages lifecycle of Activities and Fragments, their Presenters and ViewStates.
 
@@ -33,20 +33,13 @@ dependencies{
 ```
 
 Contains implementations of:
-* [Retainable elements](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp/src/main/kotlin/com/ufkoku/mvp/retainable):
-  * [BaseRetainableActivity](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/retainable/BaseRetainableActivity.kt);
-  * [BaseRetainableFragment](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/retainable/BaseRetainableFragment.kt);
-  * [BaseRetainableDialogFragment](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/retainable/BaseRetainableDialogFragment.kt);
-* [Savable elements](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp/src/main/kotlin/com/ufkoku/mvp/savable):
-  * [BaseSavableActivity](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/savable/BaseSavableActivity.kt);
-  * [BaseSavableFragment](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/savable/BaseSavableFragment.kt);
-  * [BaseSavableDialogFragment](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/savable/BaseSavableDialogFragment.kt).
+* [BaseMvpActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/mvp/BaseMvpActivity.kt)
+* [BaseMvpDialogFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/mvp/BaseMvpDialogFragment.kt)
+* [BaseMvpActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/mvp/BaseMvpActivity.kt)
 
 Examples of usage:
-* [BaseRetainableActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/retainable)
-* [BaseRetainableFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/fragments/retainable)
-* [BaseSavableActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/savable)
-* [BaseSavableFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/fragments/savable)
+* [StaticListActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/activity/static_list/)
+* [StaticListFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/fragments/static_list/)
 
 ### [mvp_presenter](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_presenter)
 
@@ -69,6 +62,16 @@ dependencies{
 ```
 
 Contains [BaseAsyncRxSchedulerPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_rx_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/rx/BaseAsyncRxSchedulerPresenter.kt)
+
+### [mvp_rx2_presenter](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_rx2_presenter)
+
+```gradle
+dependencies{
+  compile "com.ufkoku.mvp:mvp_rx2_presenter:$mvp_ver"
+}
+```
+
+Contains [BaseAsyncRxSchedulerPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_rx_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/rx2/BaseAsyncRxSchedulerPresenter.kt)
 
 ### [mvp_autosavable](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_autosavable) and [mvp_autosavable_annotation](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_autosavable)
 
