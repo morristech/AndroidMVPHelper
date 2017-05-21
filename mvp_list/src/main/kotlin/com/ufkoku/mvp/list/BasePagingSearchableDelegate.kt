@@ -215,7 +215,6 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             viewState!!.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
             viewState!!.nextPageFailed = false
             viewState!!.canLoadMore = response.canLoadMore
-            presenter!!.cancelNextPages() //preventing finishing of next page requests
             setItems(response.data, response.canLoadMore, StringUtils.isNotNullOrEmpty(viewState!!.query))
             scrollUpdater?.loading = false
         }
@@ -323,7 +322,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * */
     override fun onListEndReached(): Boolean {
         if (viewState != null) {
-            if (viewState!!.canLoadMore) {
+            if (viewState!!.canLoadMore && !presenter!!.isFirstPageLoading()) {
                 loadNextPage()
                 return true
             } else {
