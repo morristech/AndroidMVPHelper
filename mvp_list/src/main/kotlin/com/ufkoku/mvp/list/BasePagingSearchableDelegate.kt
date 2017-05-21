@@ -213,7 +213,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
         if (viewState != null && presenter != null) {
             viewState!!.items = response.data
             viewState!!.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
-            viewState!!.isNextPageFailed = false
+            viewState!!.nextPageFailed = false
             viewState!!.canLoadMore = response.canLoadMore
             presenter!!.cancelNextPages() //preventing finishing of next page requests
             setItems(response.data, response.canLoadMore, StringUtils.isNotNullOrEmpty(viewState!!.query))
@@ -250,7 +250,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     override fun onNextPageLoaded(response: PR) {
         if (viewState != null) {
             viewState!!.canLoadMore = response.canLoadMore
-            viewState!!.isNextPageFailed = false
+            viewState!!.nextPageFailed = false
             viewState!!.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
             viewState!!.items?.addAll(response.data)
         }
@@ -278,7 +278,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             val message = getErrorMessage(StringUtils.isNotNullOrEmpty(viewState!!.query), code)
             if (viewState!!.items == null) {
                 viewState!!.errorCode = code
-                viewState!!.isNextPageFailed = false
+                viewState!!.nextPageFailed = false
                 showErrorView(true, StringUtils.isNotNullOrEmpty(viewState!!.query), code)
             } else {
                 Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
@@ -292,7 +292,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     override fun onNextPageLoadFailed(code: Int) {
         if (viewState != null) {
             viewState!!.errorCode = code
-            viewState!!.isNextPageFailed = true
+            viewState!!.nextPageFailed = true
         }
 
         if (scrollUpdater != null) {
