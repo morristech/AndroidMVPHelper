@@ -129,7 +129,7 @@ open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresente
         synchronized(lockObject) {
             taskStatusListener = this.taskStatusListener
         }
-        taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
+        taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
     }
 
     fun isTaskRunning(task: Int): Boolean {
