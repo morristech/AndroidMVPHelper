@@ -20,7 +20,7 @@ import com.ufkoku.mvp.list.interfaces.IPagingSearchableView
 import com.ufkoku.mvp.list.util.StringUtils
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-open class BasePagingSearchableViewState<I, in V : IPagingSearchableView<I, *>> : IViewState<V> {
+abstract class BasePagingSearchableViewState<I, in V : IPagingSearchableView<I, *>> : IViewState<V> {
 
     companion object {
         @JvmField val NO_ERROR_CODE = -1
@@ -28,11 +28,11 @@ open class BasePagingSearchableViewState<I, in V : IPagingSearchableView<I, *>> 
 
     var query = ""
 
-    var items: MutableList<I>? = null
+    abstract var items: MutableList<I>?
 
     var canLoadMore = false
 
-    var isNextPageFailed = false
+    var nextPageFailed = false
 
     var errorCode = NO_ERROR_CODE
 
@@ -40,7 +40,7 @@ open class BasePagingSearchableViewState<I, in V : IPagingSearchableView<I, *>> 
         view.setQuery(query)
         if (this.items != null) {
             view.setItems(this.items!!, canLoadMore, StringUtils.isNotNullOrEmpty(query))
-            if (errorCode != NO_ERROR_CODE && isNextPageFailed) {
+            if (errorCode != NO_ERROR_CODE && nextPageFailed) {
                 view.onNextPageLoadFailed(errorCode)
             }
         } else if (errorCode != NO_ERROR_CODE) {

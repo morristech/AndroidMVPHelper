@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.activity.retainable.paging_list;
+package com.ufkoku.demo_app.ui.activity.paging_list;
 
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,15 +11,25 @@ import com.ufkoku.demo_app.ui.base.paging.IPagingViewWrap;
 import com.ufkoku.demo_app.ui.base.paging.PagingDelegate;
 import com.ufkoku.demo_app.ui.base.paging.PagingPresenter;
 import com.ufkoku.demo_app.ui.base.paging.PagingViewState;
-import com.ufkoku.mvp.retainable.BaseRetainableActivity;
+import com.ufkoku.mvp.BaseMvpActivity;
 
 import org.jetbrains.annotations.NotNull;
 
-public class PagingActivity extends BaseRetainableActivity<IPagingView, PagingPresenter, PagingViewState> {
+public class PagingActivity extends BaseMvpActivity<IPagingView, PagingPresenter, PagingViewState> {
 
     private PagingDelegate delegate = new PagingDelegate();
 
     private IPagingViewWrap delegateWrap = new IPagingViewWrap(delegate);
+
+    @Override
+    public boolean retainPresenter() {
+        return true;
+    }
+
+    @Override
+    public boolean retainViewState() {
+        return true;
+    }
 
     @Override
     public void createView() {

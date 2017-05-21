@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp.retainable
+package com.ufkoku.mvp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.ufkoku.mvp.retainable.delegate.ActivityDelegate
+import com.ufkoku.mvp.delegate.ActivityDelegate
+import com.ufkoku.mvp.base.IElementsHolder
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpActivity
+import com.ufkoku.mvp.base.IMvpActivity
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-abstract class BaseRetainableActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
+abstract class BaseMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
 
-    private val delegate: ActivityDelegate<BaseRetainableActivity<V, P, VS>, V, P, VS> = ActivityDelegate(this)
+    private val delegate: ActivityDelegate<BaseMvpActivity<V, P, VS>, V, P, VS> = ActivityDelegate(this)
 
     protected val presenter: P?
         get() {

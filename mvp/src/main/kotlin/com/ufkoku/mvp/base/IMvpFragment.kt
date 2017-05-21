@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
+ * Copyright 2016 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp.savable.delegate
+package com.ufkoku.mvp.base
 
-interface ISavableDelegateClient {
+import com.ufkoku.mvp_base.presenter.IPresenter
+import com.ufkoku.mvp_base.view.IMvpView
+import com.ufkoku.mvp_base.viewstate.IViewState
+
+interface IMvpFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : IMvpView, IElementsHolder<V, P, VS> {
 
     /**
-     * Return true if presenter must be retained accross fragment or activity recreations
-     *
-     * Note: it must be constant value
+     * This is methods is called when ui, view state and presenter are initialized, and viewState.apply() method called
      * */
-    fun retainPresenter(): Boolean = false
+    fun onInitialized(presenter: P, viewState: VS)
 
 }

@@ -1,29 +1,38 @@
-package com.ufkoku.demo_app.ui.activity.savable;
+package com.ufkoku.demo_app.ui.activity.static_list;
 
+import android.content.Context;
 import android.content.Intent;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.demo_app.ui.activity.retainable.static_list.RetainableActivity;
 import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
 import com.ufkoku.demo_app.ui.base.view.DataView;
-import com.ufkoku.mvp.savable.BaseSavableActivity;
+import com.ufkoku.mvp.BaseMvpActivity;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SavableActivity extends BaseSavableActivity<ISavableActivity, StaticListPresenter<ISavableActivity>, SavableActivityViewState> implements ISavableActivity {
+public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, StaticListPresenter<IStaticListActivity>, StaticListActivityViewState> implements IStaticListActivity {
+
+    protected static final String ARG_RETAIN = "com.ufkoku.demo_app.ui.activity.static_list.StaticListActivity.ARG_RETAIN";
 
     private DataView view;
 
-    private ISavableActivityWrap wrap = new ISavableActivityWrap(this);
+    private IStaticListActivityWrap wrap = new IStaticListActivityWrap(this);
 
     //------------------------------------------------------------------------------------//
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     public boolean retainPresenter() {
-        return true;
+        return getViewState().isRetain();
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public boolean retainViewState() {
+        return getViewState().isRetain();
     }
 
     @Override
@@ -32,14 +41,12 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
         view.setListener(new DataView.ViewListener() {
             @Override
             public void onRetainableClicked() {
-                Intent intent = new Intent(SavableActivity.this, RetainableActivity.class);
-                startActivity(intent);
+                startActivity(new Builder(true).build(StaticListActivity.this));
             }
 
             @Override
             public void onSavableClicked() {
-                Intent intent = new Intent(SavableActivity.this, SavableActivity.class);
-                startActivity(intent);
+                startActivity(new Builder(false).build(StaticListActivity.this));
             }
         });
         setContentView(view);
@@ -47,24 +54,31 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
 
     @NotNull
     @Override
-    public ISavableActivity getMvpView() {
+    public IStaticListActivity getMvpView() {
         return wrap;
     }
 
     @NotNull
     @Override
-    public SavableActivityViewState createNewViewState() {
-        return new SavableActivityViewState();
+    public StaticListActivityViewState createNewViewState() {
+        StaticListActivityViewState viewState = new StaticListActivityViewState();
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            viewState.setRetain(intent.getBooleanExtra(ARG_RETAIN, false));
+        }
+
+        return viewState;
     }
 
     @NotNull
     @Override
-    public StaticListPresenter<ISavableActivity> createPresenter() {
+    public StaticListPresenter<IStaticListActivity> createPresenter() {
         return new StaticListPresenter<>();
     }
 
     @Override
-    public void onInitialized(StaticListPresenter<ISavableActivity> presenter, SavableActivityViewState viewState) {
+    public void onInitialized(StaticListPresenter<IStaticListActivity> presenter, StaticListActivityViewState viewState) {
         if (!viewState.isApplied()) {
             if (!presenter.isTaskRunning(StaticListPresenter.TASK_FETCH_DATA)) {
                 presenter.fetchData();
@@ -86,7 +100,7 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
 
     @Override
     public void onDataLoaded(List<AwesomeEntity> entity) {
-        SavableActivityViewState state = getViewState();
+        StaticListActivityViewState state = getViewState();
         if (state != null) {
             state.setData(entity);
         }
@@ -116,10 +130,41 @@ public class SavableActivity extends BaseSavableActivity<ISavableActivity, Stati
     //---------------------------------------------------------------------------------//
 
     public void updateProgressVisibility() {
-        StaticListPresenter<ISavableActivity> presenter = getPresenter();
+        StaticListPresenter<IStaticListActivity> presenter = getPresenter();
         if (presenter != null) {
             setWaitViewVisible(presenter.hasRunningTasks());
         }
+    }
+
+    //---------------------------------------------------------------------------------//
+
+    public static class Builder {
+
+        private boolean retainElements = false;
+
+        public Builder() {
+        }
+
+        public Builder(boolean retainElements) {
+            this.retainElements = retainElements;
+        }
+
+        public boolean isRetainElements() {
+            return retainElements;
+        }
+
+        public void setRetainElements(boolean retainElements) {
+            this.retainElements = retainElements;
+        }
+
+        public Intent build(Context context) {
+            Intent intent = new Intent(context, StaticListActivity.class);
+
+            intent.putExtra(ARG_RETAIN, retainElements);
+
+            return intent;
+        }
+
     }
 
 }

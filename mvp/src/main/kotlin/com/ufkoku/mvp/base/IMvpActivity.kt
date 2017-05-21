@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp_base.view
+package com.ufkoku.mvp.base
 
 import com.ufkoku.mvp_base.presenter.IPresenter
+import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-interface IMvpFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> {
-
-    fun getMvpView(): V
+interface IMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : IMvpView, IElementsHolder<V, P, VS> {
 
     /**
-     * Creating viewState
+     * Call setContentView hear and init all UI variables
      * */
-    fun createNewViewState(): VS
-
-    /**
-     * Creating presenter
-     * */
-    fun createPresenter(): P
+    fun createView()
 
     /**
      * This is methods is called when ui, view state and presenter are initialized, and viewState.apply() method called

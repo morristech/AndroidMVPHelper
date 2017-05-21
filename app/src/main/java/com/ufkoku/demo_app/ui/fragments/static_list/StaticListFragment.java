@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.fragments.savable;
+package com.ufkoku.demo_app.ui.fragments.static_list;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,42 +12,56 @@ import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
 import com.ufkoku.demo_app.ui.base.view.DataView;
 import com.ufkoku.demo_app.ui.fragments.base.IFragmentManager;
-import com.ufkoku.demo_app.ui.fragments.retainable.static_list.RetainableFragment;
-import com.ufkoku.mvp.savable.BaseSavableFragment;
+import com.ufkoku.mvp.BaseMvpFragment;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class SavableFragment extends BaseSavableFragment<ISavableFragment, StaticListPresenter<ISavableFragment>, SavableFragmentViewState> implements ISavableFragment {
+public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, StaticListPresenter<IStaticListFragment>, StaticListFragmentViewState> implements IStaticListFragment {
+
+    protected static final String ARG_RETAIN = "com.ufkoku.demo_app.ui.fragments.savable.StaticListFragment.retain";
 
     private DataView view;
 
-    private ISavableFragmentWrap wrap = new ISavableFragmentWrap(this);
+    private IStaticListFragmentWrap wrap = new IStaticListFragmentWrap(this);
 
     //----------------------------------------------------------------------------------------//
 
     @Override
+    @SuppressWarnings({"ConstantConditions"})
     public boolean retainPresenter() {
-        return true;
+        return getViewState().isRetain();
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public boolean retainViewState() {
+        return getViewState().isRetain();
     }
 
     @NotNull
     @Override
-    public ISavableFragment getMvpView() {
+    public IStaticListFragment getMvpView() {
         return wrap;
     }
 
-
     @NotNull
     @Override
-    public SavableFragmentViewState createNewViewState() {
-        return new SavableFragmentViewState();
+    public StaticListFragmentViewState createNewViewState() {
+        StaticListFragmentViewState viewState = new StaticListFragmentViewState();
+
+        Bundle args = getArguments();
+        if (args != null) {
+            viewState.setRetain(args.getBoolean(ARG_RETAIN));
+        }
+
+        return viewState;
     }
 
     @NotNull
     @Override
-    public StaticListPresenter<ISavableFragment> createPresenter() {
+    public StaticListPresenter<IStaticListFragment> createPresenter() {
         return new StaticListPresenter<>();
     }
 
@@ -60,7 +74,7 @@ public class SavableFragment extends BaseSavableFragment<ISavableFragment, Stati
             public void onRetainableClicked() {
                 Context context = getContext();
                 if (context instanceof IFragmentManager) {
-                    ((IFragmentManager) context).setFragment(new RetainableFragment());
+                    ((IFragmentManager) context).setFragment(new Builder(true).build());
                 }
             }
 
@@ -68,7 +82,7 @@ public class SavableFragment extends BaseSavableFragment<ISavableFragment, Stati
             public void onSavableClicked() {
                 Context context = getContext();
                 if (context instanceof IFragmentManager) {
-                    ((IFragmentManager) context).setFragment(new SavableFragment());
+                    ((IFragmentManager) context).setFragment(new Builder(false).build());
                 }
             }
         });
@@ -76,7 +90,7 @@ public class SavableFragment extends BaseSavableFragment<ISavableFragment, Stati
     }
 
     @Override
-    public void onInitialized(StaticListPresenter<ISavableFragment> presenter, SavableFragmentViewState viewState) {
+    public void onInitialized(StaticListPresenter<IStaticListFragment> presenter, StaticListFragmentViewState viewState) {
         if (!viewState.isApplied()) {
             if (!presenter.isTaskRunning(StaticListPresenter.TASK_FETCH_DATA)) {
                 presenter.fetchData();
@@ -96,7 +110,7 @@ public class SavableFragment extends BaseSavableFragment<ISavableFragment, Stati
 
     @Override
     public void onDataLoaded(List<AwesomeEntity> entities) {
-        SavableFragmentViewState state = getViewState();
+        StaticListFragmentViewState state = getViewState();
         if (state != null) {
             state.setEntities(entities);
         }
@@ -125,10 +139,43 @@ public class SavableFragment extends BaseSavableFragment<ISavableFragment, Stati
     //---------------------------------------------------------------------------------//
 
     public void updateProgressVisibility() {
-        StaticListPresenter<ISavableFragment> presenter = getPresenter();
+        StaticListPresenter<IStaticListFragment> presenter = getPresenter();
         if (presenter != null) {
             setWaitViewVisible(presenter.hasRunningTasks());
         }
+    }
+
+    //---------------------------------------------------------------------------------//
+
+    public static class Builder {
+
+        private boolean retainElements = false;
+
+        public Builder() {
+        }
+
+        public Builder(boolean retainElements) {
+            this.retainElements = retainElements;
+        }
+
+        public boolean isRetainElements() {
+            return retainElements;
+        }
+
+        public void setRetainElements(boolean retainElements) {
+            this.retainElements = retainElements;
+        }
+
+        public StaticListFragment build() {
+            StaticListFragment fragment = new StaticListFragment();
+
+            Bundle args = new Bundle();
+            args.putBoolean(ARG_RETAIN, retainElements);
+            fragment.setArguments(args);
+
+            return fragment;
+        }
+
     }
 
 }

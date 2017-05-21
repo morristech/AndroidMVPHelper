@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp.savable
+package com.ufkoku.mvp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import android.support.v4.app.DialogFragment
 import android.util.Log
 import android.view.View
-import com.ufkoku.mvp.savable.delegate.FragmentDelegate
-import com.ufkoku.mvp.savable.delegate.ISavableDelegateClient
+import com.ufkoku.mvp.delegate.FragmentDelegate
+import com.ufkoku.mvp.base.IElementsHolder
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpFragment
+import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp_base.view.IMvpView
-import com.ufkoku.mvp_base.viewstate.ISavableViewState
+import com.ufkoku.mvp_base.viewstate.IViewState
 
-abstract class BaseSavableFragment<V : IMvpView, P : IPresenter<V>, VS : ISavableViewState<V>> : Fragment(), IMvpFragment<V, P, VS>, ISavableDelegateClient {
+@SuppressLint("LongLogTag")
+abstract class BaseMvpDialogFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : DialogFragment(), IMvpFragment<V, P, VS> {
 
     companion object {
-        private val TAG = "BaseSavableFragment"
+        private val TAG = "BaseSavableDialogFragment"
     }
 
-    private val delegate: FragmentDelegate<BaseSavableFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)
+    private val delegate: FragmentDelegate<BaseMvpDialogFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)
 
     protected val presenter: P?
         get() {
@@ -70,11 +72,6 @@ abstract class BaseSavableFragment<V : IMvpView, P : IPresenter<V>, VS : ISavabl
     override fun onDestroy() {
         delegate.onDestroy()
         super.onDestroy()
-    }
-
-    override fun setRetainInstance(retain: Boolean) {
-        super.setRetainInstance(retain)
-        Log.e(TAG, "Don't use setRetainInstance(boolean) with savable elements, use retainable for correct work.")
     }
 
 }

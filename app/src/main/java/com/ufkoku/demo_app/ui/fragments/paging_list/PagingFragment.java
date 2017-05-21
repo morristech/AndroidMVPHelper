@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.fragments.retainable.paging_list;
+package com.ufkoku.demo_app.ui.fragments.paging_list;
 
 import android.app.Activity;
 import android.content.Context;
@@ -18,13 +18,13 @@ import com.ufkoku.demo_app.ui.base.paging.IPagingViewWrap;
 import com.ufkoku.demo_app.ui.base.paging.PagingDelegate;
 import com.ufkoku.demo_app.ui.base.paging.PagingPresenter;
 import com.ufkoku.demo_app.ui.base.paging.PagingViewState;
-import com.ufkoku.mvp.retainable.BaseRetainableFragment;
+import com.ufkoku.mvp.BaseMvpFragment;
 
 import org.jetbrains.annotations.NotNull;
 
 public class PagingFragment
 
-        extends BaseRetainableFragment<IPagingView, PagingPresenter, PagingViewState> {
+        extends BaseMvpFragment<IPagingView, PagingPresenter, PagingViewState> {
 
     private PagingDelegate delegate = createDelegate();
 
@@ -58,6 +58,12 @@ public class PagingFragment
         delegate.onAttach((Activity) context);
     }
 
+    @Override
+    public void onCreate(@org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        setRetainInstance(true);
+        super.onCreate(savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -78,20 +84,20 @@ public class PagingFragment
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         delegate.onDestroyView();
+        super.onDestroyView();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         delegate.onDestroy();
+        super.onDestroy();
     }
 
     @Override
     public void onDetach() {
-        super.onDetach();
         delegate.onDetach();
+        super.onDetach();
     }
 
 }

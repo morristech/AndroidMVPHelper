@@ -14,20 +14,26 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp.retainable
+package com.ufkoku.mvp
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.View
-import com.ufkoku.mvp.retainable.delegate.FragmentDelegate
+import com.ufkoku.mvp.delegate.FragmentDelegate
+import com.ufkoku.mvp.base.IElementsHolder
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpFragment
+import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-abstract class BaseRetainableFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : Fragment(), IMvpFragment<V, P, VS> {
+abstract class BaseMvpFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : Fragment(), IMvpFragment<V, P, VS> {
 
-    private val delegate: FragmentDelegate<BaseRetainableFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)
+    companion object {
+        private val TAG = "BaseSavableFragment"
+    }
+
+    private val delegate: FragmentDelegate<BaseMvpFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)
 
     protected val presenter: P?
         get() {
@@ -39,7 +45,7 @@ abstract class BaseRetainableFragment<V : IMvpView, P : IPresenter<V>, VS : IVie
             return delegate.viewState
         }
 
-    //-----------------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------------//
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +55,11 @@ abstract class BaseRetainableFragment<V : IMvpView, P : IPresenter<V>, VS : IVie
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         delegate.onViewCreated(view, savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        delegate.onSaveInstanceState(outState)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroyView() {

@@ -13,11 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.ufkoku.mvp_base.viewstate
+
+import android.os.Bundle
 
 import com.ufkoku.mvp_base.view.IMvpView
 
 interface IViewState<in T : IMvpView> {
+
+    /**
+     * Restore your data from bundle
+     * */
+    fun save(out: Bundle)
+
+    /**
+     * Save your data to bundle
+     * */
+    fun restore(inState: Bundle)
 
     /**
      * This method is called to apply saved state to view

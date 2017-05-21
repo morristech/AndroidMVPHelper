@@ -13,12 +13,15 @@ import java.util.*
 class HolderFragment : Fragment() {
 
     companion object {
+
         val TAG = "com.ufkoku.mvp.utils.HolderFragment"
+
+        private val KEY_NEXT_ID = "$TAG.keyNextId"
 
         private val holders: WeakHashMap<FragmentManager, HolderFragment> = WeakHashMap()
 
         fun getInstance(fragment: Fragment): HolderFragment {
-            return getInstance(fragment.fragmentManager)
+            return getInstance(fragment.activity)
         }
 
         fun getInstance(activity: FragmentActivity): HolderFragment {
@@ -56,8 +59,16 @@ class HolderFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            nextId = savedInstanceState.getInt(KEY_NEXT_ID)
+        }
         super.onCreate(savedInstanceState)
         retainInstance = true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putInt(KEY_NEXT_ID, nextId)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
@@ -66,7 +77,6 @@ class HolderFragment : Fragment() {
                 presenter.cancel()
             }
         }
-
         super.onDestroy()
     }
 
