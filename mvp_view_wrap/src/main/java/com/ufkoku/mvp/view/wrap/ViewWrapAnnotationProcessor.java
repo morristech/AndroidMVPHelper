@@ -49,34 +49,47 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.tools.Diagnostic;
 
-@SupportedAnnotationTypes({"com.ufkoku.mvp.view.wrap.Wrap"})
+@SupportedAnnotationTypes({ViewWrapAnnotationProcessor.CLASS_NAME_WRAP})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ViewWrapAnnotationProcessor extends AbstractProcessor {
 
     private static final String WRAP_SUFFIX = "Wrap";
 
     private static final String FIELD_NAME_WRAPPED = "wrappedView";
-
     private static final String FIELD_NAME_MAIN_HANDLER = "mainHandler";
 
     private static final String CLASS_NAME_HANDLER = "android.os.Handler";
     private static final String CLASS_NAME_LOOPER = "android.os.Looper";
 
+    static final String CLASS_NAME_WRAP = "com.ufkoku.mvp.view.wrap.Wrap";
+    private static final String CLASS_NAME_IGNORE = "com.ufkoku.mvp.view.wrap.Ignore";
+
     private TypeElement typElementHandler;
     private TypeElement typeElementLooper;
 
+    private Class<? extends Annotation> wrapClass;
+    private Class<? extends Annotation> ignoreClass;
+
     @Override
+    @SuppressWarnings("unchecked")
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
 
         typElementHandler = processingEnv.getElementUtils().getTypeElement(CLASS_NAME_HANDLER);
         typeElementLooper = processingEnv.getElementUtils().getTypeElement(CLASS_NAME_LOOPER);
+
+        try {
+            wrapClass = (Class<? extends Annotation>) Class.forName(CLASS_NAME_WRAP);
+            ignoreClass = (Class<? extends Annotation>) Class.forName(CLASS_NAME_IGNORE);
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         try {
-            Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith((Class<? extends Annotation>) Class.forName("com.ufkoku.mvp.view.wrap.Wrap"));
+            Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(wrapClass);
             if (elements.size() > 0) {
                 for (Element element : elements) {
                     if (element.getKind() == ElementKind.INTERFACE) {
@@ -89,7 +102,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
             }
 
             return true;
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
@@ -201,61 +214,67 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
             callString = callBuilder.toString();
         }
 
-        CodeBlock.Builder codeBuilder = CodeBlock.builder();
-        codeBuilder.beginControlFlow("if ($T.myLooper() == $T.getMainLooper())", typeElementLooper, typeElementLooper);
-        {
-            codeBuilder.addStatement((returnTypeIsVoid ? "" : "return ") + callString);
-        }
-        codeBuilder.nextControlFlow(" else ");
-        {
-            codeBuilder.addStatement("final $T lockObject = new $T()", Object.class, Object.class);
-            if (!returnTypeIsVoid) {
-                if (returnType instanceof PrimitiveType) {
-                    codeBuilder.addStatement("final $T[] returnValueArray = new $T[1]", returnType, returnType);
-                } else {
-                    codeBuilder.addStatement("final $T[] returnValueArray = new $T[1]", Object.class, Object.class);
-                }
-            }
-            codeBuilder.add("$L.post(new $T() {\n", FIELD_NAME_MAIN_HANDLER, Runnable.class).indent();
+        if (executableElement.getAnnotation(ignoreClass) == null) {
+            CodeBlock.Builder codeBuilder = CodeBlock.builder();
+            codeBuilder.beginControlFlow("if ($T.myLooper() == $T.getMainLooper())", typeElementLooper, typeElementLooper);
             {
-                codeBuilder.add("@$T\n", Override.class);
-                codeBuilder.add("public void run() {\n").indent();
-                {
-                    if (returnTypeIsVoid) {
-                        codeBuilder.addStatement(callString);
+                codeBuilder.addStatement((returnTypeIsVoid ? "" : "return ") + callString);
+            }
+            codeBuilder.nextControlFlow("else");
+            {
+                codeBuilder.addStatement("final $T lockObject = new $T()", Object.class, Object.class);
+                if (!returnTypeIsVoid) {
+                    if (returnType instanceof PrimitiveType) {
+                        codeBuilder.addStatement("final $T[] returnValueArray = new $T[1]", returnType, returnType);
                     } else {
-                        codeBuilder.addStatement("returnValueArray[0] = $L", callString);
+                        codeBuilder.addStatement("final $T[] returnValueArray = new $T[1]", Object.class, Object.class);
                     }
-                    codeBuilder.add("synchronized(lockObject) {\n").indent();
+                }
+                codeBuilder.add("synchronized(lockObject) {\n").indent();
+                {
+                    codeBuilder.add("$L.post(new $T() {\n", FIELD_NAME_MAIN_HANDLER, Runnable.class).indent();
                     {
-                        codeBuilder.addStatement("lockObject.notify()");
+                        codeBuilder.add("@$T\n", Override.class);
+                        codeBuilder.add("public void run() {\n").indent();
+                        {
+                            if (returnTypeIsVoid) {
+                                codeBuilder.addStatement(callString);
+                            } else {
+                                codeBuilder.addStatement("returnValueArray[0] = $L", callString);
+                            }
+                            codeBuilder.add("synchronized(lockObject) {\n").indent();
+                            {
+                                codeBuilder.addStatement("lockObject.notify()");
+                            }
+                            codeBuilder.unindent().add("}");
+                        }
+                        codeBuilder.unindent().add("}\n");
+                    }
+                    codeBuilder.unindent().addStatement("})");
+
+                    codeBuilder.add("try {\n").indent();
+                    {
+                        codeBuilder.addStatement("lockObject.wait()");
+                    }
+                    codeBuilder.unindent().add("} catch ($T ex) {\n", InterruptedException.class).indent();
+                    {
+                        codeBuilder.addStatement("ex.printStackTrace()");
+                        codeBuilder.addStatement("throw new $T(ex)", RuntimeException.class);
                     }
                     codeBuilder.unindent().add("}");
                 }
-                codeBuilder.unindent().add("}\n");
-            }
-            codeBuilder.unindent().addStatement("})");
-            codeBuilder.add("synchronized(lockObject) {\n").indent();
-            {
-                codeBuilder.add("try {\n").indent();
-                {
-                    codeBuilder.addStatement("lockObject.wait()");
+                codeBuilder.unindent().add("\n}\n");
+                if (!returnTypeIsVoid) {
+                    codeBuilder.addStatement("return ($T) returnValueArray[0]", returnType);
                 }
-                codeBuilder.unindent().add("} catch ($T ex) {\n", InterruptedException.class).indent();
-                {
-                    codeBuilder.addStatement("ex.printStackTrace()");
-                    codeBuilder.addStatement("throw new $T(ex)", RuntimeException.class);
-                }
-                codeBuilder.unindent().add("}");
+                codeBuilder.endControlFlow();
             }
-            codeBuilder.unindent().add("}\n");
-            if (!returnTypeIsVoid) {
-                codeBuilder.addStatement("return ($T) returnValueArray[0]", returnType);
-            }
-            codeBuilder.endControlFlow();
+            return codeBuilder.build();
+        } else {
+            CodeBlock.Builder codeBuilder = CodeBlock.builder();
+            codeBuilder.addStatement((returnTypeIsVoid ? "" : "return ") + callString);
+            return codeBuilder.build();
         }
-
-        return codeBuilder.build();
     }
 
     //--------------------------------Util methods----------------------------------------------//
