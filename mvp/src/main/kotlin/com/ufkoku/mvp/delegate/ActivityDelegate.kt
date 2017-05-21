@@ -17,13 +17,11 @@
 package com.ufkoku.mvp.delegate
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import com.ufkoku.mvp.base.IElementsHolder
+import com.ufkoku.mvp.base.IMvpActivity
 import com.ufkoku.mvp.utils.HolderFragment
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp.base.IMvpActivity
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 

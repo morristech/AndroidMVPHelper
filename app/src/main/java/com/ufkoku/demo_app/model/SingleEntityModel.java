@@ -4,36 +4,23 @@ import com.ufkoku.demo_app.entity.AwesomeEntity;
 
 import java.util.Random;
 
-import rx.Observable;
-import rx.Observer;
-import rx.observables.SyncOnSubscribe;
+import io.reactivex.Observable;
 
 public class SingleEntityModel {
 
     public static Observable<AwesomeEntity> createEntityObservable() {
-        return Observable.create(new SyncOnSubscribe<Random, AwesomeEntity>() {
+        return Observable.create(emitter -> {
+            Random random = new Random();
 
-            @Override
-            protected Random generateState() {
-                return new Random();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                emitter.onError(e);
             }
 
-            @Override
-            protected Random next(Random state, Observer<? super AwesomeEntity> observer) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                observer.onNext(new AwesomeEntity(state.nextInt()));
-                observer.onCompleted();
-
-                return state;
-            }
-
+            emitter.onNext(new AwesomeEntity(random.nextInt()));
+            emitter.onComplete();
         });
-
     }
 
 }

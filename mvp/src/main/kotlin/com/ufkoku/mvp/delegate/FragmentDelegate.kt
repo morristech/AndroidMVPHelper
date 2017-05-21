@@ -19,11 +19,10 @@ package com.ufkoku.mvp.delegate
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
-import com.ufkoku.mvp.base.IElementsHolder
+import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp.utils.HolderFragment
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 

@@ -43,7 +43,8 @@ dependencies {
     compile "com.android.support:recyclerview-v7:" + supportVersion
 
     compile project(":mvp")
-    compile project(":mvp_rx_presenter")
+//    compile project(":mvp_rx_presenter")
+    compile project(":mvp_rx2_presenter")
     compile project(":mvp_list")
 
     compile project(":mvp_autosavable_annotation")
