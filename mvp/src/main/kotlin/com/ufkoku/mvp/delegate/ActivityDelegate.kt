@@ -111,13 +111,21 @@ where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
     fun onDestroy() {
         presenter!!.onDetachView()
 
-        if (activity.isFinishing) {
-            val holder = HolderFragment.getInstance(activity)
-            if (activity.retainPresenter()) {
-                holder.removePresenter(presenterId!!)
+        if (activity.isFinishing && (activity.retainPresenter() || activity.retainViewState())) {
+            //isDestroyed method was added in 17 API so it is impossible to use it
+            var holder: HolderFragment?
+            try {
+                holder = HolderFragment.getInstance(activity)
+            } catch (ex: Exception) {
+                holder = null
             }
-            if (activity.retainViewState()) {
-                holder.removeViewState(viewStateId!!)
+            if (holder != null) {
+                if (activity.retainPresenter()) {
+                    holder.removePresenter(presenterId!!)
+                }
+                if (activity.retainViewState()) {
+                    holder.removeViewState(viewStateId!!)
+                }
             }
         }
 
