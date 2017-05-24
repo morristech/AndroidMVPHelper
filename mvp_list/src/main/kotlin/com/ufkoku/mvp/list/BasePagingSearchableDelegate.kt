@@ -234,7 +234,8 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
                 recyclerView!!.post { if (recyclerView != null) recyclerView!!.adapter = finalAdapter as RecyclerView.Adapter<*> }
             } else {
                 val finalAdapter = adapter
-                recyclerView!!.post { if (recyclerView != null) finalAdapter.items = items }
+                recyclerView!!.post { finalAdapter.items = items }
+                recyclerView!!.post { finalAdapter.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_NONE }
             }
         }
 
@@ -246,6 +247,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     /**
      * Called from presenter when next page loaded
      * */
+    @Suppress("UNCHECKED_CAST")
     override fun onNextPageLoaded(response: PR) {
         if (viewState != null) {
             viewState!!.canLoadMore = response.canLoadMore
@@ -254,12 +256,10 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             viewState!!.items?.addAll(response.data)
         }
 
-        if (recyclerView != null) {
-            recyclerView!!.post {
-                if (recyclerView != null && recyclerView!!.adapter != null) {
-                    val adapter = recyclerView!!.adapter as BasePagingAdapter<I, *>
-                    adapter.addItems(response.data)
-                }
+        recyclerView?.post {
+            if (recyclerView != null && recyclerView!!.adapter != null) {
+                val adapter = recyclerView!!.adapter as BasePagingAdapter<I, *>
+                adapter.addItems(response.data)
             }
         }
 
@@ -297,6 +297,12 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
         if (scrollUpdater != null) {
             scrollUpdater!!.enabled = false
             scrollUpdater!!.loading = false
+        }
+
+        recyclerView?.post {
+            if (recyclerView != null && recyclerView!!.adapter != null) {
+                (recyclerView!!.adapter as BasePagingAdapter<*, *>).additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_LOAD_MANUALLY
+            }
         }
     }
 
