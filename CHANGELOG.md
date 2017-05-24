@@ -1,3 +1,8 @@
+### 2.0.3
+#### Changes
+* Fixed delegates in mvp module
+* Fixed delegate in mvp_list
+
 ### 2.0.0
 #### Changes
 * Totally refactored mvp and mvp_base modules;
