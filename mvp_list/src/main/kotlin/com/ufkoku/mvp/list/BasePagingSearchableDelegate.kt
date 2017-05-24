@@ -240,7 +240,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
 
         scrollUpdater?.enabled = canLoadMore
 
-        showEmptyView(items.size > 0, isSearch)
+        showEmptyView(items.size == 0, isSearch)
     }
 
     /**
