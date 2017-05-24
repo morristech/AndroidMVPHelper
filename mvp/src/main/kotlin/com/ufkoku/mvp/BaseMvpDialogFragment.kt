@@ -21,7 +21,7 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.view.View
 import com.ufkoku.mvp.base.IMvpFragment
-import com.ufkoku.mvp.delegate.FragmentDelegate
+import com.ufkoku.mvp.delegate.controller.FragmentDelegate
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
@@ -30,7 +30,7 @@ import com.ufkoku.mvp_base.viewstate.IViewState
 abstract class BaseMvpDialogFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : DialogFragment(), IMvpFragment<V, P, VS> {
 
     companion object {
-        private val TAG = "BaseSavableDialogFragment"
+        private val TAG = "BaseMvpDialogFragment"
     }
 
     private val delegate: FragmentDelegate<BaseMvpDialogFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)

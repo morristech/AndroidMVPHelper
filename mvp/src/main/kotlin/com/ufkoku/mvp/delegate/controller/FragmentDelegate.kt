@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
+ * Copyright 2017 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp.delegate
+package com.ufkoku.mvp.delegate.controller
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import com.ufkoku.mvp.base.IMvpActivity
+import android.support.v4.app.Fragment
+import android.view.View
+import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp.utils.HolderFragment
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-open class ActivityDelegate<out A, V : IMvpView, P : IPresenter<V>, VS : IViewState<V>>(val activity: A)
-where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
+open class FragmentDelegate<out F, V : IMvpView, P : IPresenter<V>, VS : IViewState<V>>(val fragment: F)
+where F : Fragment, F : IMvpFragment<V, P, VS> {
 
     companion object {
-        private val KEY_PRESENTER = "com.ufkoku.mvp.delegate.ActivityDelegate.keyPresenter"
-        private val KEY_VIEW_STATE = "com.ufkoku.mvp.delegate.ActivityDelegate.keyViewState"
+        private val KEY_PRESENTER = "com.ufkoku.mvp.delegate.controller.FragmentDelegate.keyPresenter"
+        private val KEY_VIEW_STATE = "com.ufkoku.mvp.delegate.controller.FragmentDelegate.keyViewState"
     }
 
     /**
@@ -49,22 +50,24 @@ where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
     var viewState: VS? = null
         protected set
 
+    protected var instanceSaved = false
+
     //-----------------------------------------------------------------------------------------//
 
     @Suppress("UNCHECKED_CAST")
     fun onCreate(savedInstanceState: Bundle?) {
-        val holder = HolderFragment.getInstance(activity)
+        val holder = HolderFragment.getInstance(fragment)
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_VIEW_STATE)) {
             viewStateId = savedInstanceState.getInt(KEY_VIEW_STATE)
             viewState = holder.getViewState(viewStateId!!) as VS?
         }
         if (viewState == null) {
-            viewState = activity.createNewViewState()
+            viewState = fragment.createNewViewState()
             if (savedInstanceState != null) {
                 viewState!!.restore(savedInstanceState)
             }
-            if (activity.retainViewState()) {
+            if (!fragment.retainInstance && fragment.retainViewState()) {
                 if (viewStateId == null) {
                     viewStateId = holder.addViewState(viewState!!)
                 } else {
@@ -78,8 +81,8 @@ where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
             presenter = holder.getPresenter(presenterId!!) as P?
         }
         if (presenter == null) {
-            presenter = activity.createPresenter()
-            if (activity.retainPresenter()) {
+            presenter = fragment.createPresenter()
+            if (!fragment.retainInstance && fragment.retainPresenter()) {
                 if (presenterId == null) {
                     presenterId = holder.addPresenter(presenter!!)
                 } else {
@@ -87,41 +90,46 @@ where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
                 }
             }
         }
+    }
 
-        activity.createView()
+    fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        viewState!!.apply(fragment.getMvpView())
+        presenter!!.onAttachView(fragment.getMvpView())
 
-        viewState!!.apply(activity.getMvpView())
-        presenter!!.onAttachView(activity.getMvpView())
-
-        activity.onInitialized(presenter!!, viewState!!)
+        fragment.onInitialized(presenter!!, viewState!!)
     }
 
     fun onSaveInstanceState(outState: Bundle?) {
         if (outState != null) {
             viewState!!.save(outState)
-            if (activity.retainPresenter()) {
-                outState.putInt(KEY_PRESENTER, presenterId!!)
+            if (!fragment.retainInstance) {
+                if (fragment.retainPresenter()) {
+                    outState.putInt(KEY_PRESENTER, presenterId!!)
+                }
+                if (fragment.retainViewState()) {
+                    outState.putInt(KEY_VIEW_STATE, viewStateId!!)
+                }
             }
-            if (activity.retainViewState()) {
-                outState.putInt(KEY_VIEW_STATE, viewStateId!!)
-            }
+            instanceSaved = true
         }
     }
 
-    fun onDestroy() {
-        presenter!!.onDetachView()
+    fun onDestroyView() {
+        presenter?.onDetachView()
+    }
 
-        if (activity.isFinishing) {
-            val holder = HolderFragment.getInstance(activity)
-            if (activity.retainPresenter()) {
+    fun onDestroy() {
+        if (!fragment.retainInstance && !instanceSaved) {
+            val holder = HolderFragment.getInstance(fragment)
+            if (fragment.retainPresenter()) {
                 holder.removePresenter(presenterId!!)
             }
-            if (activity.retainViewState()) {
+            if (fragment.retainViewState()) {
                 holder.removeViewState(viewStateId!!)
             }
         }
 
-        if (activity.isFinishing || !activity.retainPresenter()) {
+        if (fragment.retainInstance || !fragment.retainPresenter() || !instanceSaved) {
             if (presenter is IAsyncPresenter<*>) {
                 (presenter as IAsyncPresenter<*>).cancel()
             }
