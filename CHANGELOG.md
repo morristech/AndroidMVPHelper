@@ -1,3 +1,7 @@
+### 2.0.4
+#### Changes
+* Optimization in mvp module. Holder fragment won't be added if it is not required.
+
 ### 2.0.3
 #### Changes
 * Fixed delegates in mvp module
