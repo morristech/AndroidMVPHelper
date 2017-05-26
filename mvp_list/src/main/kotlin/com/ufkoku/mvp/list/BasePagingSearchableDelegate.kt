@@ -211,6 +211,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * */
     override fun onFirstPageLoaded(response: PR) {
         if (viewState != null && presenter != null) {
+            presenter!!.cancelNextPages()
             viewState!!.items = response.data
             viewState!!.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
             viewState!!.nextPageFailed = false
