@@ -53,11 +53,16 @@ where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
 
     @Suppress("UNCHECKED_CAST")
     fun onCreate(savedInstanceState: Bundle?) {
-        val holder = HolderFragment.getInstance(activity)
+        val holder: HolderFragment?
+        if (activity.retainPresenter() || activity.retainViewState()) {
+            holder = HolderFragment.getInstance(activity)
+        } else {
+            holder = null
+        }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_VIEW_STATE)) {
             viewStateId = savedInstanceState.getInt(KEY_VIEW_STATE)
-            viewState = holder.getViewState(viewStateId!!) as VS?
+            viewState = holder!!.getViewState(viewStateId!!) as VS?
         }
         if (viewState == null) {
             viewState = activity.createNewViewState()
@@ -66,24 +71,24 @@ where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
             }
             if (activity.retainViewState()) {
                 if (viewStateId == null) {
-                    viewStateId = holder.addViewState(viewState!!)
+                    viewStateId = holder!!.addViewState(viewState!!)
                 } else {
-                    holder.setViewState(viewStateId!!, viewState!!)
+                    holder!!.setViewState(viewStateId!!, viewState!!)
                 }
             }
         }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PRESENTER)) {
             presenterId = savedInstanceState.getInt(KEY_PRESENTER)
-            presenter = holder.getPresenter(presenterId!!) as P?
+            presenter = holder!!.getPresenter(presenterId!!) as P?
         }
         if (presenter == null) {
             presenter = activity.createPresenter()
             if (activity.retainPresenter()) {
                 if (presenterId == null) {
-                    presenterId = holder.addPresenter(presenter!!)
+                    presenterId = holder!!.addPresenter(presenter!!)
                 } else {
-                    holder.setPresenter(presenterId!!, presenter!!)
+                    holder!!.setPresenter(presenterId!!, presenter!!)
                 }
             }
         }
@@ -111,13 +116,15 @@ where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
     fun onDestroy() {
         presenter!!.onDetachView()
 
-        if (activity.isFinishing) {
-            val holder = HolderFragment.getInstance(activity)
-            if (activity.retainPresenter()) {
-                holder.removePresenter(presenterId!!)
-            }
-            if (activity.retainViewState()) {
-                holder.removeViewState(viewStateId!!)
+        if (activity.isFinishing && (activity.retainPresenter() || activity.retainViewState())) {
+            val holder: HolderFragment? = HolderFragment.getInstanceIfExist(activity)
+            if (holder != null) {
+                if (activity.retainPresenter()) {
+                    holder.removePresenter(presenterId!!)
+                }
+                if (activity.retainViewState()) {
+                    holder.removeViewState(viewStateId!!)
+                }
             }
         }
 

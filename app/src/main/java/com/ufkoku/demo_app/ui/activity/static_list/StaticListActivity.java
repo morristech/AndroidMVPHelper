@@ -2,6 +2,7 @@ package com.ufkoku.demo_app.ui.activity.static_list;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
@@ -26,13 +27,17 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
     @Override
     @SuppressWarnings("ConstantConditions")
     public boolean retainPresenter() {
-        return getViewState().isRetain();
+        //don't do it in real life, return constant value
+        Intent intent = getIntent();
+        return intent != null && intent.getBooleanExtra(ARG_RETAIN, false);
     }
 
     @Override
     @SuppressWarnings("ConstantConditions")
     public boolean retainViewState() {
-        return getViewState().isRetain();
+        //don't do it in real life, return constant value
+        Intent intent = getIntent();
+        return intent != null && intent.getBooleanExtra(ARG_RETAIN, false);
     }
 
     @Override
@@ -61,14 +66,7 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
     @NotNull
     @Override
     public StaticListActivityViewState createNewViewState() {
-        StaticListActivityViewState viewState = new StaticListActivityViewState();
-
-        Intent intent = getIntent();
-        if (intent != null) {
-            viewState.setRetain(intent.getBooleanExtra(ARG_RETAIN, false));
-        }
-
-        return viewState;
+        return new StaticListActivityViewState();
     }
 
     @NotNull
@@ -78,7 +76,7 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
     }
 
     @Override
-    public void onInitialized(StaticListPresenter<IStaticListActivity> presenter, StaticListActivityViewState viewState) {
+    public void onInitialized(@NonNull StaticListPresenter<IStaticListActivity> presenter, @NonNull StaticListActivityViewState viewState) {
         if (!viewState.isApplied()) {
             if (!presenter.isTaskRunning(StaticListPresenter.TASK_FETCH_DATA)) {
                 presenter.fetchData();

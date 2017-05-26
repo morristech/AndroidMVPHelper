@@ -211,6 +211,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * */
     override fun onFirstPageLoaded(response: PR) {
         if (viewState != null && presenter != null) {
+            presenter!!.cancelNextPages()
             viewState!!.items = response.data
             viewState!!.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
             viewState!!.nextPageFailed = false
@@ -234,18 +235,20 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
                 recyclerView!!.post { if (recyclerView != null) recyclerView!!.adapter = finalAdapter as RecyclerView.Adapter<*> }
             } else {
                 val finalAdapter = adapter
-                recyclerView!!.post { if (recyclerView != null) finalAdapter.items = items }
+                recyclerView!!.post { finalAdapter.items = items }
+                recyclerView!!.post { finalAdapter.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_NONE }
             }
         }
 
         scrollUpdater?.enabled = canLoadMore
 
-        showEmptyView(items.size > 0, isSearch)
+        showEmptyView(items.size == 0, isSearch)
     }
 
     /**
      * Called from presenter when next page loaded
      * */
+    @Suppress("UNCHECKED_CAST")
     override fun onNextPageLoaded(response: PR) {
         if (viewState != null) {
             viewState!!.canLoadMore = response.canLoadMore
@@ -254,12 +257,10 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             viewState!!.items?.addAll(response.data)
         }
 
-        if (recyclerView != null) {
-            recyclerView!!.post {
-                if (recyclerView != null && recyclerView!!.adapter != null) {
-                    val adapter = recyclerView!!.adapter as BasePagingAdapter<I, *>
-                    adapter.addItems(response.data)
-                }
+        recyclerView?.post {
+            if (recyclerView != null && recyclerView!!.adapter != null) {
+                val adapter = recyclerView!!.adapter as BasePagingAdapter<I, *>
+                adapter.addItems(response.data)
             }
         }
 
@@ -297,6 +298,12 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
         if (scrollUpdater != null) {
             scrollUpdater!!.enabled = false
             scrollUpdater!!.loading = false
+        }
+
+        recyclerView?.post {
+            if (recyclerView != null && recyclerView!!.adapter != null) {
+                (recyclerView!!.adapter as BasePagingAdapter<*, *>).additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_LOAD_MANUALLY
+            }
         }
     }
 

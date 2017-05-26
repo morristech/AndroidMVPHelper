@@ -1,6 +1,6 @@
 # AndroidMVPHelper
 
-![alt tag](https://img.shields.io/badge/version-2.0.0-brightgreen.svg)
+![alt tag](https://img.shields.io/badge/version-2.0.4-brightgreen.svg)
 
 Library manages lifecycle of Activities and Fragments, their Presenters and ViewStates.
 
@@ -33,9 +33,9 @@ dependencies{
 ```
 
 Contains implementations of:
-* [BaseMvpActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/mvp/BaseMvpActivity.kt)
-* [BaseMvpDialogFragment](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/mvp/BaseMvpDialogFragment.kt)
-* [BaseMvpActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/mvp/BaseMvpActivity.kt)
+* [BaseMvpActivity](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/BaseMvpActivity.kt)
+* [BaseMvpDialogFragment](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/BaseMvpDialogFragment.kt)
+* [BaseMvpActivity](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp/src/main/kotlin/com/ufkoku/mvp/BaseMvpFragment.kt)
 
 Examples of usage:
 * [StaticListActivity](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/app/src/main/java/com/ufkoku/demo_app/ui/activity/static_list/)
@@ -71,7 +71,7 @@ dependencies{
 }
 ```
 
-Contains [BaseAsyncRxSchedulerPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_rx_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/rx2/BaseAsyncRxSchedulerPresenter.kt)
+Contains [BaseAsyncRxSchedulerPresenter](https://github.com/Ufkoku/AndroidMVPHelper/blob/master/mvp_rx2_presenter/src/main/kotlin/com/ufkoku/mvp/presenter/rx2/BaseAsyncRxSchedulerPresenter.kt)
 
 ### [mvp_autosavable](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_autosavable) and [mvp_autosavable_annotation](https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_autosavable)
 

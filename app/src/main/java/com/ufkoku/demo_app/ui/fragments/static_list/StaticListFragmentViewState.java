@@ -16,20 +16,10 @@ public class StaticListFragmentViewState implements IViewState<IStaticListFragme
     @Ignore
     private boolean applied = false;
 
-    private boolean retain = false;
-
     private List<AwesomeEntity> entities;
 
     public boolean isApplied() {
         return applied;
-    }
-
-    public boolean isRetain() {
-        return retain;
-    }
-
-    public void setRetain(boolean retain) {
-        this.retain = retain;
     }
 
     public List<AwesomeEntity> getEntities() {
