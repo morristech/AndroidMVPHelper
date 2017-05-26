@@ -25,20 +25,30 @@ class HolderFragment : Fragment() {
         }
 
         fun getInstance(activity: FragmentActivity): HolderFragment {
-            return getInstance(activity.supportFragmentManager)
+            return getInstance(activity.supportFragmentManager, true)!!
         }
 
-        private fun getInstance(fragmentManager: FragmentManager): HolderFragment {
+        fun getInstanceIfExist(fragment: Fragment): HolderFragment? {
+            return getInstanceIfExist(fragment.activity)
+        }
+
+        fun getInstanceIfExist(activity: FragmentActivity): HolderFragment? {
+            return getInstance(activity.supportFragmentManager, false)
+        }
+
+        private fun getInstance(fragmentManager: FragmentManager, create: Boolean): HolderFragment? {
             var fragment = holders[fragmentManager]
             if (fragment == null) {
                 fragment = fragmentManager.findFragmentByTag(TAG) as HolderFragment?
-                if (fragment == null) {
+                if (fragment == null && create) {
                     fragment = HolderFragment()
                     fragmentManager.beginTransaction()
                             .add(fragment, TAG)
                             .commitAllowingStateLoss()
                 }
-                holders[fragmentManager] = fragment
+                if (fragment != null) {
+                    holders[fragmentManager] = fragment
+                }
             }
             return fragment
         }

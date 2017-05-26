@@ -16,20 +16,10 @@ public class StaticListActivityViewState implements IViewState<IStaticListActivi
     @Ignore
     private boolean applied = false;
 
-    private boolean retain;
-
     private List<AwesomeEntity> data;
 
     public boolean isApplied() {
         return applied;
-    }
-
-    public boolean isRetain() {
-        return retain;
-    }
-
-    public void setRetain(boolean retain) {
-        this.retain = retain;
     }
 
     public List<AwesomeEntity> getData() {

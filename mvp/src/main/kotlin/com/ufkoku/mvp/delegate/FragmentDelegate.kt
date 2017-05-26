@@ -56,11 +56,16 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
 
     @Suppress("UNCHECKED_CAST")
     fun onCreate(savedInstanceState: Bundle?) {
-        val holder = HolderFragment.getInstance(fragment)
+        val holder: HolderFragment?
+        if (!fragment.retainInstance && (fragment.retainPresenter() || fragment.retainViewState())) {
+            holder = HolderFragment.getInstance(fragment)
+        } else {
+            holder = null
+        }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_VIEW_STATE)) {
             viewStateId = savedInstanceState.getInt(KEY_VIEW_STATE)
-            viewState = holder.getViewState(viewStateId!!) as VS?
+            viewState = holder!!.getViewState(viewStateId!!) as VS?
         }
         if (viewState == null) {
             viewState = fragment.createNewViewState()
@@ -69,24 +74,24 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
             }
             if (!fragment.retainInstance && fragment.retainViewState()) {
                 if (viewStateId == null) {
-                    viewStateId = holder.addViewState(viewState!!)
+                    viewStateId = holder!!.addViewState(viewState!!)
                 } else {
-                    holder.setViewState(viewStateId!!, viewState!!)
+                    holder!!.setViewState(viewStateId!!, viewState!!)
                 }
             }
         }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PRESENTER)) {
             presenterId = savedInstanceState.getInt(KEY_PRESENTER)
-            presenter = holder.getPresenter(presenterId!!) as P?
+            presenter = holder!!.getPresenter(presenterId!!) as P?
         }
         if (presenter == null) {
             presenter = fragment.createPresenter()
             if (!fragment.retainInstance && fragment.retainPresenter()) {
                 if (presenterId == null) {
-                    presenterId = holder.addPresenter(presenter!!)
+                    presenterId = holder!!.addPresenter(presenter!!)
                 } else {
-                    holder.setPresenter(presenterId!!, presenter!!)
+                    holder!!.setPresenter(presenterId!!, presenter!!)
                 }
             }
         }
@@ -121,12 +126,7 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
     fun onDestroy() {
         if (!fragment.retainInstance && !instanceSaved && (fragment.retainPresenter() || fragment.retainViewState())) {
             //isDestroyed method was added in 17 API so it is impossible to use it
-            var holder: HolderFragment?
-            try {
-                holder = HolderFragment.getInstance(fragment)
-            } catch (ex: Exception) {
-                holder = null
-            }
+            val holder: HolderFragment? = HolderFragment.getInstanceIfExist(fragment)
             if (holder != null) {
                 if (fragment.retainPresenter()) {
                     holder.removePresenter(presenterId!!)

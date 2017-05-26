@@ -31,13 +31,17 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
     @Override
     @SuppressWarnings({"ConstantConditions"})
     public boolean retainPresenter() {
-        return getViewState().isRetain();
+        //don't do it in real life, return constant
+        Bundle args = getArguments();
+        return args != null && args.getBoolean(ARG_RETAIN);
     }
 
     @Override
     @SuppressWarnings("ConstantConditions")
     public boolean retainViewState() {
-        return getViewState().isRetain();
+        //don't do it in real life, return constant
+        Bundle args = getArguments();
+        return args != null && args.getBoolean(ARG_RETAIN);
     }
 
     @NotNull
@@ -49,14 +53,7 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
     @NotNull
     @Override
     public StaticListFragmentViewState createNewViewState() {
-        StaticListFragmentViewState viewState = new StaticListFragmentViewState();
-
-        Bundle args = getArguments();
-        if (args != null) {
-            viewState.setRetain(args.getBoolean(ARG_RETAIN));
-        }
-
-        return viewState;
+        return new StaticListFragmentViewState();
     }
 
     @NotNull
