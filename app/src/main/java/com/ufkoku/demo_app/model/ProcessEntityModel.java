@@ -11,7 +11,10 @@ public class ProcessEntityModel {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
-                emitter.onError(e);
+                if (!emitter.isDisposed()) {
+                    emitter.onError(e);
+                }
+                return;
             }
             emitter.onNext(entity);
             emitter.onComplete();

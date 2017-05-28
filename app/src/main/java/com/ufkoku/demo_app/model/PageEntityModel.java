@@ -22,7 +22,10 @@ public class PageEntityModel {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                emitter.onError(e);
+                if (!emitter.isDisposed()) {
+                    emitter.onError(e);
+                }
+                return;
             }
 
             emitter.onNext(new PagingResponse<>(data, offset + LIMIT <= LIMIT * 2));
