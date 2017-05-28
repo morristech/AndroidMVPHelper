@@ -1,3 +1,7 @@
+### 2.1.4
+#### Changes 
+* Added lifecycle observables for fragments and activities.
+
 ### 2.0.4
 #### Changes
 * Optimization in mvp module. Holder fragment won't be added if it is not required.
