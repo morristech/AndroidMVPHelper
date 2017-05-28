@@ -125,7 +125,7 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
 
     fun onDestroy() {
         if (!fragment.retainInstance && !instanceSaved && (fragment.retainPresenter() || fragment.retainViewState())) {
-            //isDestroyed method was added in 17 API so it is impossible to use it
+            //isDestroyed event was added in 17 API so it is impossible to use it
             val holder: HolderFragment? = HolderFragment.getInstanceIfExist(fragment)
             if (holder != null) {
                 if (fragment.retainPresenter()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
+ * Copyright 2017 Ufkoku (https://github.com/Ufkoku/AndroidMVPHelper)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp_base.lifecycle
+package com.ufkoku.mvp_base.view.lifecycle
 
 interface ILifecycleObservable {
 
     fun subscribe(observer: Any)
 
-    fun unSubscribe(observer: Any)
+    fun unsubscribe(observer: Any)
 
 }

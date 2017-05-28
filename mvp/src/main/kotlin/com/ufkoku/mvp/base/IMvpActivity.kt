@@ -18,9 +18,10 @@ package com.ufkoku.mvp.base
 
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpView
+import com.ufkoku.mvp_base.view.lifecycle.ILifecycleObservable
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-interface IMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : IMvpView, IElementsHolder<V, P, VS> {
+interface IMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : IElementsHolder<V, P, VS>, ILifecycleObservable, IMvpView {
 
     /**
      * Call setContentView hear and init all UI variables
@@ -28,7 +29,7 @@ interface IMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : IM
     fun createView()
 
     /**
-     * This is methods is called when ui, view state and presenter are initialized, and viewState.apply() method called
+     * This method is called when ui, view state and presenter are initialized, and viewState.apply() event called
      * */
     fun onInitialized(presenter: P, viewState: VS)
 

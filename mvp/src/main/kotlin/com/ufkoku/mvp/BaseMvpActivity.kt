@@ -20,6 +20,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.ufkoku.mvp.base.IMvpActivity
 import com.ufkoku.mvp.delegate.controller.ActivityDelegate
+import com.ufkoku.mvp.delegate.observable.ActivityLifecycleObservable
+import com.ufkoku.mvp_base.view.lifecycle.ILifecycleObservable
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
@@ -27,6 +29,8 @@ import com.ufkoku.mvp_base.viewstate.IViewState
 abstract class BaseMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
 
     private val delegate: ActivityDelegate<BaseMvpActivity<V, P, VS>, V, P, VS> = ActivityDelegate(this)
+
+    private val lifecycleDelegate: ActivityLifecycleObservable = ActivityLifecycleObservable()
 
     protected val presenter: P?
         get() {
@@ -43,16 +47,49 @@ abstract class BaseMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         delegate.onCreate(savedInstanceState)
+        lifecycleDelegate.onCreate(this, savedInstanceState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        lifecycleDelegate.onStart(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleDelegate.onResume(this)
+    }
+
+    override fun onPause() {
+        lifecycleDelegate.onPause(this)
+        super.onPause()
+    }
+
+    override fun onStop() {
+        lifecycleDelegate.onStop(this)
+        super.onStop()
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         delegate.onSaveInstanceState(outState)
+        lifecycleDelegate.onSaveInstance(this, outState)
         super.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
+        lifecycleDelegate.onDestroy(this)
         delegate.onDestroy()
         super.onDestroy()
+    }
+
+    //-----------------------------------------------------------------------------------------//
+
+    override fun subscribe(observer: Any) {
+        lifecycleDelegate.subscribe(observer)
+    }
+
+    override fun unsubscribe(observer: Any) {
+        lifecycleDelegate.unsubscribe(observer)
     }
 
 }

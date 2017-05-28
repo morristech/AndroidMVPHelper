@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
+import com.ufkoku.demo_app.ui.base.listeners.FragmentLifecycleObserver;
 import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
 import com.ufkoku.demo_app.ui.base.view.DataView;
 import com.ufkoku.demo_app.ui.fragments.base.IFragmentManager;
@@ -25,6 +26,12 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
     private DataView view;
 
     private IStaticListFragmentWrap wrap = new IStaticListFragmentWrap(this);
+
+    private FragmentLifecycleObserver observer = new FragmentLifecycleObserver();
+
+    {
+        subscribe(observer);
+    }
 
     //----------------------------------------------------------------------------------------//
 

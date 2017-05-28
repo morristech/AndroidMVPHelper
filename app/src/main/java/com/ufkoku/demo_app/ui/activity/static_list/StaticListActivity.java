@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
+import com.ufkoku.demo_app.ui.base.listeners.ActivityLifecycleObserver;
 import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
 import com.ufkoku.demo_app.ui.base.view.DataView;
 import com.ufkoku.mvp.BaseMvpActivity;
@@ -21,6 +22,12 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
     private DataView view;
 
     private IStaticListActivityWrap wrap = new IStaticListActivityWrap(this);
+
+    private ActivityLifecycleObserver observer = new ActivityLifecycleObserver();
+
+    {
+        subscribe(observer);
+    }
 
     //------------------------------------------------------------------------------------//
 
