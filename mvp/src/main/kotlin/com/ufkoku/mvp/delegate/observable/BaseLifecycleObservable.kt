@@ -27,6 +27,7 @@ abstract class BaseLifecycleObservable : ILifecycleObservable {
 
     protected companion object {
         val TAG = "ActivityObservable"
+        protected val cache: WeakHashMap<Class<out Annotation>, WeakHashMap<Any, Collection<Method>>> = WeakHashMap()
     }
 
     protected val registeredSet: MutableSet<Any?> = Collections.newSetFromMap(WeakHashMap())
@@ -34,8 +35,26 @@ abstract class BaseLifecycleObservable : ILifecycleObservable {
     //-----------------------------------------------------------------------------------------//
 
     protected fun getAcceptableMethods(clazz: Class<*>, annotation: Class<out Annotation>): Collection<Method> {
-        val methods = clazz.getAllDeclaredAcceptableMethods(annotation).filterUnique()
-        methods.forEach { it.isAccessible = true }
+        val methods: Collection<Method>
+
+        val cacheForAnnotation: WeakHashMap<Any, Collection<Method>>
+        if (cache.containsKey(annotation)) {
+            cacheForAnnotation = cache[annotation]!!
+        } else {
+            cacheForAnnotation = WeakHashMap()
+            cache[annotation] = cacheForAnnotation
+        }
+
+        if (cacheForAnnotation.contains(clazz)) {
+            methods = cacheForAnnotation[clazz]!!
+        } else {
+            methods = clazz.getAllDeclaredAcceptableMethods(annotation).filterUnique()
+            methods.forEach { it.isAccessible = true }
+            cacheForAnnotation[clazz] = methods
+        }
+
+        Log.d(TAG, "Obtained ${methods.size} methods from $clazz")
+
         return methods
     }
 
