@@ -1,3 +1,7 @@
+### 2.1.5
+#### Changes
+* [mvp_wrap] Fix method duplicating.
+
 ### 2.1.4
 #### Changes 
 * Added lifecycle observables for fragments and activities.
