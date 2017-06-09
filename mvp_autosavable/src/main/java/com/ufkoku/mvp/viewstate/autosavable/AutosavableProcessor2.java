@@ -308,12 +308,12 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         final String fFieldName = "f" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
         if (methodsPair.getterElement == null && !isPublic) {
-            saveSpecBuilder.addStatement("$T $L = state.getClass().getDeclaredField($S)", Field.class, fFieldName, fieldName);
+            saveSpecBuilder.addStatement("$T $L = $T.class.getDeclaredField($S)", Field.class, fFieldName, fieldData.variableElement.getEnclosingElement(), fieldName);
             saveSpecBuilder.addStatement("$L.setAccessible(true)", fFieldName);
         }
 
         if (methodsPair.setterElement == null && !isPublic) {
-            restoreSpecBuilder.addStatement("$T $L = state.getClass().getDeclaredField($S)", Field.class, fFieldName, fieldName);
+            restoreSpecBuilder.addStatement("$T $L = $T.class.getDeclaredField($S)", Field.class, fFieldName, fieldData.variableElement.getEnclosingElement(), fieldName);
             restoreSpecBuilder.addStatement("$L.setAccessible(true)", fFieldName);
         }
 
