@@ -1,3 +1,7 @@
+### 2.1.6
+#### Changes
+* [mvp_autosavable] Fixed processing of private fields of super classes
+
 ### 2.1.5
 #### Changes
 * [mvp_wrap] Fix method duplicating.
