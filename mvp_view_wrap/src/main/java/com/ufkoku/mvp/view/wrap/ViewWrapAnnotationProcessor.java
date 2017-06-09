@@ -27,6 +27,7 @@ import com.squareup.javapoet.TypeVariableName;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -129,7 +130,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
                 .addStatement("this.$L = $L", FIELD_NAME_WRAPPED, FIELD_NAME_WRAPPED)
                 .build();
 
-        List<MethodSpec> methodSpecs = createMethodWrapsForDeclaredType(wrappedElement, wrappedDeclaredType);
+        Set<MethodSpec> methodSpecs = createMethodWrapsForDeclaredType(wrappedElement, wrappedDeclaredType);
 
         List<TypeVariableName> typeVariableNames = convertTypeParametersToTypeVariableNames(wrappedElement.getTypeParameters());
 
@@ -147,8 +148,8 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
         file.writeTo(processingEnv.getFiler());
     }
 
-    private List<MethodSpec> createMethodWrapsForDeclaredType(TypeElement typeElement, DeclaredType declaredType) {
-        List<MethodSpec> methodSpecs = new ArrayList<>();
+    private Set<MethodSpec> createMethodWrapsForDeclaredType(TypeElement typeElement, DeclaredType declaredType) {
+        Set<MethodSpec> methodSpecs = new HashSet<>();
 
         for (Element element : typeElement.getEnclosedElements()) {
             if (element.getKind() == ElementKind.METHOD) {
