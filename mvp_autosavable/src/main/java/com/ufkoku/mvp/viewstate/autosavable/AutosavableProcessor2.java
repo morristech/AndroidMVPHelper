@@ -308,12 +308,12 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         final String fFieldName = "f" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
         if (methodsPair.getterElement == null && !isPublic) {
-            saveSpecBuilder.addStatement("$T $L = $T.class.getDeclaredField($S)", Field.class, fFieldName, fieldData.variableElement.getEnclosingElement(), fieldName);
+            saveSpecBuilder.addStatement("$T $L = $L.class.getDeclaredField($S)", Field.class, fFieldName, getClassName(fieldData.typeData.typeElement), fieldName);
             saveSpecBuilder.addStatement("$L.setAccessible(true)", fFieldName);
         }
 
         if (methodsPair.setterElement == null && !isPublic) {
-            restoreSpecBuilder.addStatement("$T $L = $T.class.getDeclaredField($S)", Field.class, fFieldName, fieldData.variableElement.getEnclosingElement(), fieldName);
+            restoreSpecBuilder.addStatement("$T $L = $L.class.getDeclaredField($S)", Field.class, fFieldName, getClassName(fieldData.typeData.typeElement), fieldName);
             restoreSpecBuilder.addStatement("$L.setAccessible(true)", fFieldName);
         }
 
@@ -348,6 +348,16 @@ public class AutosavableProcessor2 extends AbstractProcessor {
 
     //--------------------------------Util methods----------------------------------------------//
 
+    private String getClassName(TypeElement typeElement) {
+        String name = typeElement.getQualifiedName().toString();
+        if (typeElement.getTypeParameters().size() > 0) {
+            return name;
+        } else {
+            int indexOf = name.indexOf("<");
+            return name.substring(0, indexOf);
+        }
+    }
+
     private List<? extends TypeMirror> getGenericTypeOfSuperclass(DeclaredType fieldType, TypeMirror superClass) {
         final String superClassString = processingEnv.getTypeUtils().asElement(superClass).toString();
 
@@ -378,6 +388,8 @@ public class AutosavableProcessor2 extends AbstractProcessor {
     private Map<FieldData, MethodsPair> getAllAcceptableFieldsData(TypeElement typeElement, DeclaredType declaredType) {
         Map<FieldData, MethodsPair> acceptableFields = new HashMap<>();
 
+        TypeData typeData = new TypeData(typeElement, declaredType);
+
         for (Element element : typeElement.getEnclosedElements()) {
             if (element.getKind() == ElementKind.FIELD) {
                 if (!element.getModifiers().contains(Modifier.STATIC)
@@ -386,11 +398,12 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                         && element.getAnnotation(ignoreSavableClass) == null) {
 
                     FieldData fieldData = new FieldData(
+                            typeData,
                             (VariableElement) element,
                             processingEnv.getTypeUtils().asMemberOf(declaredType, element)
                     );
 
-                    acceptableFields.put(fieldData, getAccessMethodsFor(fieldData, typeElement, declaredType));
+                    acceptableFields.put(fieldData, getAccessMethodsFor(fieldData));
                 }
             }
         }
@@ -411,14 +424,14 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         return acceptableFields;
     }
 
-    private MethodsPair getAccessMethodsFor(FieldData fieldData, TypeElement typeElement, DeclaredType declaredType) {
+    private MethodsPair getAccessMethodsFor(FieldData fieldData) {
         ExecutableElement getterElement = null;
         ExecutableType getterType = null;
 
         ExecutableElement setterElement = null;
         ExecutableType setterType = null;
 
-        for (Element methodElement : typeElement.getEnclosedElements()) {
+        for (Element methodElement : fieldData.typeData.typeElement.getEnclosedElements()) {
             if (methodElement.getKind() == ElementKind.METHOD && methodElement.getModifiers().contains(Modifier.PUBLIC)) {
 
                 ExecutableElement executableElement = (ExecutableElement) methodElement;
@@ -428,7 +441,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                     String fieldName = methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
 
                     if (fieldName.equals(fieldData.variableElement.getSimpleName().toString())) {
-                        ExecutableType executableType = (ExecutableType) processingEnv.getTypeUtils().asMemberOf(declaredType, executableElement);
+                        ExecutableType executableType = (ExecutableType) processingEnv.getTypeUtils().asMemberOf(fieldData.typeData.declaredType, executableElement);
 
                         if (methodName.startsWith("get") || methodName.startsWith("is")) {
                             if (getterElement == null) {
@@ -484,12 +497,46 @@ public class AutosavableProcessor2 extends AbstractProcessor {
 
     //--------------------------------Classes---------------------------------------------------//
 
+    public static class TypeData {
+
+        final TypeElement typeElement;
+        final DeclaredType declaredType;
+
+        public TypeData(TypeElement typeElement, DeclaredType declaredType) {
+            this.typeElement = typeElement;
+            this.declaredType = declaredType;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TypeData typeData = (TypeData) o;
+
+            if (!typeElement.equals(typeData.typeElement)) return false;
+            return declaredType.equals(typeData.declaredType);
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = typeElement.hashCode();
+            result = 31 * result + declaredType.hashCode();
+            return result;
+        }
+
+    }
+
     public static class FieldData {
+
+        final TypeData typeData;
 
         final VariableElement variableElement;
         final TypeMirror typeMirror;
 
-        public FieldData(VariableElement variableElement, TypeMirror typeMirror) {
+        public FieldData(TypeData typeData, VariableElement variableElement, TypeMirror typeMirror) {
+            this.typeData = typeData;
             this.variableElement = variableElement;
             this.typeMirror = typeMirror;
         }
@@ -501,6 +548,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
 
             FieldData fieldData = (FieldData) o;
 
+            if (!typeData.equals(fieldData.typeData)) return false;
             if (!variableElement.equals(fieldData.variableElement)) return false;
             return typeMirror.equals(fieldData.typeMirror);
 
@@ -508,10 +556,12 @@ public class AutosavableProcessor2 extends AbstractProcessor {
 
         @Override
         public int hashCode() {
-            int result = variableElement.hashCode();
+            int result = typeData.hashCode();
+            result = 31 * result + variableElement.hashCode();
             result = 31 * result + typeMirror.hashCode();
             return result;
         }
+
     }
 
     public static class MethodsPair {
