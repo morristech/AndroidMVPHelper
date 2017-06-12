@@ -84,7 +84,7 @@ abstract class BaseMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<
         delegate.onDestroy()
         super.onDestroy()
         if (nullViews()) {
-            this.nullAllFields(android.view.View::class.java)
+            this.nullAllFields(View::class.java, BaseMvpActivity::class.java)
         }
     }
 

@@ -106,7 +106,7 @@ abstract class BaseMvpDialogFragment<V : IMvpView, P : IPresenter<V>, VS : IView
         delegate.onDestroyView()
         super.onDestroyView()
         if (nullViews()) {
-            this.nullAllFields(android.view.View::class.java)
+            this.nullAllFields(View::class.java, BaseMvpDialogFragment::class.java)
         }
     }
 

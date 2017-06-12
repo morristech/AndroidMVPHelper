@@ -23,19 +23,33 @@ object NullerUtil {
 
     private val cache: WeakHashMap<Class<*>, WeakHashMap<Class<*>, MutableList<Field>>> = WeakHashMap()
 
-    fun Any.nullAllFields(typeOfFields: Class<*>) {
-        this.nullAllFields(this.javaClass.getAllAcceptableFields(typeOfFields))
+    /**
+     * Set null values to all fields, including inherited.
+     *
+     * @param typeOfFields - sets value only to fields, which are instance of this param value;
+     * @param cancelOnSuperClass - stops checking hierarchy, when reaches this class. This class is not checked.
+     *
+     * */
+    fun Any.nullAllFields(typeOfFields: Class<*>, cancelOnSuperClass: Class<*>? = null) {
+        this.nullAllFields(this.javaClass.getAllAcceptableFields(typeOfFields, cancelOnSuperClass))
     }
 
-    fun Any.nullAllFields(methods: Collection<Field>) {
-        methods.forEach { it.set(this, null) }
+    fun Any.nullAllFields(fields: Collection<Field>) {
+        fields.forEach { it.set(this, null) }
     }
 
-    fun Class<*>.getAllAcceptableFields(typeOfFields: Class<*>): Collection<Field> {
-        var cacheForClass = cache[this.javaClass]
+    /**
+     * Get all fields, including inherited.
+     *
+     * @param typeOfFields - returns fields, which are instance of this param value;
+     * @param cancelOnSuperClass - stops checking hierarchy, when reaches this class. This class is not checked.
+     *
+     * */
+    fun Class<*>.getAllAcceptableFields(typeOfFields: Class<*>, cancelOnSuperClass: Class<*>? = null): Collection<Field> {
+        var cacheForClass = cache[this]
         if (cacheForClass == null) {
             cacheForClass = WeakHashMap()
-            cache[this.javaClass] = cacheForClass
+            cache[this] = cacheForClass
         }
 
         var fields = cacheForClass[typeOfFields]
@@ -46,7 +60,7 @@ object NullerUtil {
             cacheForClass[typeOfFields] = fields
         }
 
-        if (this.superclass != null) {
+        if (this.superclass != cancelOnSuperClass) {
             fields.addAll(this.superclass.getAllAcceptableFields(typeOfFields))
         }
 
