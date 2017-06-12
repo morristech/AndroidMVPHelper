@@ -32,6 +32,11 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
     //------------------------------------------------------------------------------------//
 
     @Override
+    public boolean nullViews() {
+        return true;
+    }
+
+    @Override
     @SuppressWarnings("ConstantConditions")
     public boolean retainPresenter() {
         //don't do it in real life, return constant value
@@ -91,14 +96,6 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
         }
 
         updateProgressVisibility();
-    }
-
-    //------------------------------------------------------------------------------------//
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        view = null;
     }
 
     //------------------------------------------------------------------------------------//

@@ -18,9 +18,12 @@ package com.ufkoku.mvp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.ufkoku.mvp.base.IMvpActivity
 import com.ufkoku.mvp.delegate.controller.ActivityDelegate
 import com.ufkoku.mvp.delegate.observable.ActivityLifecycleObservable
+import com.ufkoku.mvp.utils.NullerUtil
+import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
 import com.ufkoku.mvp_base.view.lifecycle.ILifecycleObservable
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpView
@@ -80,6 +83,9 @@ abstract class BaseMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<
         lifecycleDelegate.onDestroy(this)
         delegate.onDestroy()
         super.onDestroy()
+        if (nullViews()) {
+            this.nullAllFields(android.view.View::class.java)
+        }
     }
 
     //-----------------------------------------------------------------------------------------//

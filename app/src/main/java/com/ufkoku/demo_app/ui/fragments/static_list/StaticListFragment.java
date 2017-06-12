@@ -36,6 +36,11 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
     //----------------------------------------------------------------------------------------//
 
     @Override
+    public boolean nullViews() {
+        return true;
+    }
+
+    @Override
     @SuppressWarnings({"ConstantConditions"})
     public boolean retainPresenter() {
         //don't do it in real life, return constant
@@ -102,12 +107,6 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
         }
 
         updateProgressVisibility();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        view = null;
     }
 
     //----------------------------------------------------------------------------------------//

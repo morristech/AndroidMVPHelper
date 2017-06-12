@@ -23,6 +23,8 @@ import android.view.View
 import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp.delegate.controller.FragmentDelegate
 import com.ufkoku.mvp.delegate.observable.FragmentLifecycleObservable
+import com.ufkoku.mvp.utils.NullerUtil
+import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
@@ -101,6 +103,9 @@ abstract class BaseMvpFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<
         lifecycleDelegate.onDestroyView(this)
         delegate.onDestroyView()
         super.onDestroyView()
+        if (nullViews()) {
+            this.nullAllFields(android.view.View::class.java)
+        }
     }
 
     override fun onDestroy() {
