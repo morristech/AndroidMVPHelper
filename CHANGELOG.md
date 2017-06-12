@@ -1,3 +1,7 @@
+### 2.1.7
+#### Changes
+* [mvp_autosavable] Fixed reflection access for classes with type args.
+
 ### 2.1.6
 #### Changes
 * [mvp_autosavable] Fixed processing of private fields of super classes
