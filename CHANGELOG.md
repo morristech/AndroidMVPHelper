@@ -1,3 +1,8 @@
+### 2.2.8
+#### Changes
+* [mvp_list] Added auto setting null values to view fields in activities and fragments (optional);
+* [mvp_autosavable] Fix for fix from 2.1.7.
+
 ### 2.1.7
 #### Changes
 * [mvp_autosavable] Fixed reflection access for classes with type args.
