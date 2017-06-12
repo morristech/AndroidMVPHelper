@@ -350,7 +350,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
 
     private String getClassName(TypeElement typeElement) {
         String name = typeElement.getQualifiedName().toString();
-        if (typeElement.getTypeParameters().size() > 0) {
+        if (typeElement.getTypeParameters().size() == 0) {
             return name;
         } else {
             int indexOf = name.indexOf("<");
