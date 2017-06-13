@@ -1,3 +1,7 @@
+### 2.2.9
+#### Changes
+* [mvp_autosavable] Fix for fix from 2.1.7.
+
 ### 2.2.8
 #### Changes
 * [mvp] Added auto setting null values to view fields in activities and fragments (optional);
