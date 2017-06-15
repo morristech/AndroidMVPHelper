@@ -21,7 +21,7 @@ import java.util.*
 
 object NullerUtil {
 
-    private val cache: WeakHashMap<Class<*>, WeakHashMap<Class<*>, MutableList<Field>>> = WeakHashMap()
+    private val cache: WeakHashMap<Class<*>, WeakHashMap<Class<*>, List<Field>>> = WeakHashMap()
 
     /**
      * Set null values to all fields, including inherited.
@@ -31,7 +31,9 @@ object NullerUtil {
      *
      * */
     fun Any.nullAllFields(typeOfFields: Class<*>, cancelOnSuperClass: Class<*>? = null) {
-        this.nullAllFields(this.javaClass.getAllAcceptableFields(typeOfFields, cancelOnSuperClass))
+        val fields = this.javaClass.getAllAcceptableFields(typeOfFields, cancelOnSuperClass)
+        fields.forEach { it.isAccessible = true }
+        this.nullAllFields(fields)
     }
 
     fun Any.nullAllFields(fields: Collection<Field>) {
@@ -45,7 +47,7 @@ object NullerUtil {
      * @param cancelOnSuperClass - stops checking hierarchy, when reaches this class. This class is not checked.
      *
      * */
-    fun Class<*>.getAllAcceptableFields(typeOfFields: Class<*>, cancelOnSuperClass: Class<*>? = null): Collection<Field> {
+    private fun Class<*>.getAllAcceptableFields(typeOfFields: Class<*>, cancelOnSuperClass: Class<*>? = null): Collection<Field> {
         var cacheForClass = cache[this]
         if (cacheForClass == null) {
             cacheForClass = WeakHashMap()
@@ -54,17 +56,17 @@ object NullerUtil {
 
         var fields = cacheForClass[typeOfFields]
         if (fields == null) {
+
             fields = this.declaredFields
                     .filter { !typeOfFields.isPrimitive && typeOfFields.isAssignableFrom(it.type) }
                     .toMutableList()
+
+            if (this != cancelOnSuperClass && this.superclass != cancelOnSuperClass) {
+                fields.addAll(this.superclass.getAllAcceptableFields(typeOfFields, cancelOnSuperClass))
+            }
+
             cacheForClass[typeOfFields] = fields
         }
-
-        if (this.superclass != cancelOnSuperClass) {
-            fields.addAll(this.superclass.getAllAcceptableFields(typeOfFields))
-        }
-
-        fields.forEach { it.isAccessible = true }
 
         return fields
     }
