@@ -43,7 +43,6 @@ dependencies {
     compile "com.android.support:recyclerview-v7:" + supportVersion
 
     compile project(":mvp")
-//    compile project(":mvp_rx_presenter")
     compile project(":mvp_rx2_presenter")
     compile project(":mvp_list")
 
@@ -56,7 +55,7 @@ dependencies {
 //    def mvp_ver = version_name
 //
 //    compile "com.ufkoku.mvp:mvp:$mvp_ver"
-//    compile "com.ufkoku.mvp:mvp_rx_presenter:$mvp_ver"
+//    compile "com.ufkoku.mvp:mvp_rx2_presenter:$mvp_ver"
 //    compile "com.ufkoku.mvp:mvp_list:$mvp_ver"
 //
 //    compile("com.ufkoku.mvp:mvp_autosavable_annotation:$mvp_ver")

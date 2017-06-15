@@ -1,3 +1,8 @@
+### 2.2.11
+#### Changes
+* [mvp] Optimization for NullerUtil;
+* [mvp_autosavable] Added param 'includeSuper' (default is true) to AutoSavable annotation default value is true.
+
 ### 2.2.9
 #### Changes
 * [mvp_autosavable] Fix for fix from 2.1.7.
