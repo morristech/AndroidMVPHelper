@@ -45,7 +45,7 @@ object NullerUtil {
      * @param cancelOnSuperClass - stops checking hierarchy, when reaches this class. This class is not checked.
      *
      * */
-    fun Class<*>.getAllAcceptableFields(typeOfFields: Class<*>, cancelOnSuperClass: Class<*>? = null): Collection<Field> {
+    private fun Class<*>.getAllAcceptableFields(typeOfFields: Class<*>, cancelOnSuperClass: Class<*>? = null): Collection<Field> {
         var cacheForClass = cache[this]
         if (cacheForClass == null) {
             cacheForClass = WeakHashMap()
