@@ -296,12 +296,12 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         final String fFieldName = "f" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 
         if (methodsPair.getterElement == null && !isPublic) {
-            saveSpecBuilder.addStatement("$T $L = $L.class.getDeclaredField($S)", Field.class, fFieldName, getClassName(fieldData.typeData.typeElement), fieldName);
+            saveSpecBuilder.addStatement("$T $L = $L.class.getDeclaredField($S)", Field.class, fFieldName, fieldData.typeData.typeElement.getQualifiedName().toString(), fieldName);
             saveSpecBuilder.addStatement("$L.setAccessible(true)", fFieldName);
         }
 
         if (methodsPair.setterElement == null && !isPublic) {
-            restoreSpecBuilder.addStatement("$T $L = $L.class.getDeclaredField($S)", Field.class, fFieldName, getClassName(fieldData.typeData.typeElement), fieldName);
+            restoreSpecBuilder.addStatement("$T $L = $L.class.getDeclaredField($S)", Field.class, fFieldName, fieldData.typeData.typeElement.getQualifiedName().toString(), fieldName);
             restoreSpecBuilder.addStatement("$L.setAccessible(true)", fFieldName);
         }
 
@@ -335,16 +335,6 @@ public class AutosavableProcessor2 extends AbstractProcessor {
     }
 
     //--------------------------------Util methods----------------------------------------------//
-
-    private String getClassName(TypeElement typeElement) {
-        String name = typeElement.getQualifiedName().toString();
-        if (typeElement.getTypeParameters().size() == 0) {
-            return name;
-        } else {
-            int indexOf = name.indexOf("<");
-            return name.substring(0, indexOf);
-        }
-    }
 
     private List<? extends TypeMirror> getGenericTypeOfSuperclass(DeclaredType fieldType, TypeMirror superClass) {
         final String superClassString = processingEnv.getTypeUtils().asElement(superClass).toString();
