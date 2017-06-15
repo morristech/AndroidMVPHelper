@@ -56,7 +56,7 @@ import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-@SupportedAnnotationTypes({AutosavableProcessor2.CLASS_NAME_AUTOSAVABLE})
+@SupportedAnnotationTypes({"com.ufkoku.mvp.viewstate.autosavable.AutoSavable"})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class AutosavableProcessor2 extends AbstractProcessor {
 
@@ -65,14 +65,8 @@ public class AutosavableProcessor2 extends AbstractProcessor {
     private static final String CLASS_NAME_BUNDLE = "android.os.Bundle";
     private static final String CLASS_NAME_PARCELABLE = "android.os.Parcelable";
 
-    static final String CLASS_NAME_AUTOSAVABLE = "com.ufkoku.mvp.viewstate.autosavable.AutoSavable";
-    private static final String CLASS_NAME_IGNORE = "com.ufkoku.mvp.viewstate.autosavable.Ignore";
-
     private TypeElement bundleTypeElement;
     private TypeElement parcelableTypeElement;
-
-    private Class<? extends Annotation> autoSavableClass;
-    private Class<? extends Annotation> ignoreSavableClass;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -81,23 +75,17 @@ public class AutosavableProcessor2 extends AbstractProcessor {
 
         bundleTypeElement = processingEnv.getElementUtils().getTypeElement(CLASS_NAME_BUNDLE);
         parcelableTypeElement = processingEnvironment.getElementUtils().getTypeElement(CLASS_NAME_PARCELABLE);
-
-        try {
-            autoSavableClass = (Class<? extends Annotation>) Class.forName(CLASS_NAME_AUTOSAVABLE);
-            ignoreSavableClass = (Class<? extends Annotation>) Class.forName(CLASS_NAME_IGNORE);
-        } catch (ClassNotFoundException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         try {
-            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(autoSavableClass);
+            Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(AutoSavable.class);
             if (elements.size() > 0) {
                 for (Element element : elements) {
                     if (element.getKind() == ElementKind.CLASS) {
+                        AutoSavable annotation = element.getAnnotation(AutoSavable.class);
                         TypeElement typeElement = (TypeElement) element;
-                        createSaverClass(typeElement, createDeclaredType(typeElement));
+                        createSaverClass(typeElement, createDeclaredType(typeElement), annotation.includeSuper());
                     }
                 }
             }
@@ -107,7 +95,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         }
     }
 
-    private void createSaverClass(TypeElement typeElement, DeclaredType declaredType) throws IOException {
+    private void createSaverClass(TypeElement typeElement, DeclaredType declaredType, boolean includeSuper) throws IOException {
         String name = typeElement.getSimpleName() + SAVER_SUFFIX;
 
         final String OUT_STATE = "outState";
@@ -130,7 +118,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                 .addParameter(TypeName.get(bundleTypeElement.asType()), OUT_STATE)
                 .returns(void.class);
 
-        Map<FieldData, MethodsPair> fieldsData = getAllAcceptableFieldsData(typeElement, declaredType);
+        Map<FieldData, MethodsPair> fieldsData = getAllAcceptableFieldsData(typeElement, declaredType, includeSuper);
         if (fieldsData.size() > 0) {
 
             boolean allPublic = true;
@@ -385,7 +373,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
         }
     }
 
-    private Map<FieldData, MethodsPair> getAllAcceptableFieldsData(TypeElement typeElement, DeclaredType declaredType) {
+    private Map<FieldData, MethodsPair> getAllAcceptableFieldsData(TypeElement typeElement, DeclaredType declaredType, boolean includeSuper) {
         Map<FieldData, MethodsPair> acceptableFields = new HashMap<>();
 
         TypeData typeData = new TypeData(typeElement, declaredType);
@@ -395,7 +383,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                 if (!element.getModifiers().contains(Modifier.STATIC)
                         && !element.getModifiers().contains(Modifier.FINAL)
                         && !element.getModifiers().contains(Modifier.TRANSIENT)
-                        && element.getAnnotation(ignoreSavableClass) == null) {
+                        && element.getAnnotation(Ignore.class) == null) {
 
                     FieldData fieldData = new FieldData(
                             typeData,
@@ -408,16 +396,19 @@ public class AutosavableProcessor2 extends AbstractProcessor {
             }
         }
 
-        List<? extends TypeMirror> superTypes = processingEnv.getTypeUtils().directSupertypes(declaredType);
-        for (int i = 0; i < superTypes.size(); i++) {
-            TypeMirror mirror = superTypes.get(i);
-            Element element = processingEnv.getTypeUtils().asElement(mirror);
+        if (includeSuper) {
+            List<? extends TypeMirror> superTypes = processingEnv.getTypeUtils().directSupertypes(declaredType);
+            for (int i = 0; i < superTypes.size(); i++) {
+                TypeMirror mirror = superTypes.get(i);
+                Element element = processingEnv.getTypeUtils().asElement(mirror);
 
-            if (element.getKind() == ElementKind.CLASS) {
-                acceptableFields.putAll(getAllAcceptableFieldsData(
-                        (TypeElement) element,
-                        (DeclaredType) mirror
-                ));
+                if (element.getKind() == ElementKind.CLASS) {
+                    acceptableFields.putAll(getAllAcceptableFieldsData(
+                            (TypeElement) element,
+                            (DeclaredType) mirror,
+                            includeSuper
+                    ));
+                }
             }
         }
 
