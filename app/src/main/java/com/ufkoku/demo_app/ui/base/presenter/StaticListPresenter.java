@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class StaticListPresenter<V extends StaticListPresenter.PresenterListener & IMvpView> extends BaseAsyncRxSchedulerPresenter<V> {
 
@@ -17,7 +18,7 @@ public class StaticListPresenter<V extends StaticListPresenter.PresenterListener
 
     @NotNull
     @Override
-    protected ExecutorService createExecutor() {
+    protected ThreadPoolExecutor createExecutor() {
         return new ScheduledThreadPoolExecutor(1);
     }
 

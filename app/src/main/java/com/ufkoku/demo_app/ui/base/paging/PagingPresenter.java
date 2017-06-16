@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import io.reactivex.disposables.Disposable;
 
@@ -26,7 +27,7 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
     @NotNull
     @Override
-    protected ExecutorService createExecutor() {
+    protected ThreadPoolExecutor createExecutor() {
         return new ScheduledThreadPoolExecutor(1);
     }
 
@@ -42,6 +43,7 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
         SingleEntityModel.createEntityObservable()
                 .map(awesomeEntity -> awesomeEntity.getImportantDataField() + "")
+                .doOnNext(s -> {throw new RuntimeException();})
                 .subscribeOn(getScheduler())
                 .subscribe(
                         value -> waitForViewIfNeeded().onInitDataLoaded(value),
