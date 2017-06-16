@@ -61,7 +61,7 @@ object NullerUtil {
                     .filter { !typeOfFields.isPrimitive && typeOfFields.isAssignableFrom(it.type) }
                     .toMutableList()
 
-            if (this != cancelOnSuperClass && this.superclass != cancelOnSuperClass) {
+            if (this != cancelOnSuperClass && this.superclass != null && this.superclass != cancelOnSuperClass) {
                 fields.addAll(this.superclass.getAllAcceptableFields(typeOfFields, cancelOnSuperClass))
             }
 
