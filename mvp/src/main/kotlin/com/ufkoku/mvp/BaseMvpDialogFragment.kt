@@ -20,12 +20,15 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp.delegate.controller.FragmentDelegate
 import com.ufkoku.mvp.delegate.observable.FragmentLifecycleObservable
 import com.ufkoku.mvp.utils.NullerUtil
 import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
+import com.ufkoku.mvp.utils.view_injection.ViewInjector
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
@@ -62,6 +65,14 @@ abstract class BaseMvpDialogFragment<V : IMvpView, P : IPresenter<V>, VS : IView
         super.onCreate(savedInstanceState)
         delegate.onCreate(savedInstanceState)
         lifecycleDelegate.onCreate(this, savedInstanceState)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        if (ViewInjector.checkAnnotation(this)) {
+            return ViewInjector.injectViews(context, this, BaseMvpDialogFragment::class.java, container)
+        } else {
+            return super.onCreateView(inflater, container, savedInstanceState)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

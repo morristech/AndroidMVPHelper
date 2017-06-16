@@ -2,10 +2,7 @@ package com.ufkoku.demo_app.ui.fragments.static_list;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
@@ -14,15 +11,19 @@ import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
 import com.ufkoku.demo_app.ui.base.view.DataView;
 import com.ufkoku.demo_app.ui.fragments.base.IFragmentManager;
 import com.ufkoku.mvp.BaseMvpFragment;
+import com.ufkoku.mvp.utils.view_injection.annotation.InjectView;
+import com.ufkoku.mvp.utils.view_injection.annotation.Layout;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@Layout(R.layout.view_data)
 public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, StaticListPresenter<IStaticListFragment>, StaticListFragmentViewState> implements IStaticListFragment {
 
     protected static final String ARG_RETAIN = "com.ufkoku.demo_app.ui.fragments.savable.StaticListFragment.retain";
 
+    @InjectView(R.id.view_data)
     private DataView view;
 
     private IStaticListFragmentWrap wrap = new IStaticListFragmentWrap(this);
@@ -74,11 +75,9 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
         return new StaticListPresenter<>();
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = (DataView) inflater.inflate(R.layout.view_data, container, false);
-        view.setListener(new DataView.ViewListener() {
+    public void onViewCreated(@NotNull View view, @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        this.view.setListener(new DataView.ViewListener() {
             @Override
             public void onRetainableClicked() {
                 Context context = getContext();
@@ -95,7 +94,8 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
                 }
             }
         });
-        return view;
+
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override

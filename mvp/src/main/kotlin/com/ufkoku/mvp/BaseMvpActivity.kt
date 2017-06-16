@@ -24,6 +24,7 @@ import com.ufkoku.mvp.delegate.controller.ActivityDelegate
 import com.ufkoku.mvp.delegate.observable.ActivityLifecycleObservable
 import com.ufkoku.mvp.utils.NullerUtil
 import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
+import com.ufkoku.mvp.utils.view_injection.ViewInjector
 import com.ufkoku.mvp_base.view.lifecycle.ILifecycleObservable
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.view.IMvpView
@@ -51,6 +52,13 @@ abstract class BaseMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<
         super.onCreate(savedInstanceState)
         delegate.onCreate(savedInstanceState)
         lifecycleDelegate.onCreate(this, savedInstanceState)
+    }
+
+    override fun createView() {
+        if (ViewInjector.checkAnnotation(this)) {
+            val view = ViewInjector.injectViews(this, this, BaseMvpActivity::class.java, null)
+            setContentView(view)
+        }
     }
 
     override fun onStart() {
