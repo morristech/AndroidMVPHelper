@@ -12,9 +12,11 @@ import com.ufkoku.demo_app.ui.base.paging.PagingDelegate;
 import com.ufkoku.demo_app.ui.base.paging.PagingPresenter;
 import com.ufkoku.demo_app.ui.base.paging.PagingViewState;
 import com.ufkoku.mvp.BaseMvpActivity;
+import com.ufkoku.mvp.utils.view_injection.annotation.Layout;
 
 import org.jetbrains.annotations.NotNull;
 
+@Layout(R.layout.view_paging_list)
 public class PagingActivity extends BaseMvpActivity<IPagingView, PagingPresenter, PagingViewState> {
 
     private PagingDelegate delegate = new PagingDelegate();
@@ -33,8 +35,7 @@ public class PagingActivity extends BaseMvpActivity<IPagingView, PagingPresenter
 
     @Override
     public void createView() {
-        setContentView(R.layout.view_paging_list);
-
+        super.createView();
         delegate.setTvInitData((TextView) findViewById(R.id.initData));
         delegate.setSwipeRefreshLayout((SwipeRefreshLayout) findViewById(R.id.swipeToRefresh));
         delegate.setRecyclerView((RecyclerView) findViewById(R.id.recycler));

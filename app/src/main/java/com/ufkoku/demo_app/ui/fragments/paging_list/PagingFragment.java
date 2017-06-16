@@ -19,9 +19,11 @@ import com.ufkoku.demo_app.ui.base.paging.PagingDelegate;
 import com.ufkoku.demo_app.ui.base.paging.PagingPresenter;
 import com.ufkoku.demo_app.ui.base.paging.PagingViewState;
 import com.ufkoku.mvp.BaseMvpFragment;
+import com.ufkoku.mvp.utils.view_injection.annotation.Layout;
 
 import org.jetbrains.annotations.NotNull;
 
+@Layout(R.layout.view_paging_list)
 public class PagingFragment
 
         extends BaseMvpFragment<IPagingView, PagingPresenter, PagingViewState> {
@@ -64,17 +66,14 @@ public class PagingFragment
         super.onCreate(savedInstanceState);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.view_paging_list, container, false);
-
+    public void onViewCreated(@NotNull View view, @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
         delegate.setTvInitData((TextView) view.findViewById(R.id.initData));
         delegate.setSwipeRefreshLayout((SwipeRefreshLayout) view.findViewById(R.id.swipeToRefresh));
         delegate.setRecyclerView((RecyclerView) view.findViewById(R.id.recycler));
         delegate.setWaitView(view.findViewById(R.id.waitView));
 
-        return view;
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override

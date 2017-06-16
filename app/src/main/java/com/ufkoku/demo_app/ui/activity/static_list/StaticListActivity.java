@@ -10,15 +10,19 @@ import com.ufkoku.demo_app.ui.base.listeners.ActivityLifecycleObserver;
 import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
 import com.ufkoku.demo_app.ui.base.view.DataView;
 import com.ufkoku.mvp.BaseMvpActivity;
+import com.ufkoku.mvp.utils.view_injection.annotation.InjectView;
+import com.ufkoku.mvp.utils.view_injection.annotation.Layout;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+@Layout(value = R.layout.view_data)
 public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, StaticListPresenter<IStaticListActivity>, StaticListActivityViewState> implements IStaticListActivity {
 
     protected static final String ARG_RETAIN = "com.ufkoku.demo_app.ui.activity.static_list.StaticListActivity.ARG_RETAIN";
 
+    @InjectView(R.id.view_data)
     private DataView view;
 
     private IStaticListActivityWrap wrap = new IStaticListActivityWrap(this);
@@ -54,7 +58,7 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
 
     @Override
     public void createView() {
-        view = (DataView) getLayoutInflater().inflate(R.layout.view_data, null);
+        super.createView();
         view.setListener(new DataView.ViewListener() {
             @Override
             public void onRetainableClicked() {
@@ -66,7 +70,6 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
                 startActivity(new Builder(false).build(StaticListActivity.this));
             }
         });
-        setContentView(view);
     }
 
     @NotNull
