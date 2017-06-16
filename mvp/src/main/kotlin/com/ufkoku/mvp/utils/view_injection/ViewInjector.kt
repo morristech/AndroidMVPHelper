@@ -18,16 +18,22 @@ object ViewInjector {
     }
 
     fun injectViews(context: Context, target: Any, cancelOnSuperClass: Class<*>? = null, parent: ViewGroup?): View {
-        val layoutId = target.javaClass.getAnnotation(Layout::class.java).layout
+        val layoutId = target.javaClass.getAnnotation(Layout::class.java).value
         val layout = LayoutInflater.from(context).inflate(layoutId, parent, false)
 
-        injectViewsFrom(target, layout)
+        injectViewsFrom(target, layout, cancelOnSuperClass)
 
         return layout
     }
 
-    fun injectViewsFrom(target: Any, source: View) {
-
+    fun injectViewsFrom(target: Any, source: View, cancelOnSuperClass: Class<*>? = null) {
+        target.javaClass.getAllAcceptableFields(cancelOnSuperClass)
+                .forEach {
+                    it.isAccessible = true
+                    val annotation = it.getAnnotation(InjectView::class.java)
+                    val id = annotation.value
+                    it.set(target, source.findViewById(id))
+                }
     }
 
     /**
@@ -42,10 +48,10 @@ object ViewInjector {
         if (cacheForClass == null) {
 
             cacheForClass = this.declaredFields
-                    .filter { View::class.java.isAssignableFrom(it.javaClass) && it.isAnnotationPresent(InjectView::class.java) }
+                    .filter { View::class.java.isAssignableFrom(it.type) && it.isAnnotationPresent(InjectView::class.java) }
                     .toMutableList()
 
-            if (this != cancelOnSuperClass && this.superclass != cancelOnSuperClass) {
+            if (this != cancelOnSuperClass && this.superclass != null && this.superclass != cancelOnSuperClass) {
                 cacheForClass.addAll(this.superclass.getAllAcceptableFields(cancelOnSuperClass))
             }
 

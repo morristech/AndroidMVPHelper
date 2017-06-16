@@ -6,4 +6,4 @@ import java.lang.annotation.Inherited
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS)
 @Inherited
-annotation class Layout(@LayoutRes val layout: Int)
+annotation class Layout(@LayoutRes val value: Int)
