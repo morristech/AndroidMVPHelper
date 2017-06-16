@@ -43,7 +43,6 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
         SingleEntityModel.createEntityObservable()
                 .map(awesomeEntity -> awesomeEntity.getImportantDataField() + "")
-                .doOnNext(s -> {throw new RuntimeException();})
                 .subscribeOn(getScheduler())
                 .subscribe(
                         value -> waitForViewIfNeeded().onInitDataLoaded(value),
