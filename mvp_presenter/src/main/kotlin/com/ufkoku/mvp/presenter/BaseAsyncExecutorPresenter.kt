@@ -19,16 +19,18 @@ package com.ufkoku.mvp.presenter
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.view.IMvpView
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.ThreadPoolExecutor
 
 abstract class BaseAsyncExecutorPresenter<T : IMvpView> : BaseAsyncPresenter<T>(), IAsyncPresenter<T> {
 
-    protected var executor: ExecutorService? = null
-
-    protected abstract fun createExecutor(): ExecutorService
+    protected var executor: ThreadPoolExecutor? = null
 
     override fun onAttachView(view: T) {
         if (executor == null) {
             executor = createExecutor()
+            executor!!.threadFactory = createThreadFactory()
         }
 
         super.onAttachView(view)
@@ -41,6 +43,22 @@ abstract class BaseAsyncExecutorPresenter<T : IMvpView> : BaseAsyncPresenter<T>(
         }
 
         super.cancel()
+    }
+
+    protected abstract fun createExecutor(): ThreadPoolExecutor
+
+    protected open fun createThreadFactory(): ThreadFactory = SaveThreadFactory()
+
+    class SaveThreadFactory : ThreadFactory {
+
+        private val delegate = Executors.defaultThreadFactory();
+
+        override fun newThread(r: Runnable?): Thread {
+            val thread = delegate.newThread(r)
+            thread.uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { _, _ -> /*ignored*/ }
+            return thread
+        }
+
     }
 
 }
