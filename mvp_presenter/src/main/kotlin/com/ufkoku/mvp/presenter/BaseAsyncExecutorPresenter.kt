@@ -30,7 +30,11 @@ abstract class BaseAsyncExecutorPresenter<T : IMvpView> : BaseAsyncPresenter<T>(
     override fun onAttachView(view: T) {
         if (executor == null) {
             executor = createExecutor()
-            executor!!.threadFactory = createThreadFactory()
+            if (useSaveThreadFactory()) {
+                if (executor!!.threadFactory !is SaveThreadFactory) {
+                    executor!!.threadFactory = SaveThreadFactory()
+                }
+            }
         }
 
         super.onAttachView(view)
@@ -47,9 +51,9 @@ abstract class BaseAsyncExecutorPresenter<T : IMvpView> : BaseAsyncPresenter<T>(
 
     protected abstract fun createExecutor(): ThreadPoolExecutor
 
-    protected open fun createThreadFactory(): ThreadFactory = SaveThreadFactory()
+    protected fun useSaveThreadFactory(): Boolean = true
 
-    class SaveThreadFactory : ThreadFactory {
+    protected class SaveThreadFactory : ThreadFactory {
 
         private val delegate = Executors.defaultThreadFactory();
 
