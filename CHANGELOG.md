@@ -1,3 +1,10 @@
+### 2.4.13
+#### Changes
+* [mvp] Added view injections for mvp components;
+* [mvp] Optimization for NullerUtil;
+* [mvp_presenter] Added SaveThreadFactory with UncaughtExceptionHandler, which is used with provided executor;
+* [mvp_presenter] Type of executor was changed from ExecutorService to ThreadPoolExecutor;
+
 ### 2.2.11
 #### Changes
 * [mvp] Optimization for NullerUtil;
