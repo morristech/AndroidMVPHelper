@@ -3,37 +3,10 @@ package com.ufkoku.demo_app.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 
 
-public class AwesomeEntity implements Parcelable {
-
-    private int importantDataField;
-
-    public AwesomeEntity(int importantDataField) {
-        this.importantDataField = importantDataField;
-    }
-
-    public int getImportantDataField() {
-        return importantDataField;
-    }
-
-    public void setImportantDataField(int importantDataField) {
-        this.importantDataField = importantDataField;
-    }
-
-    protected AwesomeEntity(Parcel in) {
-        importantDataField = in.readInt();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(importantDataField);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+public class AwesomeEntity implements Serializable, Parcelable {
 
     public static final Creator<AwesomeEntity> CREATOR = new Creator<AwesomeEntity>() {
         @Override
@@ -46,5 +19,33 @@ public class AwesomeEntity implements Parcelable {
             return new AwesomeEntity[size];
         }
     };
+
+    private int importantDataField;
+
+    public AwesomeEntity(int importantDataField) {
+        this.importantDataField = importantDataField;
+    }
+
+    protected AwesomeEntity(Parcel in) {
+        importantDataField = in.readInt();
+    }
+
+    public int getImportantDataField() {
+        return importantDataField;
+    }
+
+    public void setImportantDataField(int importantDataField) {
+        this.importantDataField = importantDataField;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(importantDataField);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
 }

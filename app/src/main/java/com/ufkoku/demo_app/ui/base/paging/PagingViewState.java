@@ -17,7 +17,7 @@ public class PagingViewState extends BasePagingSearchableViewState<AwesomeEntity
 
     private String initData = null;
 
-    private ArrayList<AwesomeEntity> items;
+    private List<AwesomeEntity> items;
 
     public String getInitData() {
         return initData;
@@ -29,13 +29,13 @@ public class PagingViewState extends BasePagingSearchableViewState<AwesomeEntity
 
     @Nullable
     @Override
-    public ArrayList<AwesomeEntity> getItems() {
+    public List<AwesomeEntity> getItems() {
         return items;
     }
 
     @Override
     public void setItems(@Nullable List<AwesomeEntity> list) {
-        items = (ArrayList<AwesomeEntity>) list;
+        items = list;
     }
 
     @Override
