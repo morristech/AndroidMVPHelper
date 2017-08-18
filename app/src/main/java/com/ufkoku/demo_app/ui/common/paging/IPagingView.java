@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.base.paging;
+package com.ufkoku.demo_app.ui.common.paging;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.demo_app.entity.PagingResponse;

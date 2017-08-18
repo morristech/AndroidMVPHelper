@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.base.paging;
+package com.ufkoku.demo_app.ui.common.paging;
 
 import android.os.Bundle;
 
@@ -9,7 +9,6 @@ import com.ufkoku.mvp.viewstate.autosavable.AutoSavable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @AutoSavable

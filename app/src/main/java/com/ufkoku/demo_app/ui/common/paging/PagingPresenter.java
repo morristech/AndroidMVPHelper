@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.base.paging;
+package com.ufkoku.demo_app.ui.common.paging;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.demo_app.model.PageEntityModel;
@@ -9,7 +9,6 @@ import com.ufkoku.mvp.presenter.rx2.BaseAsyncRxSchedulerPresenter;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 

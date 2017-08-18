@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.base.listeners;
+package com.ufkoku.demo_app.ui.lifecycle_listeners;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

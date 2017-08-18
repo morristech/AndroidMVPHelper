@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.base.view;
+package com.ufkoku.demo_app.ui.view;
 
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.demo_app.ui.base.view.adapter.DataAdapter;
+import com.ufkoku.demo_app.ui.view.adapter.DataAdapter;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.base.view;
+package com.ufkoku.demo_app.ui.view;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 

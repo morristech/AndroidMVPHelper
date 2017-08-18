@@ -1,4 +1,4 @@
-package com.ufkoku.demo_app.ui.base.paging;
+package com.ufkoku.demo_app.ui.common.paging;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

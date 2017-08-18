@@ -6,9 +6,10 @@ import android.view.View;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.demo_app.ui.base.listeners.FragmentLifecycleObserver;
-import com.ufkoku.demo_app.ui.base.presenter.StaticListPresenter;
-import com.ufkoku.demo_app.ui.base.view.DataView;
+import com.ufkoku.demo_app.ui.common.view_state.StaticListViewState;
+import com.ufkoku.demo_app.ui.lifecycle_listeners.FragmentLifecycleObserver;
+import com.ufkoku.demo_app.ui.common.presenter.StaticListPresenter;
+import com.ufkoku.demo_app.ui.view.DataView;
 import com.ufkoku.demo_app.ui.fragments.base.IFragmentManager;
 import com.ufkoku.mvp.BaseMvpFragment;
 import com.ufkoku.mvp.utils.view_injection.annotation.InjectView;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 @Layout(R.layout.view_data)
-public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, StaticListPresenter<IStaticListFragment>, StaticListFragmentViewState> implements IStaticListFragment {
+public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, StaticListPresenter<IStaticListFragment>, StaticListViewState> implements IStaticListFragment {
 
     protected static final String ARG_RETAIN = "com.ufkoku.demo_app.ui.fragments.savable.StaticListFragment.retain";
 
@@ -65,8 +66,8 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
 
     @NotNull
     @Override
-    public StaticListFragmentViewState createNewViewState() {
-        return new StaticListFragmentViewState();
+    public StaticListViewState createNewViewState() {
+        return new StaticListViewState();
     }
 
     @NotNull
@@ -99,7 +100,7 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
     }
 
     @Override
-    public void onInitialized(StaticListPresenter<IStaticListFragment> presenter, StaticListFragmentViewState viewState) {
+    public void onInitialized(StaticListPresenter<IStaticListFragment> presenter, StaticListViewState viewState) {
         if (!viewState.isApplied()) {
             if (!presenter.isTaskRunning(StaticListPresenter.TASK_FETCH_DATA)) {
                 presenter.fetchData();
@@ -113,7 +114,7 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
 
     @Override
     public void onDataLoaded(List<AwesomeEntity> entities) {
-        StaticListFragmentViewState state = getViewState();
+        StaticListViewState state = getViewState();
         if (state != null) {
             state.setEntities(entities);
         }
