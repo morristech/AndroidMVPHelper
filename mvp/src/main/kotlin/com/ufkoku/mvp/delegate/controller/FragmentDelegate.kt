@@ -50,8 +50,6 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
     var viewState: VS? = null
         protected set
 
-    protected var instanceSaved = false
-
     //-----------------------------------------------------------------------------------------//
 
     @Suppress("UNCHECKED_CAST")
@@ -115,7 +113,6 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
                     outState.putInt(KEY_VIEW_STATE, viewStateId!!)
                 }
             }
-            instanceSaved = true
         }
     }
 
@@ -124,8 +121,7 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
     }
 
     fun onDestroy() {
-        if (!fragment.retainInstance && !instanceSaved && (fragment.retainPresenter() || fragment.retainViewState())) {
-            //isDestroyed event was added in 17 API so it is impossible to use it
+        if (fragment.isRemoving) {
             val holder: HolderFragment? = HolderFragment.getInstanceIfExist(fragment)
             if (holder != null) {
                 if (fragment.retainPresenter()) {
@@ -137,7 +133,7 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
             }
         }
 
-        if (fragment.retainInstance || !fragment.retainPresenter() || !instanceSaved) {
+        if (!(fragment.retainInstance || fragment.retainPresenter()) || fragment.isRemoving) {
             if (presenter is IAsyncPresenter<*>) {
                 (presenter as IAsyncPresenter<*>).cancel()
             }
