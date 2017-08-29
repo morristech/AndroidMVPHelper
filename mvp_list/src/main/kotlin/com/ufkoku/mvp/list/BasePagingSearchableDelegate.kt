@@ -32,19 +32,19 @@ import com.ufkoku.mvp.list.util.StringUtils
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 
 abstract class BasePagingSearchableDelegate<I, in PR : IPagingResponse<I>, in V, P : IPagingSearchablePresenter, VS : BasePagingSearchableViewState<I, V>>
-    :
-        IPagingSearchableView<I, PR>,
-        RecyclerViewOnScrollUpdater.Listener,
-        BasePagingAdapter.AdapterListener,
-        SearchView.OnQueryTextListener,
-        SwipeRefreshLayout.OnRefreshListener,
-        IAsyncPresenter.ITaskListener
+    : IPagingSearchableView<I, PR>,
+      RecyclerViewOnScrollUpdater.Listener,
+      BasePagingAdapter.AdapterListener,
+      SearchView.OnQueryTextListener,
+      SwipeRefreshLayout.OnRefreshListener,
+      IAsyncPresenter.ITaskListener
 
 where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
 
     protected var activity: Activity? = null
-    protected var presenter: P? = null
-    protected var viewState: VS? = null
+
+    var presenter: P? = null
+    var viewState: VS? = null
 
     var searchView: SearchView? = null
         set(value) {
@@ -98,7 +98,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
     protected var vEmpty: View? = null
     protected var tvEmptyMessage: TextView? = null
 
-    /****************************************************************************/
+    //--------------------------------------------------------------------------//
 
     /**
      * Call your presenter to first next page in this method
@@ -129,16 +129,13 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * */
     protected abstract fun getErrorMessage(isSearch: Boolean, code: Int): String
 
-    /*****Call these methods from class, that delegate is attached to************/
+    //----Call these methods from class, that delegate is attached to-----------//
 
     open fun onAttach(activity: Activity) {
         this.activity = activity
     }
 
     open fun onInitialized(presenter: P, state: VS) {
-        this.presenter = presenter
-        this.viewState = state
-
         if (state.errorCode == BasePagingSearchableViewState.NO_ERROR_CODE) {
             if (state.items == null) {
                 if (!presenter.isFirstPageLoading()) {
@@ -172,15 +169,15 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
         this.activity = null
     }
 
-    /****************************************************************************/
+    //--------------------------------------------------------------------------//
 
     /**
      * @param tvErrorMessage must be child of vError
      * */
-    open fun setErrorView(vError: View, tvErrorMessage: TextView, retryButton: View) {
+    open fun setErrorView(vError: View, tvErrorMessage: TextView, retryButton: View?) {
         this.vError = vError
 
-        retryButton.setOnClickListener {
+        retryButton?.setOnClickListener {
             onErrorRetryButtonClicked()
         }
 
@@ -199,10 +196,11 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * Set query to search view, without calling OnQueryTextListener
      * */
     override fun setQuery(query: String) {
-        if (searchView != null) {
-            searchView!!.setOnQueryTextListener(null)
-            searchView!!.setQuery(query, false)
-            searchView!!.setOnQueryTextListener(this)
+        val view = searchView
+        if (view != null) {
+            view.setOnQueryTextListener(null)
+            view.setQuery(query, false)
+            view.setOnQueryTextListener(this)
         }
     }
 
@@ -210,13 +208,15 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * Called from presenter when first page loaded
      * */
     override fun onFirstPageLoaded(response: PR) {
+        val viewState = this.viewState
+        val presenter = this.presenter
         if (viewState != null && presenter != null) {
-            presenter!!.cancelNextPages()
-            viewState!!.items = response.data
-            viewState!!.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
-            viewState!!.nextPageFailed = false
-            viewState!!.canLoadMore = response.canLoadMore
-            setItems(response.data, response.canLoadMore, StringUtils.isNotNullOrEmpty(viewState!!.query))
+            presenter.cancelNextPages()
+            viewState.items = response.data
+            viewState.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
+            viewState.nextPageFailed = false
+            viewState.canLoadMore = response.canLoadMore
+            setItems(response.data, response.canLoadMore, StringUtils.isNotNullOrEmpty(viewState.query))
             scrollUpdater?.loading = false
         }
     }
@@ -225,24 +225,23 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * Set items to RecyclerView and initiates it with adapter.
      * */
     override fun setItems(items: MutableList<I>, canLoadMore: Boolean, isSearch: Boolean) {
-        showErrorView(false)
+        updateErrorViewVisibility()
 
+        val recyclerView = this.recyclerView
         if (recyclerView != null) {
-            var adapter: BasePagingAdapter<I, *>? = recyclerView!!.adapter as BasePagingAdapter<I, *>?
+            @Suppress("UNCHECKED_CAST")
+            var adapter: BasePagingAdapter<I, *>? = recyclerView.adapter as BasePagingAdapter<I, *>?
             if (adapter == null) {
-                adapter = createPagingAdapter(activity!!.layoutInflater, items)
-                val finalAdapter = adapter
-                recyclerView!!.post { if (recyclerView != null) recyclerView!!.adapter = finalAdapter as RecyclerView.Adapter<*> }
+                recyclerView.adapter = createPagingAdapter(activity!!.layoutInflater, items)
             } else {
-                val finalAdapter = adapter
-                recyclerView!!.post { finalAdapter.items = items }
-                recyclerView!!.post { finalAdapter.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_NONE }
+                adapter.items = items
+                adapter.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_NONE
             }
         }
 
         scrollUpdater?.enabled = canLoadMore
 
-        showEmptyView(items.size == 0, isSearch)
+        updateEmptyViewVisibility()
     }
 
     /**
@@ -250,23 +249,20 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * */
     @Suppress("UNCHECKED_CAST")
     override fun onNextPageLoaded(response: PR) {
+        val viewState = this.viewState
         if (viewState != null) {
-            viewState!!.canLoadMore = response.canLoadMore
-            viewState!!.nextPageFailed = false
-            viewState!!.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
-            viewState!!.items?.addAll(response.data)
+            viewState.canLoadMore = response.canLoadMore
+            viewState.nextPageFailed = false
+            viewState.errorCode = BasePagingSearchableViewState.NO_ERROR_CODE
+            viewState.items?.addAll(response.data)
         }
 
-        recyclerView?.post {
-            if (recyclerView != null && recyclerView!!.adapter != null) {
-                val adapter = recyclerView!!.adapter as BasePagingAdapter<I, *>
-                adapter.addItems(response.data)
-            }
-        }
+        (recyclerView?.adapter as BasePagingAdapter<I, *>?)?.addItems(response.data)
 
+        val scrollUpdater = this.scrollUpdater
         if (scrollUpdater != null) {
-            scrollUpdater!!.enabled = response.canLoadMore
-            scrollUpdater!!.loading = false
+            scrollUpdater.enabled = response.canLoadMore
+            scrollUpdater.loading = false
         }
     }
 
@@ -274,13 +270,14 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * Called from presenter when first page load failed with error code
      * */
     override fun onFirstPageLoadFailed(code: Int) {
+        val viewState = this.viewState
         if (viewState != null) {
-            val message = getErrorMessage(StringUtils.isNotNullOrEmpty(viewState!!.query), code)
-            if (viewState!!.items == null) {
-                viewState!!.errorCode = code
-                viewState!!.nextPageFailed = false
-                showErrorView(true, StringUtils.isNotNullOrEmpty(viewState!!.query), code)
+            if (viewState.items == null) {
+                viewState.errorCode = code
+                viewState.nextPageFailed = false
+                updateErrorViewVisibility()
             } else {
+                val message = getErrorMessage(StringUtils.isNotNullOrEmpty(viewState.query), code)
                 Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
             }
         }
@@ -290,21 +287,19 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * Called from presenter when next page load failed with error code
      * */
     override fun onNextPageLoadFailed(code: Int) {
+        val viewState = this.viewState
         if (viewState != null) {
-            viewState!!.errorCode = code
-            viewState!!.nextPageFailed = true
+            viewState.errorCode = code
+            viewState.nextPageFailed = true
         }
 
+        val scrollUpdater = this.scrollUpdater
         if (scrollUpdater != null) {
-            scrollUpdater!!.enabled = false
-            scrollUpdater!!.loading = false
+            scrollUpdater.enabled = false
+            scrollUpdater.loading = false
         }
 
-        recyclerView?.post {
-            if (recyclerView != null && recyclerView!!.adapter != null) {
-                (recyclerView!!.adapter as BasePagingAdapter<*, *>).additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_LOAD_MANUALLY
-            }
-        }
+        (recyclerView?.adapter as BasePagingAdapter<*, *>?)?.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_LOAD_MANUALLY
     }
 
     /**
@@ -318,8 +313,9 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * SwipeToRefreshLayout callback
      * */
     override fun onRefresh() {
+        val presenter = this.presenter
         if (presenter != null) {
-            presenter!!.cancelAllPageRequests()
+            presenter.cancelAllPageRequests()
             loadFirstPage()
         }
     }
@@ -328,8 +324,10 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * RecyclerViewOnScrollUpdater.Listener callback
      * */
     override fun onListEndReached(): Boolean {
-        if (viewState != null) {
-            if (viewState!!.canLoadMore && !presenter!!.isFirstPageLoading()) {
+        val viewState = this.viewState
+        val presenter = this.presenter
+        if (viewState != null && presenter != null) {
+            if (viewState.canLoadMore && !presenter.isFirstPageLoading()) {
                 loadNextPage()
                 return true
             } else {
@@ -343,14 +341,16 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * Callback of SearchView OnQueryTextListener
      * */
     override fun onQueryTextChange(query: String): Boolean {
+        val viewState = this.viewState
+        val presenter = this.presenter
         if (viewState != null && presenter != null) {
-            if (viewState!!.query != query) {
+            if (viewState.query != query) {
 
-                viewState!!.items = null
-                viewState!!.query = query
-                presenter!!.cancelAllPageRequests()
+                viewState.items = null
+                viewState.query = query
+                presenter.cancelAllPageRequests()
 
-                recyclerView?.post { recyclerView?.adapter = null }
+                recyclerView?.adapter = null
 
                 loadFirstPage()
             }
@@ -378,24 +378,50 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
      * Updates progress visibility based on presenter running tasks
      * */
     open fun updateProgressVisibility() {
-        if (presenter != null && viewState != null) {
-            if (presenter!!.isFirstPageLoading()) {
-                waitView?.visibility = if (viewState!!.items == null) View.VISIBLE else View.GONE
-                swipeRefreshLayout?.isRefreshing = viewState!!.items != null
+        val viewState = this.viewState
+        val presenter = this.presenter
+        if (viewState != null && presenter != null) {
+            if (presenter.isFirstPageLoading()) {
+                waitView?.visibility = if (viewState.items == null) View.VISIBLE else View.GONE
+                swipeRefreshLayout?.isRefreshing = viewState.items != null
             } else {
                 waitView?.visibility = View.GONE
                 swipeRefreshLayout?.isRefreshing = false
             }
-            recyclerView?.post {
-                if (recyclerView != null && recyclerView!!.adapter != null) {
-                    val adapter = recyclerView!!.adapter as BasePagingAdapter<*, *>
-                    if (presenter!!.isNextPageLoading()) {
-                        adapter.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_LOADER
-                    } else if (adapter.additionalItem == BasePagingAdapter.ADDITIONAL_ITEM_LOADER) {
-                        adapter.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_NONE
-                    }
+
+            val adapter = recyclerView?.adapter as BasePagingAdapter<*, *>?
+            if (adapter != null) {
+                if (presenter.isNextPageLoading()) {
+                    adapter.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_LOADER
+                } else if (adapter.additionalItem == BasePagingAdapter.ADDITIONAL_ITEM_LOADER) {
+                    adapter.additionalItem = BasePagingAdapter.ADDITIONAL_ITEM_NONE
                 }
             }
+        }
+    }
+
+    /**
+     * Updates empty stub visibility based on items count
+     * */
+    open fun updateEmptyViewVisibility() {
+        val viewState = this.viewState
+        if (viewState != null) {
+            val items = viewState.items
+            showEmptyView(items != null && items.size == 0,
+                          StringUtils.isNotNullOrEmpty(viewState.query))
+        }
+    }
+
+    /**
+     * Updates error stub visibility based on view state
+     * */
+    open fun updateErrorViewVisibility() {
+        val viewState = this.viewState
+        if (viewState != null) {
+            val items = viewState.items
+            showErrorView(items == null && viewState.errorCode != BasePagingSearchableViewState.NO_ERROR_CODE && !viewState.nextPageFailed,
+                          StringUtils.isNotNullOrEmpty(viewState.query),
+                          viewState.errorCode)
         }
     }
 

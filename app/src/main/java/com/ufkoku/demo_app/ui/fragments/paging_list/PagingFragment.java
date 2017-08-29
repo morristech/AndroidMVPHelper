@@ -42,17 +42,21 @@ public class PagingFragment
     @NotNull
     @Override
     public PagingViewState createNewViewState() {
-        return new PagingViewState();
+        PagingViewState state = new PagingViewState();
+        delegate.setViewState(state);
+        return state;
     }
 
     @NotNull
     @Override
     public PagingPresenter createPresenter() {
-        return new PagingPresenter();
+        PagingPresenter presenter = new PagingPresenter();
+        delegate.setPresenter(presenter);
+        return presenter;
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         delegate.onAttach((Activity) context);
     }
@@ -65,9 +69,9 @@ public class PagingFragment
 
     @Override
     public void onViewCreated(@NotNull View view, @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        delegate.setTvInitData((TextView) view.findViewById(R.id.initData));
-        delegate.setSwipeRefreshLayout((SwipeRefreshLayout) view.findViewById(R.id.swipeToRefresh));
-        delegate.setRecyclerView((RecyclerView) view.findViewById(R.id.recycler));
+        delegate.setTvInitData(view.findViewById(R.id.initData));
+        delegate.setSwipeRefreshLayout(view.findViewById(R.id.swipeToRefresh));
+        delegate.setRecyclerView(view.findViewById(R.id.recycler));
         delegate.setWaitView(view.findViewById(R.id.waitView));
 
         super.onViewCreated(view, savedInstanceState);

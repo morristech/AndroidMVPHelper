@@ -33,12 +33,28 @@ public class PagingActivity extends BaseMvpActivity<IPagingView, PagingPresenter
         return true;
     }
 
+    @NotNull
+    @Override
+    public PagingViewState createNewViewState() {
+        PagingViewState state = new PagingViewState();
+        delegate.setViewState(state);
+        return state;
+    }
+
+    @NotNull
+    @Override
+    public PagingPresenter createPresenter() {
+        PagingPresenter presenter = new PagingPresenter();
+        delegate.setPresenter(presenter);
+        return presenter;
+    }
+
     @Override
     public void createView() {
         super.createView();
-        delegate.setTvInitData((TextView) findViewById(R.id.initData));
-        delegate.setSwipeRefreshLayout((SwipeRefreshLayout) findViewById(R.id.swipeToRefresh));
-        delegate.setRecyclerView((RecyclerView) findViewById(R.id.recycler));
+        delegate.setTvInitData(findViewById(R.id.initData));
+        delegate.setSwipeRefreshLayout(findViewById(R.id.swipeToRefresh));
+        delegate.setRecyclerView(findViewById(R.id.recycler));
         delegate.setWaitView(findViewById(R.id.waitView));
     }
 
@@ -46,18 +62,6 @@ public class PagingActivity extends BaseMvpActivity<IPagingView, PagingPresenter
     @Override
     public IPagingView getMvpView() {
         return delegateWrap;
-    }
-
-    @NotNull
-    @Override
-    public PagingViewState createNewViewState() {
-        return new PagingViewState();
-    }
-
-    @NotNull
-    @Override
-    public PagingPresenter createPresenter() {
-        return new PagingPresenter();
     }
 
     @Override
