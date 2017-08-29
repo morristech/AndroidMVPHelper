@@ -61,38 +61,46 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
             holder = null
         }
 
+        var viewState: VS? = null
+        var viewStateId: Int? = null
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_VIEW_STATE)) {
             viewStateId = savedInstanceState.getInt(KEY_VIEW_STATE)
-            viewState = holder!!.getViewState(viewStateId!!) as VS?
+            viewState = holder!!.getViewState(viewStateId) as VS?
         }
         if (viewState == null) {
             viewState = fragment.createNewViewState()
             if (savedInstanceState != null) {
-                viewState!!.restore(savedInstanceState)
+                viewState.restore(savedInstanceState)
             }
             if (!fragment.retainInstance && fragment.retainViewState()) {
                 if (viewStateId == null) {
-                    viewStateId = holder!!.addViewState(viewState!!)
+                    viewStateId = holder!!.addViewState(viewState)
                 } else {
-                    holder!!.setViewState(viewStateId!!, viewState!!)
+                    holder!!.setViewState(viewStateId, viewState)
                 }
             }
         }
+        this.viewState = viewState
+        this.viewStateId = viewStateId
 
+        var presenter: P? = null
+        var presenterId: Int? = null
         if (savedInstanceState != null && savedInstanceState.containsKey(KEY_PRESENTER)) {
             presenterId = savedInstanceState.getInt(KEY_PRESENTER)
-            presenter = holder!!.getPresenter(presenterId!!) as P?
+            presenter = holder!!.getPresenter(presenterId) as P?
         }
         if (presenter == null) {
             presenter = fragment.createPresenter()
             if (!fragment.retainInstance && fragment.retainPresenter()) {
                 if (presenterId == null) {
-                    presenterId = holder!!.addPresenter(presenter!!)
+                    presenterId = holder!!.addPresenter(presenter)
                 } else {
-                    holder!!.setPresenter(presenterId!!, presenter!!)
+                    holder!!.setPresenter(presenterId, presenter)
                 }
             }
         }
+        this.presenter = presenter
+        this.presenterId = presenterId
     }
 
     fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
