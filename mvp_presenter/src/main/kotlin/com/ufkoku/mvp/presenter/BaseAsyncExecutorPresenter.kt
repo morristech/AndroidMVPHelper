@@ -28,23 +28,23 @@ abstract class BaseAsyncExecutorPresenter<T : IMvpView> : BaseAsyncPresenter<T>(
     protected var executor: ThreadPoolExecutor? = null
 
     override fun onAttachView(view: T) {
+        var executor = this.executor
         if (executor == null) {
             executor = createExecutor()
             if (useSaveThreadFactory()) {
-                if (executor!!.threadFactory !is SaveThreadFactory) {
-                    executor!!.threadFactory = SaveThreadFactory()
+                if (executor.threadFactory !is SaveThreadFactory) {
+                    executor.threadFactory = SaveThreadFactory()
                 }
             }
+            this.executor = executor
         }
 
         super.onAttachView(view)
     }
 
     override fun cancel() {
-        if (executor != null) {
-            executor!!.shutdownNow()
-            executor = null
-        }
+        executor?.shutdownNow()
+        executor = null
 
         super.cancel()
     }
