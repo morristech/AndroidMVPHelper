@@ -66,7 +66,7 @@ where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
             viewState = holder!!.getViewState(viewStateId) as VS?
         }
         if (viewState == null) {
-            viewState = activity.createNewViewState()
+            viewState = activity.createViewState()
             if (savedInstanceState != null) {
                 viewState.restore(savedInstanceState)
             }

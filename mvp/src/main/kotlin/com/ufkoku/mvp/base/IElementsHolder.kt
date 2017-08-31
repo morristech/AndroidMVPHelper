@@ -50,7 +50,7 @@ interface IElementsHolder<V, out P : IPresenter<V>, out VS : IViewState<V>> {
     /**
      * Create and return new instance of view state
      * */
-    fun createNewViewState(): VS
+    fun createViewState(): VS
 
     /**
      * Create and return new instance of presenter

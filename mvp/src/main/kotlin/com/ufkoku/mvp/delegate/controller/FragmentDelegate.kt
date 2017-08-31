@@ -67,7 +67,7 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
             viewState = holder!!.getViewState(viewStateId) as VS?
         }
         if (viewState == null) {
-            viewState = fragment.createNewViewState()
+            viewState = fragment.createViewState()
             if (savedInstanceState != null) {
                 viewState.restore(savedInstanceState)
             }

@@ -81,7 +81,7 @@ public class StaticListActivity extends BaseMvpActivity<IStaticListActivity, Sta
 
     @NotNull
     @Override
-    public StaticListViewState createNewViewState() {
+    public StaticListViewState createViewState() {
         return new StaticListViewState();
     }
 

@@ -66,7 +66,7 @@ public class StaticListFragment extends BaseMvpFragment<IStaticListFragment, Sta
 
     @NotNull
     @Override
-    public StaticListViewState createNewViewState() {
+    public StaticListViewState createViewState() {
         return new StaticListViewState();
     }
 

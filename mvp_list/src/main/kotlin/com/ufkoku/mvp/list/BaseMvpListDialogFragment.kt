@@ -85,7 +85,7 @@ VS : BasePagingSearchableViewState<I, V> {
         return presenter
     }
 
-    final override fun createNewViewState(): VS {
+    final override fun createViewState(): VS {
         val viewState = createListViewState()
         pagingDelegate.viewState = viewState
         return viewState
