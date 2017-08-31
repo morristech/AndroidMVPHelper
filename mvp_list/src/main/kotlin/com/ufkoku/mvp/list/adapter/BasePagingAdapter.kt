@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp.list
+package com.ufkoku.mvp.list.adapter
 
 import android.support.annotation.IntDef
 import android.support.v7.widget.RecyclerView

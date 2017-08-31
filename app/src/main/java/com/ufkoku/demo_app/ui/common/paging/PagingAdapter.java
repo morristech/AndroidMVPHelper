@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.ufkoku.demo_app.R;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.mvp.list.BasePagingAdapter;
+import com.ufkoku.mvp.list.adapter.BasePagingAdapter;
 
 import org.jetbrains.annotations.NotNull;
 

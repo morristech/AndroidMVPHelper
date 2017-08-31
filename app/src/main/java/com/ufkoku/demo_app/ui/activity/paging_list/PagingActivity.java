@@ -1,45 +1,28 @@
 package com.ufkoku.demo_app.ui.activity.paging_list;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.view.View;
 
 import com.ufkoku.demo_app.R;
+import com.ufkoku.demo_app.entity.AwesomeEntity;
+import com.ufkoku.demo_app.entity.PagingResponse;
 import com.ufkoku.demo_app.ui.common.paging.IPagingView;
 import com.ufkoku.demo_app.ui.common.paging.IPagingViewWrap;
 import com.ufkoku.demo_app.ui.common.paging.PagingDelegate;
 import com.ufkoku.demo_app.ui.common.paging.PagingPresenter;
 import com.ufkoku.demo_app.ui.common.paging.PagingViewState;
-import com.ufkoku.mvp.BaseMvpActivity;
+import com.ufkoku.mvp.list.BaseMvpListActivity;
 import com.ufkoku.mvp.utils.view_injection.annotation.Layout;
 
 import org.jetbrains.annotations.NotNull;
 
 @Layout(R.layout.view_paging_list)
-public class PagingActivity extends BaseMvpActivity<IPagingView, PagingPresenter, PagingViewState> {
+public class PagingActivity extends BaseMvpListActivity<AwesomeEntity, PagingResponse<AwesomeEntity>, PagingDelegate, IPagingView, PagingPresenter, PagingViewState> {
 
     private PagingDelegate delegate = new PagingDelegate();
 
     private IPagingViewWrap delegateWrap = new IPagingViewWrap(delegate);
-
-    @Override
-    public boolean retainPresenter() {
-        return true;
-    }
-
-    @NotNull
-    @Override
-    public PagingViewState createNewViewState() {
-        PagingViewState state = new PagingViewState();
-        delegate.setViewState(state);
-        return state;
-    }
-
-    @NotNull
-    @Override
-    public PagingPresenter createPresenter() {
-        PagingPresenter presenter = new PagingPresenter();
-        delegate.setPresenter(presenter);
-        return presenter;
-    }
 
     @Override
     public void createView() {
@@ -56,23 +39,22 @@ public class PagingActivity extends BaseMvpActivity<IPagingView, PagingPresenter
         return delegateWrap;
     }
 
+    @NotNull
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        delegate.onAttach(this);
-        super.onCreate(savedInstanceState);
+    public PagingDelegate createDelegate() {
+        return new PagingDelegate();
     }
 
+    @NotNull
     @Override
-    public void onInitialized(@NotNull PagingPresenter presenter, @NotNull PagingViewState viewState) {
-        delegate.onInitialized(presenter, viewState);
+    public PagingPresenter createListPresenter() {
+        return new PagingPresenter();
     }
 
+    @NotNull
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        delegate.onDestroyView();
-        delegate.onDestroy();
-        delegate.onDetach();
+    public PagingViewState createListViewState() {
+        return new PagingViewState();
     }
 
 }

@@ -3,7 +3,7 @@ package com.ufkoku.demo_app.ui.common.paging;
 import android.os.Bundle;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
-import com.ufkoku.mvp.list.BasePagingSearchableViewState;
+import com.ufkoku.mvp.list.viewstate.BasePagingSearchableViewState;
 import com.ufkoku.mvp.viewstate.autosavable.AutoSavable;
 
 import org.jetbrains.annotations.NotNull;

@@ -9,8 +9,8 @@ import android.widget.Toast;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.demo_app.entity.PagingResponse;
-import com.ufkoku.mvp.list.BasePagingSearchableDelegate;
-import com.ufkoku.mvp.list.BasePagingSearchableViewState;
+import com.ufkoku.mvp.list.delegate.BasePagingSearchableDelegate;
+import com.ufkoku.mvp.list.viewstate.BasePagingSearchableViewState;
 import com.ufkoku.mvp.list.util.StringUtils;
 
 import org.jetbrains.annotations.NotNull;
@@ -82,8 +82,6 @@ public class PagingDelegate extends BasePagingSearchableDelegate<AwesomeEntity, 
     @Override
     public void onInitialized(@NonNull PagingPresenter presenter, @NonNull PagingViewState state) {
         if (state.getInitData() == null && state.getErrorCode() == PagingViewState.NO_ERROR_CODE) {
-            this.setPresenter(presenter);
-            this.setViewState(state);
             if (!presenter.isTaskRunning(PagingPresenter.TASK_LOAD_INIT_DATA)) {
                 presenter.getInitData();
             }

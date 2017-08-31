@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp.list
+package com.ufkoku.mvp.list.viewstate
 
 import com.ufkoku.mvp.list.interfaces.IPagingSearchableView
 import com.ufkoku.mvp.list.util.StringUtils

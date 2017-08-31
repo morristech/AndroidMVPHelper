@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ufkoku.mvp.list
+package com.ufkoku.mvp.list.delegate
 
 import android.app.Activity
 import android.support.v4.widget.SwipeRefreshLayout
@@ -24,6 +24,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import com.ufkoku.mvp.list.viewstate.BasePagingSearchableViewState
+import com.ufkoku.mvp.list.adapter.BasePagingAdapter
 import com.ufkoku.mvp.list.interfaces.IPagingResponse
 import com.ufkoku.mvp.list.interfaces.IPagingSearchablePresenter
 import com.ufkoku.mvp.list.interfaces.IPagingSearchableView
