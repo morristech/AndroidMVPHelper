@@ -1,5 +1,22 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.dokka-android'
+
+dokka {
+    outputFormat = "javadoc"
+    outputDirectory = "$buildDir/docs/javadoc"
+    linkMapping {
+        dir = "src/main/kotlin"
+        url = "https://github.com/Ufkoku/AndroidMVPHelper/tree/master/mvp_list/src/main/kotlin"
+        suffix = "#L"
+    }
+}
+
+tasks.whenTaskAdded{ task ->
+    if (task.name == 'javadoc'){
+        task.dependsOn 'dokka'
+    }
+}
 
 ext {
     bintrayRepo = 'maven'

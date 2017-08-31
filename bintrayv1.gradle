@@ -10,11 +10,10 @@ if (project.hasProperty("android")) {
     }
 
     task javadoc(type: Javadoc) {
+        excludes = ['**/*.kt']
         source = android.sourceSets.main.java.srcDirs
         classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     }
-
-    tasks.withType(Javadoc).all { enabled = false }
 
 } else {
     task sourcesJar(type: Jar, dependsOn: classes) {
