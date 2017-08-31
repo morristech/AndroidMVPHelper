@@ -30,11 +30,10 @@ import com.ufkoku.mvp.utils.NullerUtil
 import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
 import com.ufkoku.mvp.utils.view_injection.ViewInjector
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
 @SuppressLint("LongLogTag")
-abstract class BaseMvpDialogFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : DialogFragment(), IMvpFragment<V, P, VS> {
+abstract class BaseMvpDialogFragment<V, P : IPresenter<V>, VS : IViewState<V>> : DialogFragment(), IMvpFragment<V, P, VS> {
 
     companion object {
         private val TAG = "BaseMvpDialogFragment"

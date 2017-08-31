@@ -17,9 +17,8 @@
 package com.ufkoku.mvp.presenter
 
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 
-open class BasePresenter<T : IMvpView> : IPresenter<T> {
+open class BasePresenter<T> : IPresenter<T> {
 
     protected open var view: T? = null
 

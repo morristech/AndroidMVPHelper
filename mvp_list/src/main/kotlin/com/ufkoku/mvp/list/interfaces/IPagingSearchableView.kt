@@ -17,9 +17,8 @@
 package com.ufkoku.mvp.list.interfaces
 
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 
-interface IPagingSearchableView<I, in PR : IPagingResponse<I>> : IMvpView, IAsyncPresenter.ITaskListener {
+interface IPagingSearchableView<I, in PR : IPagingResponse<I>> : IAsyncPresenter.ITaskListener {
 
     fun setQuery(query: String)
 

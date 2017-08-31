@@ -27,11 +27,11 @@ import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
 import com.ufkoku.mvp.utils.view_injection.ViewInjector
 import com.ufkoku.mvp_base.view.lifecycle.ILifecycleObservable
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-abstract class BaseMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
+abstract class BaseMvpActivity<V, P : IPresenter<V>, VS : IViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
 
+    @Suppress("LeakingThis")
     private val delegate: ActivityDelegate<BaseMvpActivity<V, P, VS>, V, P, VS> = ActivityDelegate(this)
 
     private val lifecycleDelegate: ActivityLifecycleObservable = ActivityLifecycleObservable()

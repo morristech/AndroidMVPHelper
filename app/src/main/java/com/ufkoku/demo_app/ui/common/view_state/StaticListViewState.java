@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.mvp.viewstate.autosavable.AutoSavable;
 import com.ufkoku.mvp.viewstate.autosavable.Ignore;
-import com.ufkoku.mvp_base.view.IMvpView;
 import com.ufkoku.mvp_base.viewstate.IViewState;
 
 import java.util.ArrayList;
@@ -50,7 +49,7 @@ public class StaticListViewState implements IViewState<StaticListViewState.Stati
         }
     }
 
-    public interface StaticListViewStateView extends IMvpView {
+    public interface StaticListViewStateView {
 
         void populateData(List<AwesomeEntity> entities);
 

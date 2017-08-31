@@ -17,13 +17,12 @@
 package com.ufkoku.mvp.presenter
 
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 
-abstract class BaseAsyncExecutorPresenter<T : IMvpView> : BaseAsyncPresenter<T>(), IAsyncPresenter<T> {
+abstract class BaseAsyncExecutorPresenter<T : IAsyncPresenter.ITaskListener> : BaseAsyncPresenter<T>(), IAsyncPresenter<T> {
 
     protected var executor: ThreadPoolExecutor? = null
 

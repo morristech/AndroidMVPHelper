@@ -28,15 +28,15 @@ import com.ufkoku.mvp.delegate.observable.FragmentLifecycleObservable
 import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
 import com.ufkoku.mvp.utils.view_injection.ViewInjector
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-abstract class BaseMvpFragment<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : Fragment(), IMvpFragment<V, P, VS> {
+abstract class BaseMvpFragment<V, P : IPresenter<V>, VS : IViewState<V>> : Fragment(), IMvpFragment<V, P, VS> {
 
     companion object {
         private val TAG = "BaseMvpFragment"
     }
 
+    @Suppress("LeakingThis")
     private val delegate: FragmentDelegate<BaseMvpFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)
 
     private val lifecycleDelegate: FragmentLifecycleObservable = FragmentLifecycleObservable()

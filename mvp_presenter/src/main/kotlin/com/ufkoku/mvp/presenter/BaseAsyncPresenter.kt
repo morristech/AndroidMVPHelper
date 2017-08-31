@@ -18,10 +18,9 @@
 package com.ufkoku.mvp.presenter
 
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import java.util.*
 
-open class BaseAsyncPresenter<T : IMvpView> : BasePresenter<T>(), IAsyncPresenter<T> {
+open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter<T>(), IAsyncPresenter<T> {
 
     companion object {
         val TASK_ADDED = 0

@@ -23,10 +23,9 @@ import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp.utils.HolderFragment
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-open class FragmentDelegate<out F, V : IMvpView, P : IPresenter<V>, VS : IViewState<V>>(val fragment: F)
+open class FragmentDelegate<out F, V, P : IPresenter<V>, VS : IViewState<V>>(val fragment: F)
 where F : Fragment, F : IMvpFragment<V, P, VS> {
 
     companion object {

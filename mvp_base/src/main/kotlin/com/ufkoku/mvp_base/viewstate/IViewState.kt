@@ -18,9 +18,7 @@ package com.ufkoku.mvp_base.viewstate
 
 import android.os.Bundle
 
-import com.ufkoku.mvp_base.view.IMvpView
-
-interface IViewState<in T : IMvpView> {
+interface IViewState<in T> {
 
     /**
      * Restore your data from bundle

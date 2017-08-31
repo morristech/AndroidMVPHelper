@@ -3,7 +3,6 @@ package com.ufkoku.demo_app.ui.common.presenter;
 import com.ufkoku.demo_app.entity.AwesomeEntity;
 import com.ufkoku.demo_app.model.PageEntityModel;
 import com.ufkoku.mvp.presenter.rx2.BaseAsyncRxSchedulerPresenter;
-import com.ufkoku.mvp_base.view.IMvpView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class StaticListPresenter<V extends StaticListPresenter.PresenterListener & IMvpView> extends BaseAsyncRxSchedulerPresenter<V> {
+public class StaticListPresenter<V extends StaticListPresenter.PresenterListener> extends BaseAsyncRxSchedulerPresenter<V> {
 
     public static Integer TASK_FETCH_DATA = 1;
 

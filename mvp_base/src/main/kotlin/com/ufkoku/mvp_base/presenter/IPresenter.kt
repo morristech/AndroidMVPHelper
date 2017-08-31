@@ -16,9 +16,7 @@
 
 package com.ufkoku.mvp_base.presenter
 
-import com.ufkoku.mvp_base.view.IMvpView
-
-interface IPresenter<in T : IMvpView> {
+interface IPresenter<in T> {
 
     fun onAttachView(view: T)
 

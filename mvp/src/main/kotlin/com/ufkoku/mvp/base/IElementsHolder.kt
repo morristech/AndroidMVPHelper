@@ -17,10 +17,9 @@
 package com.ufkoku.mvp.base
 
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-interface IElementsHolder<V : IMvpView, out P : IPresenter<V>, out VS : IViewState<V>> {
+interface IElementsHolder<V, out P : IPresenter<V>, out VS : IViewState<V>> {
 
     /**
      * Return true if presenter must be retained accross fragment or activity recreations

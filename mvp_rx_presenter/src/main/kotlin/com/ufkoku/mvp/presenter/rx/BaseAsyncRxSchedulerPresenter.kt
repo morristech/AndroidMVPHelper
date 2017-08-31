@@ -17,11 +17,11 @@
 package com.ufkoku.mvp.presenter.rx
 
 import com.ufkoku.mvp.presenter.BaseAsyncExecutorPresenter
-import com.ufkoku.mvp_base.view.IMvpView
+import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import rx.Scheduler
 import rx.schedulers.Schedulers
 
-abstract class BaseAsyncRxSchedulerPresenter<T : IMvpView> : BaseAsyncExecutorPresenter<T>() {
+abstract class BaseAsyncRxSchedulerPresenter<T : IAsyncPresenter.ITaskListener> : BaseAsyncExecutorPresenter<T>() {
 
     var scheduler: Scheduler? = null
 

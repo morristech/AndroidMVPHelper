@@ -16,9 +16,7 @@
 
 package com.ufkoku.mvp_base.presenter
 
-import com.ufkoku.mvp_base.view.IMvpView
-
-interface IAsyncPresenter<T : IMvpView> : IPresenter<T> {
+interface IAsyncPresenter<in T : IAsyncPresenter.ITaskListener> : IPresenter<T> {
 
     fun cancel()
 

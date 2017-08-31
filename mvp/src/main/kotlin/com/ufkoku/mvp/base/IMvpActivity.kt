@@ -17,11 +17,10 @@
 package com.ufkoku.mvp.base
 
 import com.ufkoku.mvp_base.presenter.IPresenter
-import com.ufkoku.mvp_base.view.IMvpView
 import com.ufkoku.mvp_base.view.lifecycle.ILifecycleObservable
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-interface IMvpActivity<V : IMvpView, P : IPresenter<V>, VS : IViewState<V>> : IElementsHolder<V, P, VS>, ILifecycleObservable, IMvpView {
+interface IMvpActivity<V, P : IPresenter<V>, VS : IViewState<V>> : IElementsHolder<V, P, VS>, ILifecycleObservable {
 
     /**
      * Call setContentView hear and init all UI variables
