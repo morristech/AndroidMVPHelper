@@ -55,6 +55,7 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
 @SupportedAnnotationTypes({"com.ufkoku.mvp.viewstate.autosavable.AutoSavable"})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
@@ -192,7 +193,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                         addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putLongArray", "getLongArray", "set", "get", false);
                     } else if (typeUtils.isSameType(fieldData.typeMirror, typeUtils.getArrayType(typeUtils.getPrimitiveType(TypeKind.DOUBLE)))) {
                         addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putDoubleArray", "getDoubleArray", "set", "get", false);
-                    } else if (typeUtils.isAssignable(elementUtils.getTypeElement(CharSequence.class.getCanonicalName()).asType(), fieldData.typeMirror)) {
+                    } else if (typeUtils.isAssignable(fieldData.typeMirror, elementUtils.getTypeElement(CharSequence.class.getCanonicalName()).asType())) {
                         addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putCharSequence", "getCharSequence", "set", "get", false);
                     } else if (typeUtils.isAssignable(fieldData.typeMirror, parcelableTypeElement.asType())) {
                         addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putParcelable", "getParcelable", "set", "get", false);
@@ -234,7 +235,14 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                         }
 
                         if (!saved) {
-                            addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putSerializable", "getSerializable", "set", "get", true);
+                            if (typeUtils.isAssignable(fieldData.typeMirror, elementUtils.getTypeElement(Serializable.class.getCanonicalName()).asType())) {
+                                addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putSerializable", "getSerializable", "set", "get", true);
+                            }
+                        }
+
+                        if (!saved) {
+                            processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Unable to save this field to bundle. Please mark it with @Ignore annotation and save it manually", fieldData.variableElement);
+                            continue;
                         }
 
                     }
