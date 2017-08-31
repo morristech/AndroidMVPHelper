@@ -9,6 +9,7 @@ import com.ufkoku.mvp.viewstate.autosavable.AutoSavable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AutoSavable
@@ -16,7 +17,7 @@ public class PagingViewState extends BasePagingSearchableViewState<AwesomeEntity
 
     private String initData = null;
 
-    private List<AwesomeEntity> items;
+    private ArrayList<AwesomeEntity> items;
 
     public String getInitData() {
         return initData;
@@ -34,7 +35,7 @@ public class PagingViewState extends BasePagingSearchableViewState<AwesomeEntity
 
     @Override
     public void setItems(@Nullable List<AwesomeEntity> list) {
-        items = list;
+        items = (ArrayList<AwesomeEntity>) list;
     }
 
     @Override

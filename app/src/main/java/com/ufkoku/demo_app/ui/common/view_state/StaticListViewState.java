@@ -9,6 +9,7 @@ import com.ufkoku.mvp.viewstate.autosavable.Ignore;
 import com.ufkoku.mvp_base.view.IMvpView;
 import com.ufkoku.mvp_base.viewstate.IViewState;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AutoSavable
@@ -17,7 +18,7 @@ public class StaticListViewState implements IViewState<StaticListViewState.Stati
     @Ignore
     private boolean applied = false;
 
-    private List<AwesomeEntity> entities;
+    private ArrayList<AwesomeEntity> entities;
 
     public boolean isApplied() {
         return applied;
@@ -28,7 +29,7 @@ public class StaticListViewState implements IViewState<StaticListViewState.Stati
     }
 
     public void setEntities(List<AwesomeEntity> entity) {
-        this.entities = entity;
+        this.entities = (ArrayList<AwesomeEntity>) entity;
     }
 
     @Override

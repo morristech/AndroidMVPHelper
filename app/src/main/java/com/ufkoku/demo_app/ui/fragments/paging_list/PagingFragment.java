@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 @Layout(R.layout.view_paging_list)
 public class PagingFragment
-
         extends BaseMvpFragment<IPagingView, PagingPresenter, PagingViewState> {
 
     private PagingDelegate delegate = createDelegate();
@@ -37,6 +36,11 @@ public class PagingFragment
     @Override
     public IPagingView getMvpView() {
         return delegateWrap;
+    }
+
+    @Override
+    public boolean retainPresenter() {
+        return true;
     }
 
     @NotNull
@@ -59,12 +63,6 @@ public class PagingFragment
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         delegate.onAttach((Activity) context);
-    }
-
-    @Override
-    public void onCreate(@org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        setRetainInstance(true);
-        super.onCreate(savedInstanceState);
     }
 
     @Override
