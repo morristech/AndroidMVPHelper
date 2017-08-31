@@ -1,3 +1,13 @@
+### 3.0.0
+#### Changes
+* [global] Support lib update. Min version is raised to 14;
+* [mvp] Removed redundant interface IMvpView;
+* [mvp] Method createNewViewState() renamed to createViewState();
+* [mvp_list] Refactoring of delegate, it is now more flexible;
+* [mvp_list] Added new BaseMvpListFragment, BaseMvpListDialogFragment, BaseMvpListActivity;
+* [mvp_autosable] Now throws exception, if it is unable to save field to Bundle automatically;
+* [mvp_presenter] All async presenters' views must inmplement IAsyncPresenter.ITaskListener.
+
 ### 2.4.13
 #### Changes
 * [mvp] Added view injections for mvp components;
