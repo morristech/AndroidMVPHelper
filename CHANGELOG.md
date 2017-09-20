@@ -1,3 +1,7 @@
+### 3.0.1
+#### Changes  
+* [mvp_list] Fixed displaying of progress bar, when next page is loading.
+
 ### 3.0.0
 #### Changes
 * [global] Support lib update. Min version is raised to 14;
