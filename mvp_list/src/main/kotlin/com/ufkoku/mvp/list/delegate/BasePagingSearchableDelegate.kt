@@ -330,7 +330,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
         val presenter = this.presenter
         if (viewState != null && presenter != null) {
             if (viewState.canLoadMore && !presenter.isFirstPageLoading()) {
-                loadNextPage()
+                recyclerView!!.post { loadNextPage() }
                 return true
             } else {
                 return false
