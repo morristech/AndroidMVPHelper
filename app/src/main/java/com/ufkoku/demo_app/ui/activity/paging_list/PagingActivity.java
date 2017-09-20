@@ -20,17 +20,16 @@ import org.jetbrains.annotations.NotNull;
 @Layout(R.layout.view_paging_list)
 public class PagingActivity extends BaseMvpListActivity<AwesomeEntity, PagingResponse<AwesomeEntity>, PagingDelegate, IPagingView, PagingPresenter, PagingViewState> {
 
-    private PagingDelegate delegate = new PagingDelegate();
-
-    private IPagingViewWrap delegateWrap = new IPagingViewWrap(delegate);
+    private IPagingViewWrap delegateWrap = new IPagingViewWrap(getPagingDelegate());
 
     @Override
     public void createView() {
         super.createView();
-        delegate.setTvInitData(findViewById(R.id.initData));
-        delegate.setSwipeRefreshLayout(findViewById(R.id.swipeToRefresh));
-        delegate.setRecyclerView(findViewById(R.id.recycler));
-        delegate.setWaitView(findViewById(R.id.waitView));
+        PagingDelegate pagingDelegate = getPagingDelegate();
+        pagingDelegate.setTvInitData(findViewById(R.id.initData));
+        pagingDelegate.setSwipeRefreshLayout(findViewById(R.id.swipeToRefresh));
+        pagingDelegate.setRecyclerView(findViewById(R.id.recycler));
+        pagingDelegate.setWaitView(findViewById(R.id.waitView));
     }
 
     @NotNull
