@@ -17,9 +17,15 @@
 package com.ufkoku.mvp.presenter.rx2
 
 import com.ufkoku.mvp.presenter.BaseAsyncExecutorPresenter
+import com.ufkoku.mvp.presenter.BaseAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
+import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.atomic.AtomicBoolean
 
 abstract class BaseAsyncRxSchedulerPresenter<T : IAsyncPresenter.ITaskListener> : BaseAsyncExecutorPresenter<T>() {
 
@@ -37,6 +43,57 @@ abstract class BaseAsyncRxSchedulerPresenter<T : IAsyncPresenter.ITaskListener> 
             scheduler = null
         }
         super.cancel()
+    }
+
+    fun <T> execute(observable: Observable<T>, id: Int, onNext: Consumer<T>?, onError: Consumer<Throwable>?, onComplete: Action?): Disposable {
+        return IdDisposable(observable, id, onNext, onError, onComplete)
+    }
+
+    private inner class IdDisposable<T>(observable: Observable<T>,
+                                        val id: Int,
+                                        val onNext: Consumer<T>?,
+                                        val onError: Consumer<Throwable>?,
+                                        val onComplete: Action?) : Disposable {
+
+        init {
+            this@BaseAsyncRxSchedulerPresenter.notifyTaskAdded(id)
+        }
+
+        private var taskFinishedNotified = false
+
+        private val innerDisposable = observable.subscribe(
+                {
+                    onNext?.accept(it)
+                },
+                {
+                    if (!this@BaseAsyncRxSchedulerPresenter.checkIfInterruptedException(it)) {
+                        onError?.accept(it)
+                    }
+                    notifyTaskFinishedIfPossible()
+                },
+                {
+                    onComplete?.run()
+                    notifyTaskFinishedIfPossible()
+                })
+
+        override fun dispose() {
+            innerDisposable.dispose()
+            notifyTaskFinishedIfPossible()
+        }
+
+        override fun isDisposed(): Boolean {
+            return innerDisposable.isDisposed
+        }
+
+        private fun notifyTaskFinishedIfPossible() {
+            synchronized(this) {
+                if (!taskFinishedNotified) {
+                    taskFinishedNotified = true
+                    this@BaseAsyncRxSchedulerPresenter.notifyTaskFinished(id)
+                }
+            }
+        }
+
     }
 
 }

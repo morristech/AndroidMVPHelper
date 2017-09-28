@@ -19,6 +19,9 @@ package com.ufkoku.mvp.presenter
 
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import java.util.*
+import java.util.concurrent.AbstractExecutorService
+import java.util.concurrent.Callable
+import java.util.concurrent.Future
 
 open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter<T>(), IAsyncPresenter<T> {
 
@@ -68,6 +71,29 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
 
             }
         }
+    }
+
+    fun <T> execute(executor: AbstractExecutorService, callable: Callable<T>, id: Int): Future<T> {
+        notifyTaskAdded(id)
+        return executor.submit(Callable<T> {
+            try {
+                return@Callable callable.call()
+            } finally {
+                notifyTaskFinished(id)
+            }
+        })
+    }
+
+    fun execute(executor: AbstractExecutorService, runnable: Runnable, id: Int): Future<Void> {
+        notifyTaskAdded(id)
+        return executor.submit(Callable<Void> {
+            try {
+                runnable.run()
+                return@Callable null
+            } finally {
+                notifyTaskFinished(id)
+            }
+        })
     }
 
     /**

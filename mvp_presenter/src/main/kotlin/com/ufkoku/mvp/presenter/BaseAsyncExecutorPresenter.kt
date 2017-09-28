@@ -17,10 +17,7 @@
 package com.ufkoku.mvp.presenter
 
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.*
 
 abstract class BaseAsyncExecutorPresenter<T : IAsyncPresenter.ITaskListener> : BaseAsyncPresenter<T>(), IAsyncPresenter<T> {
 
@@ -46,6 +43,14 @@ abstract class BaseAsyncExecutorPresenter<T : IAsyncPresenter.ITaskListener> : B
         executor = null
 
         super.cancel()
+    }
+
+    fun <T> execute(callable: Callable<T>, id: Int): Future<T> {
+        return super.execute(executor!!, callable, id)
+    }
+
+    fun execute(runnable: Runnable, id: Int): Future<Void> {
+        return super.execute(executor!!, runnable, id)
     }
 
     protected abstract fun createExecutor(): ThreadPoolExecutor
