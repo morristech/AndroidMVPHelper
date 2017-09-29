@@ -1,3 +1,12 @@
+### 3.2.1
+#### Changes  
+* [mvp_presenter] Added 'execute' methods;
+* [mvp_presenter] Added methods to post to main thread;
+* [mvp_rx2_presenter] Added execute methods;
+* [mvp_rx2_presenter] Added IdDisposable to remove boilerplate with ids;
+#### Removals
+* [mvp_rx_presenter] Removed module.
+
 ### 3.0.1
 #### Changes  
 * [mvp_list] Fixed displaying of progress bar, when next page is loading.
