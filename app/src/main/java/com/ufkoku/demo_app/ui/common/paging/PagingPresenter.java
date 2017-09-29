@@ -1,6 +1,7 @@
 package com.ufkoku.demo_app.ui.common.paging;
 
 import com.ufkoku.demo_app.entity.AwesomeEntity;
+import com.ufkoku.demo_app.entity.PagingResponse;
 import com.ufkoku.demo_app.model.PageEntityModel;
 import com.ufkoku.demo_app.model.ProcessEntityModel;
 import com.ufkoku.demo_app.model.SingleEntityModel;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
 public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> implements IPagingSearchablePresenter {
@@ -38,21 +40,17 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
     @SuppressWarnings({"ConstantConditions"})
     public void getInitData() {
-        notifyTaskAdded(TASK_LOAD_INIT_DATA);
+        Observable<String> observable = SingleEntityModel.createEntityObservable()
+                .map(awesomeEntity -> awesomeEntity.getImportantDataField() + "");
 
-        SingleEntityModel.createEntityObservable()
-                .map(awesomeEntity -> awesomeEntity.getImportantDataField() + "")
-                .subscribeOn(getScheduler())
-                .subscribe(
-                        value -> waitForViewIfNeeded().onInitDataLoaded(value),
-                        throwable -> {
-                            notifyTaskFinished(TASK_LOAD_INIT_DATA);
-                            if (!checkIfInterruptedException(throwable)) {
-                                waitForViewIfNeeded().onInitDataLoadFailed(0);
-                            }
-                        },
-                        () -> notifyTaskFinished(TASK_LOAD_INIT_DATA)
-                );
+        execute(
+                observable,
+                TASK_LOAD_INIT_DATA,
+                value -> waitForViewIfNeeded().onInitDataLoaded(value),
+                throwable -> waitForViewIfNeeded().onInitDataLoadFailed(0),
+                null,
+                false
+        );
     }
 
     @SuppressWarnings({"ConstantConditions"})
@@ -67,46 +65,39 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
             taskId = TASK_LOAD_NEXT_PAGE;
         }
 
-        notifyTaskAdded(taskId);
+        Disposable disposable = execute(
+                PageEntityModel.createPageObservable(offset),
+                taskId,
+                page -> {
+                    if (taskId == TASK_LOAD_FIRST_PAGE) {
+                        waitForViewIfNeeded().onFirstPageLoaded(page);
+                    } else {
+                        waitForViewIfNeeded().onNextPageLoaded(page);
+                    }
+                },
+                throwable -> {
+                    if (taskId == TASK_LOAD_FIRST_PAGE) {
+                        firstPageSub = null;
+                    } else {
+                        nextPageSub = null;
+                    }
 
-        Disposable disposable = PageEntityModel.createPageObservable(offset)
-                .subscribeOn(getScheduler())
-                .subscribe(
-                        page -> {
-                            if (offset == 0) {
-                                waitForViewIfNeeded().onFirstPageLoaded(page);
-                            } else {
-                                waitForViewIfNeeded().onNextPageLoaded(page);
-                            }
-                        },
-                        throwable -> {
-                            throwable.printStackTrace();
-
-                            notifyTaskFinished(taskId);
-
-                            if (taskId == TASK_LOAD_FIRST_PAGE) {
-                                firstPageSub = null;
-                            } else {
-                                nextPageSub = null;
-                            }
-
-                            if (!checkIfInterruptedException(throwable)) {
-                                if (offset == 0) {
-                                    waitForViewIfNeeded().onFirstPageLoadFailed(0);
-                                } else {
-                                    waitForViewIfNeeded().onNextPageLoadFailed(0);
-                                }
-                            }
-                        },
-                        () -> {
-                            if (taskId == TASK_LOAD_FIRST_PAGE) {
-                                firstPageSub = null;
-                            } else {
-                                nextPageSub = null;
-                            }
-                            notifyTaskFinished(taskId);
+                    if (!checkIfInterruptedException(throwable)) {
+                        if (taskId == TASK_LOAD_FIRST_PAGE) {
+                            waitForViewIfNeeded().onFirstPageLoadFailed(0);
+                        } else {
+                            waitForViewIfNeeded().onNextPageLoadFailed(0);
                         }
-                );
+                    }
+                },
+                () -> {
+                    if (taskId == TASK_LOAD_FIRST_PAGE) {
+                        firstPageSub = null;
+                    } else {
+                        nextPageSub = null;
+                    }
+                },
+                true);
 
         if (offset == 0) {
             firstPageSub = disposable;
@@ -117,14 +108,12 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
 
     @SuppressWarnings({"ConstantConditions"})
     public void processPickedItem(final AwesomeEntity entity) {
-        notifyTaskAdded(TASK_PROCESS_PICKED_DATA);
-        ProcessEntityModel.createObservable(entity)
-                .subscribeOn(getScheduler())
-                .subscribe(
-                        awesomeEntity -> waitForViewIfNeeded().onPickedItemProcessed(awesomeEntity),
-                        throwable -> notifyTaskFinished(TASK_PROCESS_PICKED_DATA),
-                        () -> notifyTaskFinished(TASK_PROCESS_PICKED_DATA)
-                );
+        execute(ProcessEntityModel.createObservable(entity),
+                TASK_PROCESS_PICKED_DATA,
+                awesomeEntity -> waitForViewIfNeeded().onPickedItemProcessed(awesomeEntity),
+                null,
+                null,
+                false);
     }
 
     @Override
@@ -142,7 +131,6 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
         if (firstPageSub != null && !firstPageSub.isDisposed()) {
             firstPageSub.dispose();
             firstPageSub = null;
-            notifyTaskFinished(TASK_LOAD_FIRST_PAGE);
         }
     }
 
@@ -151,7 +139,6 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
         if (nextPageSub != null && !nextPageSub.isDisposed()) {
             nextPageSub.dispose();
             nextPageSub = null;
-            notifyTaskFinished(TASK_LOAD_NEXT_PAGE);
         }
     }
 

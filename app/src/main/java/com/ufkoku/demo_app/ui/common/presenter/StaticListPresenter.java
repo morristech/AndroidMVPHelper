@@ -21,15 +21,14 @@ public class StaticListPresenter<V extends StaticListPresenter.PresenterListener
     }
 
     public void fetchData() {
-        notifyTaskAdded(TASK_FETCH_DATA);
-
-        PageEntityModel.createPageObservable(0)
-                .subscribeOn(getScheduler())
-                .subscribe(
-                        page -> waitForViewIfNeeded().onDataLoaded(page.getData()),
-                        throwable -> notifyTaskFinished(TASK_FETCH_DATA),
-                        () -> notifyTaskFinished(TASK_FETCH_DATA)
-                );
+        execute(
+                PageEntityModel.createPageObservable(0),
+                TASK_FETCH_DATA,
+                page -> waitForViewIfNeeded().onDataLoaded(page.getData()),
+                null,
+                null,
+                false
+        );
     }
 
     public interface PresenterListener extends ITaskListener {
