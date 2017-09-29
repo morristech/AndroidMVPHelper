@@ -45,19 +45,46 @@ abstract class BaseAsyncRxSchedulerPresenter<T : IAsyncPresenter.ITaskListener> 
         super.cancel()
     }
 
-    fun <T> execute(observable: Observable<T>, id: Int, onNext: Consumer<T>?, onError: Consumer<Throwable>?, onComplete: Action?): Disposable {
-        return IdDisposable(observable, id, onNext, onError, onComplete)
+    /**
+     * Executes and provide results to subscription inside provided schedulers.
+     * */
+    fun <T> execute(observable: Observable<T>,
+                    subscribeOn: Scheduler,
+                    observeOn: Scheduler,
+                    id: Int,
+                    onNext: Consumer<T>? = null,
+                    onError: Consumer<Throwable>? = null,
+                    onComplete: Action? = null,
+                    provideInterruptedException: Boolean = false): Disposable {
+        return IdDisposable(observable.subscribeOn(subscribeOn).observeOn(observeOn),
+                            id,
+                            onNext,
+                            onError,
+                            onComplete,
+                            provideInterruptedException)
     }
 
-    private inner class IdDisposable<T>(observable: Observable<T>,
-                                        val id: Int,
-                                        val onNext: Consumer<T>?,
-                                        val onError: Consumer<Throwable>?,
-                                        val onComplete: Action?) : Disposable {
+    /**
+     * Executes and provide results to subscription inside presenter's scheduler.
+     *
+     * Perfect to use with mvp_view_wrap module.
+     *
+     * */
+    fun <T> execute(observable: Observable<T>,
+                    taskId: Int,
+                    onNext: Consumer<T>? = null,
+                    onError: Consumer<Throwable>? = null,
+                    onComplete: Action? = null,
+                    provideInterruptedException: Boolean = false): Disposable {
+        return execute(observable, scheduler!!, scheduler!!, taskId, onNext, onError, onComplete, provideInterruptedException)
+    }
 
-        init {
-            this@BaseAsyncRxSchedulerPresenter.notifyTaskAdded(id)
-        }
+    protected inner class IdDisposable<T>(observable: Observable<T>,
+                                          val id: Int,
+                                          val onNext: Consumer<T>?,
+                                          val onError: Consumer<Throwable>?,
+                                          val onComplete: Action?,
+                                          val provideInterruptedException: Boolean) : Disposable {
 
         private var taskFinishedNotified = false
 
@@ -66,26 +93,29 @@ abstract class BaseAsyncRxSchedulerPresenter<T : IAsyncPresenter.ITaskListener> 
                     onNext?.accept(it)
                 },
                 {
-                    if (!this@BaseAsyncRxSchedulerPresenter.checkIfInterruptedException(it)) {
+                    if (provideInterruptedException || !this@BaseAsyncRxSchedulerPresenter.checkIfInterruptedException(it)) {
                         onError?.accept(it)
                     }
-                    notifyTaskFinishedIfPossible()
+                    notifyTaskFinishedIfNeeded()
                 },
                 {
                     onComplete?.run()
-                    notifyTaskFinishedIfPossible()
+                    notifyTaskFinishedIfNeeded()
+                },
+                {
+                    this@BaseAsyncRxSchedulerPresenter.notifyTaskAdded(id)
                 })
 
         override fun dispose() {
             innerDisposable.dispose()
-            notifyTaskFinishedIfPossible()
+            notifyTaskFinishedIfNeeded()
         }
 
         override fun isDisposed(): Boolean {
             return innerDisposable.isDisposed
         }
 
-        private fun notifyTaskFinishedIfPossible() {
+        private fun notifyTaskFinishedIfNeeded() {
             synchronized(this) {
                 if (!taskFinishedNotified) {
                     taskFinishedNotified = true

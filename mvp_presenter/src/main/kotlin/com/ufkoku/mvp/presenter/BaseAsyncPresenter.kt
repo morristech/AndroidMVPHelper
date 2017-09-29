@@ -17,6 +17,10 @@
 
 package com.ufkoku.mvp.presenter
 
+import android.os.Handler
+import android.os.Looper
+import android.support.annotation.CallSuper
+import android.support.annotation.WorkerThread
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import java.util.*
 import java.util.concurrent.AbstractExecutorService
@@ -26,19 +30,25 @@ import java.util.concurrent.Future
 open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter<T>(), IAsyncPresenter<T> {
 
     companion object {
+
+        @JvmField
         val TASK_ADDED = 0
+
+        @JvmField
         val TASK_FINISHED = 1
+
     }
 
     /**
      * Variable is used in method waitForViewIfNeeded().
      * */
-    val lockObject = Object()
+    protected val lockObject = Object()
 
     private var taskStatusListener: IAsyncPresenter.ITaskListener? = null
 
     private val runningTasks: MutableList<Int> = Collections.synchronizedList(LinkedList())
 
+    @CallSuper
     override fun onAttachView(view: T) {
         synchronized(lockObject) {
             super.onAttachView(view)
@@ -51,6 +61,7 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
         }
     }
 
+    @CallSuper
     override fun onDetachView() {
         synchronized(lockObject) {
             super.onDetachView()
@@ -58,6 +69,7 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
         }
     }
 
+    @CallSuper
     override fun cancel() {
         runningTasks.clear()
         notifyLockObject()
@@ -73,7 +85,7 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
         }
     }
 
-    fun <T> execute(executor: AbstractExecutorService, callable: Callable<T>, id: Int): Future<T> {
+    fun <T> execute(callable: Callable<T>, executor: AbstractExecutorService, id: Int): Future<T> {
         notifyTaskAdded(id)
         return executor.submit(Callable<T> {
             try {
@@ -84,12 +96,11 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
         })
     }
 
-    fun execute(executor: AbstractExecutorService, runnable: Runnable, id: Int): Future<Void> {
+    fun execute(runnable: Runnable, executor: AbstractExecutorService, id: Int): Future<Unit> {
         notifyTaskAdded(id)
-        return executor.submit(Callable<Void> {
+        return executor.submit(Callable<Unit> {
             try {
                 runnable.run()
-                return@Callable null
             } finally {
                 notifyTaskFinished(id)
             }
@@ -105,6 +116,7 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
      *
      * @throws RuntimeException with cause InterruptedException, if thread was interrupted
      * */
+    @WorkerThread
     fun waitForViewIfNeeded(): T {
         synchronized(lockObject) {
             if (Thread.interrupted()) {
@@ -121,7 +133,7 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
         }
     }
 
-    fun checkIfInterruptedException(ex: Throwable?): Boolean {
+    protected fun checkIfInterruptedException(ex: Throwable?): Boolean {
         var currentLevel = ex
         while (currentLevel != null) {
             if (currentLevel is InterruptedException) {
@@ -142,7 +154,7 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
         synchronized(lockObject) {
             taskStatusListener = this.taskStatusListener
         }
-        taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED)
+        postOnMainThread { taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED) }
     }
 
     /**
@@ -154,7 +166,19 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
         synchronized(lockObject) {
             taskStatusListener = this.taskStatusListener
         }
-        taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED)
+        postOnMainThread { taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED) }
+    }
+
+    protected fun isInMainThread(): Boolean {
+        return Looper.getMainLooper() == Looper.myLooper()
+    }
+
+    protected inline fun postOnMainThread(crossinline body: () -> Unit) {
+        if (isInMainThread()) {
+            body()
+        } else {
+            Handler(Looper.getMainLooper()).post { body() }
+        }
     }
 
     fun isTaskRunning(task: Int): Boolean {

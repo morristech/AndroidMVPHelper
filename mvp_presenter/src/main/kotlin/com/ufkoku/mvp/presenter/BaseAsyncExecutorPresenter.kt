@@ -46,11 +46,11 @@ abstract class BaseAsyncExecutorPresenter<T : IAsyncPresenter.ITaskListener> : B
     }
 
     fun <T> execute(callable: Callable<T>, id: Int): Future<T> {
-        return super.execute(executor!!, callable, id)
+        return super.execute(callable, executor!!, id)
     }
 
-    fun execute(runnable: Runnable, id: Int): Future<Void> {
-        return super.execute(executor!!, runnable, id)
+    fun execute(runnable: Runnable, id: Int): Future<Unit> {
+        return super.execute(runnable, executor!!, id)
     }
 
     protected abstract fun createExecutor(): ThreadPoolExecutor
