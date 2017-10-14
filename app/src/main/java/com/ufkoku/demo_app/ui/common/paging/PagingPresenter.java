@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
-public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> implements IPagingSearchablePresenter {
+public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<PagingPresenter.IPresenterView> implements IPagingSearchablePresenter {
 
     public static final int TASK_LOAD_INIT_DATA = 0;
     public static final int TASK_LOAD_FIRST_PAGE = 1;
@@ -146,6 +146,16 @@ public class PagingPresenter extends BaseAsyncRxSchedulerPresenter<IPagingView> 
     public void cancelAllPageRequests() {
         cancelFirstPages();
         cancelNextPages();
+    }
+
+    public interface IPresenterView extends IPagingSearchablePresenter.IPresenterView<AwesomeEntity, PagingResponse<AwesomeEntity>> {
+
+        void onInitDataLoaded(String data);
+
+        void onInitDataLoadFailed(int code);
+
+        void onPickedItemProcessed(AwesomeEntity entity);
+
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AutoSavable
-public class PagingViewState extends BasePagingSearchableViewState<AwesomeEntity, IPagingView> {
+public class PagingViewState extends BasePagingSearchableViewState<AwesomeEntity, PagingViewState.IViewStateView> {
 
     private String initData = null;
 
@@ -49,11 +49,17 @@ public class PagingViewState extends BasePagingSearchableViewState<AwesomeEntity
     }
 
     @Override
-    public void apply(@NotNull IPagingView view) {
+    public void apply(@NotNull IViewStateView view) {
         if (initData != null) {
             view.setInitData(initData);
         }
         super.apply(view);
+    }
+
+    public interface IViewStateView extends BasePagingSearchableViewState.IViewStateView<AwesomeEntity> {
+
+        void setInitData(String data);
+
     }
 
 }

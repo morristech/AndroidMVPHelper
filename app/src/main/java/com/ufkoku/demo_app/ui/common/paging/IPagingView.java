@@ -6,14 +6,6 @@ import com.ufkoku.mvp.list.interfaces.IPagingSearchableView;
 import com.ufkoku.mvp.view.wrap.Wrap;
 
 @Wrap
-public interface IPagingView extends IPagingSearchableView<AwesomeEntity, PagingResponse<AwesomeEntity>> {
-
-    void onInitDataLoaded(String data);
-
-    void onInitDataLoadFailed(int code);
-
-    void setInitData(String data);
-
-    void onPickedItemProcessed(AwesomeEntity entity);
+public interface IPagingView extends IPagingSearchableView<AwesomeEntity, PagingResponse<AwesomeEntity>>, PagingPresenter.IPresenterView, PagingViewState.IViewStateView, PagingAdapter.PagingAdapterListener {
 
 }

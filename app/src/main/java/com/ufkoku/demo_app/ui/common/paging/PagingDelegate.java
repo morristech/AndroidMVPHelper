@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class PagingDelegate extends BasePagingSearchableDelegate<AwesomeEntity, PagingResponse<AwesomeEntity>, IPagingView, PagingPresenter, PagingViewState> implements IPagingView, PagingAdapter.PagingAdapterListener {
+public class PagingDelegate extends BasePagingSearchableDelegate<AwesomeEntity, PagingResponse<AwesomeEntity>, IPagingView, PagingPresenter, PagingViewState> implements IPagingView {
 
     protected TextView tvInitData;
 
@@ -59,7 +59,7 @@ public class PagingDelegate extends BasePagingSearchableDelegate<AwesomeEntity, 
     @NotNull
     @Override
     public PagingAdapter createPagingAdapter(@NotNull LayoutInflater inflater, @NotNull List<AwesomeEntity> items) {
-        if (getRecyclerView() != null){
+        if (getRecyclerView() != null) {
             getRecyclerView().setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         }
         PagingAdapter adapter = new PagingAdapter(inflater, items);

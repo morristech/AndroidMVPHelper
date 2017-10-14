@@ -58,12 +58,9 @@ public class PagingAdapter extends BasePagingAdapter<AwesomeEntity, PagingAdapte
 
             tvTitle = (TextView) itemView;
 
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (getListener() != null && binded != null){
-                        getListener().onItemClicked(binded);
-                    }
+            itemView.setOnClickListener(v -> {
+                if (getListener() != null && binded != null){
+                    getListener().onItemClicked(binded);
                 }
             });
         }
@@ -79,12 +76,9 @@ public class PagingAdapter extends BasePagingAdapter<AwesomeEntity, PagingAdapte
 
         public LoadFailedViewHolder(View itemView) {
             super(itemView);
-            itemView.findViewById(R.id.retryLoad).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (getListener() != null) {
-                        getListener().loadNextPageClicked();
-                    }
+            itemView.findViewById(R.id.retryLoad).setOnClickListener(v -> {
+                if (getListener() != null) {
+                    getListener().loadNextPageClicked();
                 }
             });
         }
