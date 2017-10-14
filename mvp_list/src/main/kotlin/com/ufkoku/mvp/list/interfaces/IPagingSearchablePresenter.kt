@@ -16,6 +16,8 @@
 
 package com.ufkoku.mvp.list.interfaces
 
+import com.ufkoku.mvp_base.presenter.IAsyncPresenter
+
 interface IPagingSearchablePresenter {
 
     fun isFirstPageLoading(): Boolean
@@ -27,5 +29,17 @@ interface IPagingSearchablePresenter {
     fun cancelNextPages()
 
     fun cancelAllPageRequests()
+
+    interface IPresenterView<I, in PR : IPagingResponse<I>> : IAsyncPresenter.ITaskListener {
+
+        fun onFirstPageLoaded(response: PR)
+
+        fun onNextPageLoaded(response: PR)
+
+        fun onNextPageLoadFailed(code: Int)
+
+        fun onFirstPageLoadFailed(code: Int)
+
+    }
 
 }

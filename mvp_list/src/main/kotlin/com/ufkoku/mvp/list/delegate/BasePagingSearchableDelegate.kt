@@ -33,15 +33,12 @@ import com.ufkoku.mvp.list.util.RecyclerViewOnScrollUpdater
 import com.ufkoku.mvp.list.util.StringUtils
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 
-abstract class BasePagingSearchableDelegate<I, in PR : IPagingResponse<I>, in V, P : IPagingSearchablePresenter, VS : BasePagingSearchableViewState<I, V>>
+abstract class BasePagingSearchableDelegate<I, in PR : IPagingResponse<I>, in V : IPagingSearchableView<I, PR>, P : IPagingSearchablePresenter, VS : BasePagingSearchableViewState<I, V>>
     : IPagingSearchableView<I, PR>,
       RecyclerViewOnScrollUpdater.Listener,
       BasePagingAdapter.AdapterListener,
       SearchView.OnQueryTextListener,
-      SwipeRefreshLayout.OnRefreshListener,
-      IAsyncPresenter.ITaskListener
-
-where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
+      SwipeRefreshLayout.OnRefreshListener {
 
     protected var activity: Activity? = null
 
@@ -277,12 +274,16 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             if (viewState.items == null) {
                 viewState.errorCode = code
                 viewState.nextPageFailed = false
-                updateErrorViewVisibility()
+                setFirstPageLoadFailed(code)
             } else {
                 val message = getErrorMessage(StringUtils.isNotNullOrEmpty(viewState.query), code)
                 Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    override fun setFirstPageLoadFailed(code: Int) {
+        updateErrorViewVisibility()
     }
 
     /**
@@ -295,6 +296,10 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
             viewState.nextPageFailed = true
         }
 
+        setNextPageLoadFailed(code)
+    }
+
+    override fun setNextPageLoadFailed(code: Int) {
         val scrollUpdater = this.scrollUpdater
         if (scrollUpdater != null) {
             scrollUpdater.enabled = false
@@ -460,6 +465,7 @@ where V : IPagingSearchableView<I, PR>, V : IAsyncPresenter.ITaskListener {
                 vError!!.visibility = View.VISIBLE
             } else {
                 vError!!.visibility = View.GONE
+                tvErrorMessage!!.text = null
             }
         }
     }

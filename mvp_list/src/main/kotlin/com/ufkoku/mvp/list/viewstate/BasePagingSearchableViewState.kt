@@ -16,11 +16,10 @@
 
 package com.ufkoku.mvp.list.viewstate
 
-import com.ufkoku.mvp.list.interfaces.IPagingSearchableView
 import com.ufkoku.mvp.list.util.StringUtils
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-abstract class BasePagingSearchableViewState<I, in V : IPagingSearchableView<I, *>> : IViewState<V> {
+abstract class BasePagingSearchableViewState<I, in V : BasePagingSearchableViewState.IViewStateView<I>> : IViewState<V> {
 
     companion object {
         @JvmField val NO_ERROR_CODE = -1
@@ -41,11 +40,23 @@ abstract class BasePagingSearchableViewState<I, in V : IPagingSearchableView<I, 
         if (this.items != null) {
             view.setItems(this.items!!, canLoadMore, StringUtils.isNotNullOrEmpty(query))
             if (errorCode != NO_ERROR_CODE && nextPageFailed) {
-                view.onNextPageLoadFailed(errorCode)
+                view.setNextPageLoadFailed(errorCode)
             }
         } else if (errorCode != NO_ERROR_CODE) {
-            view.onFirstPageLoadFailed(errorCode)
+            view.setFirstPageLoadFailed(errorCode)
         }
+    }
+
+    interface IViewStateView<I> {
+
+        fun setQuery(query: String)
+
+        fun setItems(items: MutableList<I>, canLoadMore: Boolean, isSearch: Boolean)
+
+        fun setNextPageLoadFailed(code: Int)
+
+        fun setFirstPageLoadFailed(code: Int)
+
     }
 
 }

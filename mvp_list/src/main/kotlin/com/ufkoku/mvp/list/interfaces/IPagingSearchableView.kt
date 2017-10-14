@@ -16,20 +16,6 @@
 
 package com.ufkoku.mvp.list.interfaces
 
-import com.ufkoku.mvp_base.presenter.IAsyncPresenter
+import com.ufkoku.mvp.list.viewstate.BasePagingSearchableViewState
 
-interface IPagingSearchableView<I, in PR : IPagingResponse<I>> : IAsyncPresenter.ITaskListener {
-
-    fun setQuery(query: String)
-
-    fun onFirstPageLoaded(response: PR)
-
-    fun setItems(items: MutableList<I>, canLoadMore: Boolean, isSearch: Boolean)
-
-    fun onNextPageLoaded(response: PR)
-
-    fun onNextPageLoadFailed(code: Int)
-
-    fun onFirstPageLoadFailed(code: Int)
-
-}
+interface IPagingSearchableView<I, in PR : IPagingResponse<I>> : BasePagingSearchableViewState.IViewStateView<I>, IPagingSearchablePresenter.IPresenterView<I, PR>
