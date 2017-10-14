@@ -1,3 +1,7 @@
+### 3.2.2
+#### Changes  
+* [mvp_list] Refactoring.
+
 ### 3.2.1
 #### Changes  
 * [mvp_presenter] Added 'execute' methods;
