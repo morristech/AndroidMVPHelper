@@ -237,6 +237,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                         if (!saved) {
                             if (typeUtils.isAssignable(fieldData.typeMirror, elementUtils.getTypeElement(Serializable.class.getCanonicalName()).asType())) {
                                 addStatementsForField(saveSpecBuilder, restoreSpecBuilder, fieldData, methodsPair, STATE, IN_STATE, OUT_STATE, "putSerializable", "getSerializable", "set", "get", true);
+                                saved = true;
                             }
                         }
 
