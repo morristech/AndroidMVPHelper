@@ -1,3 +1,7 @@
+### 3.2.3
+#### Changes  
+* [mvp_autosavable] Fix.
+
 ### 3.2.2
 #### Changes  
 * [mvp_list] Refactoring.
