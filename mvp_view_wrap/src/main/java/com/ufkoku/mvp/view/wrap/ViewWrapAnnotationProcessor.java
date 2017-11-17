@@ -25,7 +25,6 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +49,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.tools.Diagnostic;
 
-@SupportedAnnotationTypes({ViewWrapAnnotationProcessor.CLASS_NAME_WRAP})
+import jdk.nashorn.internal.ir.annotations.Ignore;
+
+@SupportedAnnotationTypes({"com.ufkoku.mvp.view.wrap.Wrap"})
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ViewWrapAnnotationProcessor extends AbstractProcessor {
 
@@ -62,14 +63,8 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
     private static final String CLASS_NAME_HANDLER = "android.os.Handler";
     private static final String CLASS_NAME_LOOPER = "android.os.Looper";
 
-    static final String CLASS_NAME_WRAP = "com.ufkoku.mvp.view.wrap.Wrap";
-    private static final String CLASS_NAME_IGNORE = "com.ufkoku.mvp.view.wrap.Ignore";
-
     private TypeElement typElementHandler;
     private TypeElement typeElementLooper;
-
-    private Class<? extends Annotation> wrapClass;
-    private Class<? extends Annotation> ignoreClass;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -78,19 +73,12 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
 
         typElementHandler = processingEnv.getElementUtils().getTypeElement(CLASS_NAME_HANDLER);
         typeElementLooper = processingEnv.getElementUtils().getTypeElement(CLASS_NAME_LOOPER);
-
-        try {
-            wrapClass = (Class<? extends Annotation>) Class.forName(CLASS_NAME_WRAP);
-            ignoreClass = (Class<? extends Annotation>) Class.forName(CLASS_NAME_IGNORE);
-        } catch (ClassNotFoundException ex) {
-            throw new RuntimeException(ex);
-        }
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         try {
-            Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(wrapClass);
+            Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(Wrap.class);
             if (elements.size() > 0) {
                 for (Element element : elements) {
                     if (element.getKind() == ElementKind.INTERFACE) {
@@ -215,7 +203,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
             callString = callBuilder.toString();
         }
 
-        if (executableElement.getAnnotation(ignoreClass) == null) {
+        if (executableElement.getAnnotation(Ignore.class) == null) {
             CodeBlock.Builder codeBuilder = CodeBlock.builder();
             codeBuilder.beginControlFlow("if ($T.myLooper() == $T.getMainLooper())", typeElementLooper, typeElementLooper);
             {
