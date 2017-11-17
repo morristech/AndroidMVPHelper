@@ -1,3 +1,7 @@
+### 3.2.4
+#### Changes  
+* [mvp_view_wrap] Fix.
+
 ### 3.2.3
 #### Changes  
 * [mvp_autosavable] Fix.
