@@ -13,7 +13,6 @@
             <option value="$PROJECT_DIR$/mvp_autosavable" />
             <option value="$PROJECT_DIR$/mvp_autosavable_annotation" />
             <option value="$PROJECT_DIR$/mvp_base" />
-            <option value="$PROJECT_DIR$/mvp_list" />
             <option value="$PROJECT_DIR$/mvp_presenter" />
             <option value="$PROJECT_DIR$/mvp_rx2_presenter" />
             <option value="$PROJECT_DIR$/mvp_view_wrap" />

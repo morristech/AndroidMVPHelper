@@ -16,28 +16,30 @@
 
 package com.ufkoku.mvp.presenter
 
+import android.support.annotation.MainThread
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
-import java.util.concurrent.*
+import java.util.concurrent.Callable
+import java.util.concurrent.Future
+import java.util.concurrent.ThreadFactory
+import java.util.concurrent.ThreadPoolExecutor
 
 abstract class BaseAsyncExecutorPresenter<T : IAsyncPresenter.ITaskListener> : BaseAsyncPresenter<T>(), IAsyncPresenter<T> {
 
     protected var executor: ThreadPoolExecutor? = null
 
+    @MainThread
     override fun onAttachView(view: T) {
         var executor = this.executor
         if (executor == null) {
             executor = createExecutor()
-            if (useSaveThreadFactory()) {
-                if (executor.threadFactory !is SaveThreadFactory) {
-                    executor.threadFactory = SaveThreadFactory()
-                }
-            }
             this.executor = executor
+            onExecutorCreated(executor)
         }
 
         super.onAttachView(view)
     }
 
+    @MainThread
     override fun cancel() {
         executor?.shutdownNow()
         executor = null
@@ -45,21 +47,40 @@ abstract class BaseAsyncExecutorPresenter<T : IAsyncPresenter.ITaskListener> : B
         super.cancel()
     }
 
-    fun <T> execute(callable: Callable<T>, id: Int): Future<T> {
-        return super.execute(callable, executor!!, id)
+    /**
+     * Executes callable with Presenter's executor
+     * */
+    fun <T> Callable<T>.execute(id: Int): Future<T> {
+        return this.execute(executor!!, id)
     }
 
-    fun execute(runnable: Runnable, id: Int): Future<Unit> {
-        return super.execute(runnable, executor!!, id)
+    /**
+     * Executes Runnable with Presenter's executor
+     * */
+    fun Runnable.execute(id: Int): Future<Unit> {
+        return this.execute(executor!!, id)
+    }
+
+    /**
+     * Executes lambda with Presenter's executor
+     * */
+    fun <T> execute(task: () -> T, id: Int): Future<T> {
+        return execute(task, executor!!, id)
     }
 
     protected abstract fun createExecutor(): ThreadPoolExecutor
 
-    protected fun useSaveThreadFactory(): Boolean = true
+    protected open fun onExecutorCreated(executor: ThreadPoolExecutor) {
+        if (useSaveThreadFactory()) {
+            if (executor.threadFactory !is SaveThreadFactory) {
+                executor.threadFactory = SaveThreadFactory(executor.threadFactory)
+            }
+        }
+    }
 
-    protected class SaveThreadFactory : ThreadFactory {
+    protected open fun useSaveThreadFactory(): Boolean = true
 
-        private val delegate = Executors.defaultThreadFactory();
+    protected class SaveThreadFactory(private val delegate: ThreadFactory) : ThreadFactory {
 
         override fun newThread(r: Runnable?): Thread {
             val thread = delegate.newThread(r)

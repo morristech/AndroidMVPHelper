@@ -26,7 +26,7 @@ import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.viewstate.IViewState
 
 open class FragmentDelegate<out F, V, P : IPresenter<V>, VS : IViewState<V>>(val fragment: F)
-where F : Fragment, F : IMvpFragment<V, P, VS> {
+        where F : Fragment, F : IMvpFragment<V, P, VS> {
 
     companion object {
         private val KEY_PRESENTER = "com.ufkoku.mvp.delegate.controller.FragmentDelegate.keyPresenter"
@@ -128,7 +128,7 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
     }
 
     fun onDestroy() {
-        if (fragment.isRemoving) {
+        if (!fragment.isStateSaved && (fragment.retainPresenter() || fragment.retainViewState())) {
             val holder: HolderFragment? = HolderFragment.getInstanceIfExist(fragment)
             if (holder != null) {
                 if (fragment.retainPresenter()) {
@@ -140,7 +140,7 @@ where F : Fragment, F : IMvpFragment<V, P, VS> {
             }
         }
 
-        if (!(fragment.retainInstance || fragment.retainPresenter()) || fragment.isRemoving) {
+        if (!fragment.isStateSaved || !(fragment.retainInstance || fragment.retainPresenter())) {
             if (presenter is IAsyncPresenter<*>) {
                 (presenter as IAsyncPresenter<*>).cancel()
             }

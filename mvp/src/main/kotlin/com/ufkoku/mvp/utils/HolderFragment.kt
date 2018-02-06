@@ -21,7 +21,7 @@ class HolderFragment : Fragment() {
         private val holders: WeakHashMap<FragmentManager, HolderFragment> = WeakHashMap()
 
         fun getInstance(fragment: Fragment): HolderFragment {
-            return getInstance(fragment.activity)
+            return getInstance(fragment.activity!!)
         }
 
         fun getInstance(activity: FragmentActivity): HolderFragment {
@@ -29,7 +29,8 @@ class HolderFragment : Fragment() {
         }
 
         fun getInstanceIfExist(fragment: Fragment): HolderFragment? {
-            return getInstanceIfExist(fragment.activity)
+            val activity = fragment.activity
+            return if (activity != null) getInstanceIfExist(activity) else null
         }
 
         fun getInstanceIfExist(activity: FragmentActivity): HolderFragment? {
@@ -76,8 +77,8 @@ class HolderFragment : Fragment() {
         retainInstance = true
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putInt(KEY_NEXT_ID, nextId)
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt(KEY_NEXT_ID, nextId)
         super.onSaveInstanceState(outState)
     }
 

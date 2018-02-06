@@ -16,114 +16,102 @@
 
 package com.ufkoku.mvp.presenter.rx2
 
+import android.support.annotation.MainThread
 import com.ufkoku.mvp.presenter.BaseAsyncExecutorPresenter
-import com.ufkoku.mvp.presenter.BaseAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Scheduler
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Action
+import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.ThreadPoolExecutor
 
 abstract class BaseAsyncRxSchedulerPresenter<T : IAsyncPresenter.ITaskListener> : BaseAsyncExecutorPresenter<T>() {
 
     var scheduler: Scheduler? = null
 
-    override fun onAttachView(view: T) {
-        super.onAttachView(view)
-        if (scheduler == null) {
-            scheduler = Schedulers.from(executor)
-        }
-    }
-
+    @MainThread
     override fun cancel() {
         if (scheduler != null) {
+            scheduler?.shutdown()
             scheduler = null
         }
         super.cancel()
     }
 
-    /**
-     * Executes and provide results to subscription inside provided schedulers.
-     * */
-    fun <T> execute(observable: Observable<T>,
-                    subscribeOn: Scheduler,
-                    observeOn: Scheduler,
-                    id: Int,
-                    onNext: Consumer<T>? = null,
-                    onError: Consumer<Throwable>? = null,
-                    onComplete: Action? = null,
-                    provideInterruptedException: Boolean = false): Disposable {
-        return IdDisposable(observable.subscribeOn(subscribeOn).observeOn(observeOn),
-                            id,
-                            onNext,
-                            onError,
-                            onComplete,
-                            provideInterruptedException)
+    override fun onExecutorCreated(executor: ThreadPoolExecutor) {
+        super.onExecutorCreated(executor)
+        if (scheduler == null) {
+            scheduler = Schedulers.from(executor)
+            onSchedulerCreated()
+        }
+    }
+
+    protected open fun onSchedulerCreated() {
+
     }
 
     /**
-     * Executes and provide results to subscription inside presenter's scheduler.
-     *
-     * Perfect to use with mvp_view_wrap module.
-     *
+     *  Adds id to observable
      * */
-    fun <T> execute(observable: Observable<T>,
-                    taskId: Int,
-                    onNext: Consumer<T>? = null,
-                    onError: Consumer<Throwable>? = null,
-                    onComplete: Action? = null,
-                    provideInterruptedException: Boolean = false): Disposable {
-        return execute(observable, scheduler!!, scheduler!!, taskId, onNext, onError, onComplete, provideInterruptedException)
+    open fun <T> Observable<T>.withId(taskId: Int): Observable<T> {
+        return this.doOnSubscribe({ notifyTaskAdded(taskId) })
+                .doFinally { notifyTaskFinished(taskId) }
     }
 
-    protected inner class IdDisposable<T>(observable: Observable<T>,
-                                          val id: Int,
-                                          val onNext: Consumer<T>?,
-                                          val onError: Consumer<Throwable>?,
-                                          val onComplete: Action?,
-                                          val provideInterruptedException: Boolean) : Disposable {
+    /**
+     *  Adds id to flowable
+     * */
+    open fun <T> Flowable<T>.withId(taskId: Int): Flowable<T> {
+        return this.doOnSubscribe({ notifyTaskAdded(taskId) })
+                .doFinally { notifyTaskFinished(taskId) }
+    }
 
-        private var taskFinishedNotified = false
+    /**
+     *  Adds id to Single
+     * */
+    open fun <T> Single<T>.withId(taskId: Int): Single<T> {
+        return this.doOnSubscribe({ notifyTaskAdded(taskId) })
+                .doFinally { notifyTaskFinished(taskId) }
+    }
 
-        private val innerDisposable = observable.subscribe(
-                {
-                    onNext?.accept(it)
-                },
-                {
-                    if (provideInterruptedException || !this@BaseAsyncRxSchedulerPresenter.checkIfInterruptedException(it)) {
-                        onError?.accept(it)
-                    }
-                    notifyTaskFinishedIfNeeded()
-                },
-                {
-                    onComplete?.run()
-                    notifyTaskFinishedIfNeeded()
-                },
-                {
-                    this@BaseAsyncRxSchedulerPresenter.notifyTaskAdded(id)
-                })
-
-        override fun dispose() {
-            innerDisposable.dispose()
-            notifyTaskFinishedIfNeeded()
-        }
-
-        override fun isDisposed(): Boolean {
-            return innerDisposable.isDisposed
-        }
-
-        private fun notifyTaskFinishedIfNeeded() {
-            synchronized(this) {
-                if (!taskFinishedNotified) {
-                    taskFinishedNotified = true
-                    this@BaseAsyncRxSchedulerPresenter.notifyTaskFinished(id)
-                }
+    /**
+     *  Filter interrupted exception
+     * */
+    open fun <T> Observable<T>.catchInterruptedException(): Observable<T> {
+        return this.onErrorResumeNext { t: Throwable ->
+            if (t.isInterruptedException()) {
+                Observable.empty()
+            } else {
+                throw t
             }
         }
+    }
 
+    /**
+     *  Filter interrupted exception
+     * */
+    open fun <T> Flowable<T>.catchInterruptedException(): Flowable<T> {
+        return this.onErrorResumeNext { t: Throwable ->
+            if (t.isInterruptedException()) {
+                Flowable.empty()
+            } else {
+                throw t
+            }
+        }
+    }
+
+    open fun interruptedCatcher(consumer: ((Throwable) -> Unit)? = null): (Throwable) -> Unit {
+        return { throwable ->
+            if (!throwable.isInterruptedException()) consumer?.invoke(throwable)
+        }
+    }
+
+    open fun interruptedCatcher(consumer: Consumer<in Throwable>?): (Throwable) -> Unit {
+        return { throwable ->
+            if (!throwable.isInterruptedException()) consumer?.accept(throwable)
+        }
     }
 
 }

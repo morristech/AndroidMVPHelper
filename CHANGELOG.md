@@ -1,3 +1,14 @@
+### 4.0.1
+#### Changes  
+* Global refactoring;
+* Removed view injections, use kotlin android extensions;
+* Presenters now use more features of kotlin;
+* Names of some methods in presenter are changed;
+* Added new methods to presenters;
+* Dependencies updates;
+* Demo app is moved to kotlin;
+* Added Leak Canary to demo app; 
+
 ### 3.2.4
 #### Changes  
 * [mvp_view_wrap] Fix.
@@ -31,7 +42,7 @@
 * [mvp_list] Refactoring of delegate, it is now more flexible;
 * [mvp_list] Added new BaseMvpListFragment, BaseMvpListDialogFragment, BaseMvpListActivity;
 * [mvp_autosable] Now throws exception, if it is unable to save field to Bundle automatically;
-* [mvp_presenter] All async presenters' views must inmplement IAsyncPresenter.ITaskListener.
+* [mvp_presenter] All async presenters' views must implement IAsyncPresenter.ITaskListener.
 
 ### 2.4.13
 #### Changes

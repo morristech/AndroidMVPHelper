@@ -64,25 +64,14 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 }
-buildscript {
-    ext.kotlin_version = kotlin_version
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    api project(':mvp_presenter')
 
-    compile project(':mvp_presenter')
+    api 'io.reactivex.rxjava2:rxjava:2.1.9'
+    api 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-    compile 'io.reactivex.rxjava2:rxjava:2.1.5'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
 apply from: '../installv1.gradle'

@@ -23,7 +23,8 @@ import com.ufkoku.mvp_base.viewstate.IViewState
 interface IMvpFragment<V, P : IPresenter<V>, VS : IViewState<V>> : IElementsHolder<V, P, VS>, ILifecycleObservable {
 
     /**
-     * This method is called when ui, view state and presenter are initialized, and viewState.apply() event called
+     * This method is called when ui, view state and presenter are initialized, and viewState.apply() method called.
+     * In other words this callback notifies you, that screen is totally ready.
      * */
     fun onInitialized(presenter: P, viewState: VS)
 

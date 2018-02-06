@@ -26,9 +26,11 @@ import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -126,6 +128,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addTypeVariables(typeVariableNames)
                 .addSuperinterface(TypeName.get(wrappedElement.asType()))
+                .addSuperinterface(IWrapped.class)
                 .addField(wrappedFieldSpec)
                 .addField(mainHandlerFieldSpec)
                 .addMethod(constructor)
@@ -137,7 +140,25 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
     }
 
     private Set<MethodSpec> createMethodWrapsForDeclaredType(TypeElement typeElement, DeclaredType declaredType) {
-        Set<MethodSpec> methodSpecs = new HashSet<>();
+        Set<MethodSpec> methodSpecs = new TreeSet<>(new Comparator<MethodSpec>() {
+            @Override
+            public int compare(MethodSpec o1, MethodSpec o2) {
+                if (o1.name.equals(o2.name)) {
+                    if (o1.parameters.size() == o2.parameters.size() && o1.parameters.size() > 0) {
+                        for (int i = 0; i < o1.parameters.size(); i++) {
+                            TypeName o1param = o1.parameters.get(i).type;
+                            TypeName o2param = o2.parameters.get(i).type;
+                            if (!o1param.equals(o2param)) {
+                                return o1param.toString().compareTo(o2.toString());
+                            }
+                        }
+                    } else {
+                        return o1.parameters.size() - o2.parameters.size();
+                    }
+                }
+                return o1.name.compareTo(o2.name);
+            }
+        });
 
         for (Element element : typeElement.getEnclosedElements()) {
             if (element.getKind() == ElementKind.METHOD) {
@@ -203,7 +224,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
             callString = callBuilder.toString();
         }
 
-        if (executableElement.getAnnotation(Ignore.class) == null) {
+        if (executableElement.getAnnotation(DontWrap.class) == null) {
             CodeBlock.Builder codeBuilder = CodeBlock.builder();
             codeBuilder.beginControlFlow("if ($T.myLooper() == $T.getMainLooper())", typeElementLooper, typeElementLooper);
             {

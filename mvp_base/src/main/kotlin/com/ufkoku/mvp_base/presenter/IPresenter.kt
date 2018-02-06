@@ -16,10 +16,14 @@
 
 package com.ufkoku.mvp_base.presenter
 
-interface IPresenter<in T> {
+import android.support.annotation.MainThread
 
-    fun onAttachView(view: T)
+interface IPresenter<V> {
 
+    @MainThread
+    fun onAttachView(view: V)
+
+    @MainThread
     fun onDetachView()
 
 }

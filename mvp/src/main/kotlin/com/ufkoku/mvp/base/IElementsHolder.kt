@@ -24,21 +24,16 @@ interface IElementsHolder<V, out P : IPresenter<V>, out VS : IViewState<V>> {
     /**
      * Return true if presenter must be retained accross fragment or activity recreations
      *
-     * Note: it must be constant value
+     * Note: it must be constant value to prevent leaks
      * */
     fun retainPresenter(): Boolean = false
 
     /**
      * Return true if view state must be retained accross fragment or activity recreations
      *
-     * Note: it must be constant value
+     * Note: it must be constant value to prevent leaks
      * */
     fun retainViewState(): Boolean = false
-
-    /**
-     * Return true if you want all views be nulled in onDestroyView()/onDestroy calls
-     * */
-    fun nullViews(): Boolean = false
 
     /**
      * Return object that will be passed to presenter and view state as callback.

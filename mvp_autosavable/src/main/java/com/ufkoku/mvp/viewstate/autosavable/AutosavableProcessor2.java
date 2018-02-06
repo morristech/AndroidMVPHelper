@@ -25,7 +25,6 @@ import com.squareup.javapoet.TypeVariableName;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -382,7 +381,7 @@ public class AutosavableProcessor2 extends AbstractProcessor {
                 if (!element.getModifiers().contains(Modifier.STATIC)
                         && !element.getModifiers().contains(Modifier.FINAL)
                         && !element.getModifiers().contains(Modifier.TRANSIENT)
-                        && element.getAnnotation(Ignore.class) == null) {
+                        && element.getAnnotation(DontSave.class) == null) {
 
                     FieldData fieldData = new FieldData(
                             typeData,

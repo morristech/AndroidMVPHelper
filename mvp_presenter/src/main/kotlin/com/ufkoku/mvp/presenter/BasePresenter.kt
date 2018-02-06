@@ -18,11 +18,11 @@ package com.ufkoku.mvp.presenter
 
 import com.ufkoku.mvp_base.presenter.IPresenter
 
-open class BasePresenter<T> : IPresenter<T> {
+open class BasePresenter<V> : IPresenter<V> {
 
-    protected open var view: T? = null
+    protected open var view: V? = null
 
-    override fun onAttachView(view: T) {
+    override fun onAttachView(view: V) {
         this.view = view
     }
 

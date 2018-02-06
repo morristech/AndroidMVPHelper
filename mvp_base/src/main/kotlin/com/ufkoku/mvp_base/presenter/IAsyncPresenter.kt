@@ -16,8 +16,11 @@
 
 package com.ufkoku.mvp_base.presenter
 
-interface IAsyncPresenter<in T : IAsyncPresenter.ITaskListener> : IPresenter<T> {
+import android.support.annotation.MainThread
 
+interface IAsyncPresenter<V : IAsyncPresenter.ITaskListener> : IPresenter<V> {
+
+    @MainThread
     fun cancel()
 
     interface ITaskListener {

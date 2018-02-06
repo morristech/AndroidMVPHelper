@@ -127,7 +127,7 @@ open class FragmentLifecycleObservable : BaseLifecycleObservable() {
         invokeMethodsFromMap(onStopListeners, fragment)
     }
 
-    open fun onSaveInstance(fragment: Fragment, savedInstance: Bundle?) {
+    open fun onSaveInstance(fragment: Fragment, savedInstance: Bundle) {
         invokeMethodsFromMap(onSaveInstanceListeners, fragment, savedInstance)
     }
 

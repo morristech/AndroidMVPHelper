@@ -18,16 +18,13 @@ package com.ufkoku.mvp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import com.ufkoku.mvp.base.IMvpActivity
 import com.ufkoku.mvp.delegate.controller.ActivityDelegate
 import com.ufkoku.mvp.delegate.observable.ActivityLifecycleObservable
-import com.ufkoku.mvp.utils.NullerUtil
-import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
-import com.ufkoku.mvp.utils.view_injection.ViewInjector
-import com.ufkoku.mvp_base.view.lifecycle.ILifecycleObservable
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.viewstate.IViewState
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 abstract class BaseMvpActivity<V, P : IPresenter<V>, VS : IViewState<V>> : AppCompatActivity(), IMvpActivity<V, P, VS> {
 
@@ -36,15 +33,13 @@ abstract class BaseMvpActivity<V, P : IPresenter<V>, VS : IViewState<V>> : AppCo
 
     private val lifecycleDelegate: ActivityLifecycleObservable = ActivityLifecycleObservable()
 
-    protected val presenter: P?
-        get() {
-            return delegate.presenter
-        }
+    protected val presenter: P? by object : ReadOnlyProperty<BaseMvpActivity<V, P, VS>, P?> {
+        override fun getValue(thisRef: BaseMvpActivity<V, P, VS>, property: KProperty<*>): P? = delegate.presenter
+    }
 
-    protected val viewState: VS?
-        get() {
-            return delegate.viewState
-        }
+    protected val viewState: VS? by object : ReadOnlyProperty<BaseMvpActivity<V, P, VS>, VS?> {
+        override fun getValue(thisRef: BaseMvpActivity<V, P, VS>, property: KProperty<*>): VS? = delegate.viewState
+    }
 
     //-----------------------------------------------------------------------------------------//
 
@@ -52,13 +47,6 @@ abstract class BaseMvpActivity<V, P : IPresenter<V>, VS : IViewState<V>> : AppCo
         super.onCreate(savedInstanceState)
         delegate.onCreate(savedInstanceState)
         lifecycleDelegate.onCreate(this, savedInstanceState)
-    }
-
-    override fun createView() {
-        if (ViewInjector.checkAnnotation(this)) {
-            val view = ViewInjector.injectViews(this, this, BaseMvpActivity::class.java, null)
-            setContentView(view)
-        }
     }
 
     override fun onStart() {
@@ -91,9 +79,6 @@ abstract class BaseMvpActivity<V, P : IPresenter<V>, VS : IViewState<V>> : AppCo
         lifecycleDelegate.onDestroy(this)
         delegate.onDestroy()
         super.onDestroy()
-        if (nullViews()) {
-            this.nullAllFields(View::class.java, BaseMvpActivity::class.java)
-        }
     }
 
     //-----------------------------------------------------------------------------------------//

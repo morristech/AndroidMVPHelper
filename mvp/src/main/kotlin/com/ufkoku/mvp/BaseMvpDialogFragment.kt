@@ -20,38 +20,35 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.ufkoku.mvp.base.IMvpFragment
 import com.ufkoku.mvp.delegate.controller.FragmentDelegate
 import com.ufkoku.mvp.delegate.observable.FragmentLifecycleObservable
-import com.ufkoku.mvp.utils.NullerUtil
-import com.ufkoku.mvp.utils.NullerUtil.nullAllFields
-import com.ufkoku.mvp.utils.view_injection.ViewInjector
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.viewstate.IViewState
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 @SuppressLint("LongLogTag")
 abstract class BaseMvpDialogFragment<V, P : IPresenter<V>, VS : IViewState<V>> : DialogFragment(), IMvpFragment<V, P, VS> {
 
     companion object {
+
         private val TAG = "BaseMvpDialogFragment"
+
     }
 
     private val delegate: FragmentDelegate<BaseMvpDialogFragment<V, P, VS>, V, P, VS> = FragmentDelegate(this)
 
     private val lifecycleDelegate: FragmentLifecycleObservable = FragmentLifecycleObservable()
 
-    protected val presenter: P?
-        get() {
-            return delegate.presenter
-        }
+    protected val presenter: P? by object : ReadOnlyProperty<BaseMvpDialogFragment<V, P, VS>, P?> {
+        override fun getValue(thisRef: BaseMvpDialogFragment<V, P, VS>, property: KProperty<*>): P? = delegate.presenter
+    }
 
-    protected val viewState: VS?
-        get() {
-            return delegate.viewState
-        }
+    protected val viewState: VS? by object : ReadOnlyProperty<BaseMvpDialogFragment<V, P, VS>, VS?> {
+        override fun getValue(thisRef: BaseMvpDialogFragment<V, P, VS>, property: KProperty<*>): VS? = delegate.viewState
+    }
 
     //---------------------------------------------------------------------------------------//
 
@@ -64,14 +61,6 @@ abstract class BaseMvpDialogFragment<V, P : IPresenter<V>, VS : IViewState<V>> :
         super.onCreate(savedInstanceState)
         delegate.onCreate(savedInstanceState)
         lifecycleDelegate.onCreate(this, savedInstanceState)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        if (ViewInjector.checkAnnotation(this)) {
-            return ViewInjector.injectViews(context, this, BaseMvpDialogFragment::class.java, container)
-        } else {
-            return super.onCreateView(inflater, container, savedInstanceState)
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -105,7 +94,7 @@ abstract class BaseMvpDialogFragment<V, P : IPresenter<V>, VS : IViewState<V>> :
         super.onStop()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         delegate.onSaveInstanceState(outState)
         lifecycleDelegate.onSaveInstance(this, outState)
         super.onSaveInstanceState(outState)
@@ -115,9 +104,6 @@ abstract class BaseMvpDialogFragment<V, P : IPresenter<V>, VS : IViewState<V>> :
         lifecycleDelegate.onDestroyView(this)
         delegate.onDestroyView()
         super.onDestroyView()
-        if (nullViews()) {
-            this.nullAllFields(View::class.java, BaseMvpDialogFragment::class.java)
-        }
     }
 
     override fun onDestroy() {

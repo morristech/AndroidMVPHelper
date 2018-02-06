@@ -64,22 +64,10 @@ android {
     }
 }
 
-buildscript {
-    ext.kotlin_version = kotlin_version
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    api project(':mvp_base')
 
-    compile project(':mvp_base')
-
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
 apply from: '../installv1.gradle'

@@ -4,7 +4,8 @@ repositories {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlin.android.extensions'
 
 android {
     compileSdkVersion = Integer.parseInt(compileApiVersion)
@@ -34,34 +35,48 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    compile "com.android.support:appcompat-v7:" + supportVersion
-    compile "com.android.support:recyclerview-v7:" + supportVersion
+    implementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
 
-    compile project(":mvp")
-    compile project(":mvp_rx2_presenter")
-    compile project(":mvp_list")
+    implementation "com.android.support:appcompat-v7:" + supportVersion
+    implementation "com.android.support:recyclerview-v7:" + supportVersion
 
-    compile project(":mvp_autosavable_annotation")
-    annotationProcessor project(":mvp_autosavable")
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    compile project(":mvp_view_wrap_annotation")
-    annotationProcessor project(":mvp_view_wrap")
+    implementation project(":mvp")
+    implementation project(":mvp_rx2_presenter")
+
+    implementation project(":mvp_autosavable_annotation")
+    kapt project(":mvp_autosavable")
+
+    implementation project(":mvp_view_wrap_annotation")
+    kapt project(":mvp_view_wrap")
 
 //    def mvp_ver = version_name
 //
-//    compile "com.ufkoku.mvp:mvp:$mvp_ver"
-//    compile "com.ufkoku.mvp:mvp_rx2_presenter:$mvp_ver"
-//    compile "com.ufkoku.mvp:mvp_list:$mvp_ver"
+//    implementation "com.ufkoku.mvp:mvp:$mvp_ver"
+//    implementation "com.ufkoku.mvp:mvp_rx2_presenter:$mvp_ver"
 //
-//    compile("com.ufkoku.mvp:mvp_autosavable_annotation:$mvp_ver")
+//    implementation("com.ufkoku.mvp:mvp_autosavable_annotation:$mvp_ver")
 //    annotationProcessor("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")
 //
-//    compile("com.ufkoku.mvp:mvp_view_wrap_annotation:$mvp_ver")
+//    implementation("com.ufkoku.mvp:mvp_view_wrap_annotation:$mvp_ver")
 //    annotationProcessor("com.ufkoku.mvp:mvp_view_wrap:$mvp_ver")
 
+}
+
+kapt {
+    generateStubs = true
+}
+
+androidExtensions {
+    experimental = true
 }

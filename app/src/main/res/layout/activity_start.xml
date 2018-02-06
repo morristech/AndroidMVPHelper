@@ -24,22 +24,10 @@
             android:text="Savable Activity" />
 
         <Button
-            android:id="@+id/pagingActivity"
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:text="Paging Activity" />
-
-        <Button
             android:id="@+id/fragments"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:text="Fragments" />
-
-        <Button
-            android:id="@+id/pagingFragment"
-            android:layout_width="180dp"
-            android:layout_height="wrap_content"
-            android:text="Paging Fragment" />
 
     </LinearLayout>
 

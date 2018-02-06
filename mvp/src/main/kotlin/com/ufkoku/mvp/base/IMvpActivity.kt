@@ -28,7 +28,8 @@ interface IMvpActivity<V, P : IPresenter<V>, VS : IViewState<V>> : IElementsHold
     fun createView()
 
     /**
-     * This method is called when ui, view state and presenter are initialized, and viewState.apply() event called
+     * This method is called when ui, view state and presenter are initialized, and viewState.apply() method called.
+     * In other words this callback notifies you, that screen is totally ready.
      * */
     fun onInitialized(presenter: P, viewState: VS)
 

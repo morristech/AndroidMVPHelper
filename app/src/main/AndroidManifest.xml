@@ -16,11 +16,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.activity.retainable.static_list.RetainableActivity" android:label="Retainable"/>
-
         <activity android:name=".ui.activity.static_list.StaticListActivity" android:label="Savable"/>
-
-        <activity android:name=".ui.activity.paging_list.PagingActivity"/>
 
         <activity android:name=".ui.fragments.FragmentsActivity" android:label="Fragments"/>
 

@@ -24,8 +24,8 @@ import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IPresenter
 import com.ufkoku.mvp_base.viewstate.IViewState
 
-open class ActivityDelegate<out A, V, P : IPresenter<V>, VS : IViewState<V>>(val activity: A)
-where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
+open class ActivityDelegate<A, V, P : IPresenter<V>, VS : IViewState<V>>(val activity: A)
+        where A : AppCompatActivity, A : IMvpActivity<V, P, VS> {
 
     companion object {
         private val KEY_PRESENTER = "com.ufkoku.mvp.delegate.controller.ActivityDelegate.keyPresenter"

@@ -20,6 +20,7 @@ package com.ufkoku.mvp.presenter
 import android.os.Handler
 import android.os.Looper
 import android.support.annotation.CallSuper
+import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import java.util.*
@@ -27,80 +28,94 @@ import java.util.concurrent.AbstractExecutorService
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 
-open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter<T>(), IAsyncPresenter<T> {
+open class BaseAsyncPresenter<V : IAsyncPresenter.ITaskListener> : BasePresenter<V>(), IAsyncPresenter<V> {
 
     companion object {
-
-        @JvmField
         val TASK_ADDED = 0
-
-        @JvmField
         val TASK_FINISHED = 1
-
     }
 
     /**
-     * Variable is used in method waitForViewIfNeeded().
+     * Variable is used in method waitForView().
      * */
-    protected val lockObject = Object()
+    protected val viewSyncObject = Object()
 
     private var taskStatusListener: IAsyncPresenter.ITaskListener? = null
 
     private val runningTasks: MutableList<Int> = Collections.synchronizedList(LinkedList())
 
+    private val waitingResults: MutableList<((V) -> Unit)> = LinkedList()
+
     @CallSuper
-    override fun onAttachView(view: T) {
-        synchronized(lockObject) {
+    @MainThread
+    override fun onAttachView(view: V) {
+        synchronized(viewSyncObject) {
             super.onAttachView(view)
 
-            if (view is IAsyncPresenter.ITaskListener) {
-                taskStatusListener = view
-            }
+            taskStatusListener = view
+
+            //populate waiting results
+            //toList prevents crash
+            waitingResults.toList().forEach { result -> result.invoke(view) }
+            waitingResults.clear()
 
             notifyLockObject()
         }
     }
 
     @CallSuper
+    @MainThread
     override fun onDetachView() {
-        synchronized(lockObject) {
+        synchronized(viewSyncObject) {
             super.onDetachView()
             taskStatusListener = null
         }
     }
 
     @CallSuper
+    @MainThread
     override fun cancel() {
         runningTasks.clear()
+        waitingResults.clear()
         notifyLockObject()
     }
 
-    private fun notifyLockObject() {
-        synchronized(lockObject) {
-            try {
-                lockObject.notifyAll()
-            } catch (ignored: IllegalMonitorStateException) {
-
-            }
-        }
-    }
-
-    fun <T> execute(callable: Callable<T>, executor: AbstractExecutorService, id: Int): Future<T> {
+    /**
+     * Executes callable with provided executor
+     * */
+    fun <T> Callable<T>.execute(executor: AbstractExecutorService, id: Int): Future<T> {
         notifyTaskAdded(id)
         return executor.submit(Callable<T> {
             try {
-                return@Callable callable.call()
+                return@Callable this.call()
             } finally {
                 notifyTaskFinished(id)
             }
         })
     }
 
-    fun execute(runnable: Runnable, executor: AbstractExecutorService, id: Int): Future<Unit> {
+    /**
+     * Executes Runnable with provided executor
+     * */
+    fun Runnable.execute(executor: AbstractExecutorService, id: Int): Future<Unit> {
         notifyTaskAdded(id)
         return executor.submit(Callable<Unit> {
             try {
-                runnable.run()
+                this.run()
+            } finally {
+                notifyTaskFinished(id)
+            }
+        })
+    }
+
+    /**
+     * Executes lambda with provide executor
+     * */
+    fun <T> execute(task: () -> T, executor: AbstractExecutorService, id: Int): Future<T> {
+        notifyTaskAdded(id)
+        return executor.submit(Callable<T> {
+            try {
+                return@Callable task.invoke()
             } finally {
                 notifyTaskFinished(id)
             }
@@ -109,22 +124,22 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
 
     /**
      * Use this method to get attached view for result populating (from worker thread).
-     * It will wait for view attach, via calling wait() on lockObject.
-     * lockObject.notifyAll() will be called after onAttachView().
+     * It will wait for view attach, via calling wait() on viewSyncObject.
+     * viewSyncObject.notifyAll() will be called after onAttachView().
      *
      * @return view, attached to presenter
      *
      * @throws RuntimeException with cause InterruptedException, if thread was interrupted
      * */
     @WorkerThread
-    fun waitForViewIfNeeded(): T {
-        synchronized(lockObject) {
+    fun waitForView(): V {
+        synchronized(viewSyncObject) {
             if (Thread.interrupted()) {
                 throw RuntimeException(InterruptedException("Thread ${Thread.currentThread().name} is interrupted."))
             }
             if (view == null) {
                 try {
-                    lockObject.wait()
+                    viewSyncObject.wait()
                 } catch (e: InterruptedException) {
                     throw RuntimeException(e)
                 }
@@ -133,10 +148,57 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
         }
     }
 
-    protected fun checkIfInterruptedException(ex: Throwable?): Boolean {
-        var currentLevel = ex
+    private fun notifyLockObject() {
+        synchronized(viewSyncObject) {
+            try {
+                viewSyncObject.notifyAll()
+            } catch (ignored: IllegalMonitorStateException) {
+
+            }
+        }
+    }
+
+    /**
+     * Use this method to provide results to view asynchronously from any thread.
+     * If view is attached to presenter, result will be passed immediately,
+     * otherwise results will passed after view attached.
+     * */
+    protected fun postResult(body: (V) -> Unit) {
+        if (isInMainThread()) {
+            val view = view
+            if (view != null) {
+                body.invoke(view)
+            } else {
+                waitingResults.add(body)
+            }
+        } else {
+            postOnMainThread { postResult(body) }
+        }
+    }
+
+    /**
+     * @return true if caller thread is main.
+     * */
+    protected fun isInMainThread(): Boolean = Looper.getMainLooper() == Looper.myLooper()
+
+    /**
+     * Executes given expression in main thread.
+     * */
+    protected inline fun postOnMainThread(crossinline body: () -> Unit) {
+        if (isInMainThread()) {
+            body()
+        } else {
+            Handler(Looper.getMainLooper()).post { body() }
+        }
+    }
+
+    /***
+     * Checks if exception or its cause is InterruptedException.
+     */
+    protected fun Throwable.isInterruptedException(): Boolean {
+        var currentLevel: Throwable? = this
         while (currentLevel != null) {
-            if (currentLevel is InterruptedException) {
+            if (currentLevel.javaClass == InterruptedException::class.java) {
                 return true
             } else {
                 currentLevel = currentLevel.cause
@@ -151,7 +213,7 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
     protected fun notifyTaskAdded(task: Int) {
         runningTasks.add(task)
         var taskStatusListener: IAsyncPresenter.ITaskListener? = null
-        synchronized(lockObject) {
+        synchronized(viewSyncObject) {
             taskStatusListener = this.taskStatusListener
         }
         postOnMainThread { taskStatusListener?.onTaskStatusChanged(task, TASK_ADDED) }
@@ -163,22 +225,10 @@ open class BaseAsyncPresenter<T : IAsyncPresenter.ITaskListener> : BasePresenter
     protected fun notifyTaskFinished(task: Int) {
         runningTasks.remove(task)
         var taskStatusListener: IAsyncPresenter.ITaskListener? = null
-        synchronized(lockObject) {
+        synchronized(viewSyncObject) {
             taskStatusListener = this.taskStatusListener
         }
         postOnMainThread { taskStatusListener?.onTaskStatusChanged(task, TASK_FINISHED) }
-    }
-
-    protected fun isInMainThread(): Boolean {
-        return Looper.getMainLooper() == Looper.myLooper()
-    }
-
-    protected inline fun postOnMainThread(crossinline body: () -> Unit) {
-        if (isInMainThread()) {
-            body()
-        } else {
-            Handler(Looper.getMainLooper()).post { body() }
-        }
     }
 
     fun isTaskRunning(task: Int): Boolean {
