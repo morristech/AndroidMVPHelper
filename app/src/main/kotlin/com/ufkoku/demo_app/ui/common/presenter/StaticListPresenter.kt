@@ -42,7 +42,7 @@ class StaticListPresenter<V> : BaseAsyncRxSchedulerPresenter<V>() where V : Stat
                 .subscribe({ result -> postResult { v -> v.onItemProcessed(result) } })
     }
 
-    interface PresenterListener : IAsyncPresenter.ITaskListener {
+    interface PresenterListener : ITaskListener {
 
         fun getViewWidth(): Int
 

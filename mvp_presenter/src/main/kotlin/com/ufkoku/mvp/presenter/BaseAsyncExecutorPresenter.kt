@@ -23,12 +23,12 @@ import java.util.concurrent.Future
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.ThreadPoolExecutor
 
-abstract class BaseAsyncExecutorPresenter<T : IAsyncPresenter.ITaskListener> : BaseAsyncPresenter<T>(), IAsyncPresenter<T> {
+abstract class BaseAsyncExecutorPresenter<V : BaseAsyncPresenter.ITaskListener> : BaseAsyncPresenter<V>(), IAsyncPresenter<V> {
 
     protected var executor: ThreadPoolExecutor? = null
 
     @MainThread
-    override fun onAttachView(view: T) {
+    override fun onAttachView(view: V) {
         var executor = this.executor
         if (executor == null) {
             executor = createExecutor()

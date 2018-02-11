@@ -18,15 +18,9 @@ package com.ufkoku.mvp_base.presenter
 
 import android.support.annotation.MainThread
 
-interface IAsyncPresenter<V : IAsyncPresenter.ITaskListener> : IPresenter<V> {
+interface IAsyncPresenter<V> : IPresenter<V> {
 
     @MainThread
     fun cancel()
-
-    interface ITaskListener {
-
-        fun onTaskStatusChanged(taskId: Int, status: Int)
-
-    }
 
 }

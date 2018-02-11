@@ -18,6 +18,7 @@ package com.ufkoku.mvp.presenter.rx2
 
 import android.support.annotation.MainThread
 import com.ufkoku.mvp.presenter.BaseAsyncExecutorPresenter
+import com.ufkoku.mvp.presenter.BaseAsyncPresenter
 import com.ufkoku.mvp_base.presenter.IAsyncPresenter
 import io.reactivex.Flowable
 import io.reactivex.Observable
@@ -27,7 +28,7 @@ import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.ThreadPoolExecutor
 
-abstract class BaseAsyncRxSchedulerPresenter<T : IAsyncPresenter.ITaskListener> : BaseAsyncExecutorPresenter<T>() {
+abstract class BaseAsyncRxSchedulerPresenter<V : BaseAsyncPresenter.ITaskListener> : BaseAsyncExecutorPresenter<V>() {
 
     var scheduler: Scheduler? = null
 

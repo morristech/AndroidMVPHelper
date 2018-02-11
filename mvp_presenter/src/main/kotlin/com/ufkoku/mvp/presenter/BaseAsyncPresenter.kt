@@ -28,7 +28,7 @@ import java.util.concurrent.AbstractExecutorService
 import java.util.concurrent.Callable
 import java.util.concurrent.Future
 
-open class BaseAsyncPresenter<V : IAsyncPresenter.ITaskListener> : BasePresenter<V>(), IAsyncPresenter<V> {
+open class BaseAsyncPresenter<V : BaseAsyncPresenter.ITaskListener> : BasePresenter<V>(), IAsyncPresenter<V> {
 
     companion object {
         val TASK_ADDED = 0
@@ -40,7 +40,7 @@ open class BaseAsyncPresenter<V : IAsyncPresenter.ITaskListener> : BasePresenter
      * */
     protected val viewSyncObject = Object()
 
-    private var taskStatusListener: IAsyncPresenter.ITaskListener? = null
+    private var taskStatusListener: ITaskListener? = null
 
     private val runningTasks: MutableList<Int> = Collections.synchronizedList(LinkedList())
 
@@ -212,7 +212,7 @@ open class BaseAsyncPresenter<V : IAsyncPresenter.ITaskListener> : BasePresenter
      * */
     protected fun notifyTaskAdded(task: Int) {
         runningTasks.add(task)
-        var taskStatusListener: IAsyncPresenter.ITaskListener? = null
+        var taskStatusListener: ITaskListener? = null
         synchronized(viewSyncObject) {
             taskStatusListener = this.taskStatusListener
         }
@@ -224,7 +224,7 @@ open class BaseAsyncPresenter<V : IAsyncPresenter.ITaskListener> : BasePresenter
      * */
     protected fun notifyTaskFinished(task: Int) {
         runningTasks.remove(task)
-        var taskStatusListener: IAsyncPresenter.ITaskListener? = null
+        var taskStatusListener: ITaskListener? = null
         synchronized(viewSyncObject) {
             taskStatusListener = this.taskStatusListener
         }
@@ -241,6 +241,12 @@ open class BaseAsyncPresenter<V : IAsyncPresenter.ITaskListener> : BasePresenter
 
     fun hasRunningTasks(): Boolean {
         return runningTasks.size > 0
+    }
+
+    interface ITaskListener {
+
+        fun onTaskStatusChanged(taskId: Int, status: Int)
+
     }
 
 }

@@ -1,3 +1,7 @@
+### 4.0.4
+#### Changes
+* ITaskListener moved from IAsyncPresenter to BaseAsyncPresenter.
+
 ### 4.0.3
 #### Changes
 * Minor fix at annotation processor;
