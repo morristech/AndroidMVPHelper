@@ -65,7 +65,7 @@ android {
 }
 
 dependencies {
-    api "com.android.support:support-annotations:$supportVersion"
+    implementation "com.android.support:support-annotations:$supportVersion"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

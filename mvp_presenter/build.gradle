@@ -67,6 +67,8 @@ android {
 dependencies {
     api project(':mvp_base')
 
+    implementation "com.android.support:support-annotations:$supportVersion"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 

@@ -149,7 +149,7 @@ public class ViewWrapAnnotationProcessor extends AbstractProcessor {
                             TypeName o1param = o1.parameters.get(i).type;
                             TypeName o2param = o2.parameters.get(i).type;
                             if (!o1param.equals(o2param)) {
-                                return o1param.toString().compareTo(o2.toString());
+                                return o1param.toString().compareTo(o2param.toString());
                             }
                         }
                     } else {

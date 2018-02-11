@@ -1,6 +1,6 @@
 # AndroidMVPHelper
 
-![alt tag](https://img.shields.io/badge/version-4.0.1-brightgreen.svg)
+![alt tag](https://img.shields.io/badge/version-4.0.3-brightgreen.svg)
 
 Library manages lifecycle of Activities and Fragments, their Presenters and ViewStates.
 
@@ -18,7 +18,7 @@ repositories {
 
 ```gradle
 dependencies{
-  implementation "com.ufkoku.mvp:mvp_base:$mvp_ver"
+  api "com.ufkoku.mvp:mvp_base:$mvp_ver"
 }
 ```
 
@@ -28,7 +28,7 @@ Contains basic interfaces without any implementation.
 
 ```gradle
 dependencies{
-  implementation "com.ufkoku.mvp:mvp:$mvp_ver"
+  api "com.ufkoku.mvp:mvp:$mvp_ver"
 }
 ```
 
@@ -45,7 +45,7 @@ Examples of usage:
 
 ```gradle
 dependencies{
-  implementation "com.ufkoku.mvp:mvp_presenter:$mvp_ver"
+  api "com.ufkoku.mvp:mvp_presenter:$mvp_ver"
 }
 ```
 
@@ -57,7 +57,12 @@ Contains implementations of:
 
 ```gradle
 dependencies{
-  implementation "com.ufkoku.mvp:mvp_rx2_presenter:$mvp_ver"
+  
+  //Add RX2 dependencies, if you haven't one
+  implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+  implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+  api "com.ufkoku.mvp:mvp_rx2_presenter:$mvp_ver"
 }
 ```
 

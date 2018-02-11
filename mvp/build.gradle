@@ -67,7 +67,7 @@ android {
 dependencies {
     api project(':mvp_base')
 
-    api 'com.android.support:appcompat-v7:' + supportVersion
+    implementation 'com.android.support:appcompat-v7:' + supportVersion
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

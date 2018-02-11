@@ -47,12 +47,16 @@ dependencies {
     implementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
 
     implementation "com.android.support:appcompat-v7:" + supportVersion
+    implementation "com.android.support:support-annotations:" + supportVersion
     implementation "com.android.support:recyclerview-v7:" + supportVersion
+
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation project(":mvp")
-    implementation project(":mvp_rx2_presenter")
+    api project(":mvp")
+    api project(":mvp_rx2_presenter")
 
     implementation project(":mvp_autosavable_annotation")
     kapt project(":mvp_autosavable")
@@ -62,14 +66,14 @@ dependencies {
 
 //    def mvp_ver = version_name
 //
-//    implementation "com.ufkoku.mvp:mvp:$mvp_ver"
-//    implementation "com.ufkoku.mvp:mvp_rx2_presenter:$mvp_ver"
+//    api ("com.ufkoku.mvp:mvp:$mvp_ver")
+//    api ("com.ufkoku.mvp:mvp_rx2_presenter:$mvp_ver")
 //
 //    implementation("com.ufkoku.mvp:mvp_autosavable_annotation:$mvp_ver")
-//    annotationProcessor("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")
+//    kapt("com.ufkoku.mvp:mvp_autosavable:$mvp_ver")
 //
 //    implementation("com.ufkoku.mvp:mvp_view_wrap_annotation:$mvp_ver")
-//    annotationProcessor("com.ufkoku.mvp:mvp_view_wrap:$mvp_ver")
+//    kapt("com.ufkoku.mvp:mvp_view_wrap:$mvp_ver")
 
 }
 

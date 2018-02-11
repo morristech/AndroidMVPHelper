@@ -1,3 +1,8 @@
+### 4.0.3
+#### Changes
+* Minor fix at annotation processor;
+* Dependencies issue fix.
+
 ### 4.0.1
 #### Changes  
 * Global refactoring;
@@ -7,7 +12,7 @@
 * Added new methods to presenters;
 * Dependencies updates;
 * Demo app is moved to kotlin;
-* Added Leak Canary to demo app; 
+* Added Leak Canary to demo app. 
 
 ### 3.2.4
 #### Changes  
